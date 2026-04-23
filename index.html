@@ -467,47 +467,24 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 </div>
 <button class="fab" id="fab" onclick="openHeroModal()">+</button>
 <!-- new hero modal -->
-<div class="movl" id="m-nh" onclick="closeMB(event,'m-nh')">
-  <div class="modal">
+<div id="m-nh" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeHeroModal()">
+  <div style="background:linear-gradient(180deg,#1e1810,#140f08);border:1px solid #7a5a18;border-top:2px solid #c9962a;border-radius:10px 10px 0 0;width:100%;max-width:430px;padding:20px 18px 32px;max-height:88vh;overflow-y:auto">
 
-    <!-- Header -->
-    <div class="mtit">
-      <span>&#9876;&#65039; Nuevo Heroe</span>
-      <button class="mcls" onclick="closeM('m-nh')">&#10005;</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(201,150,42,.2)">
+      <span style="font-family:'Cinzel',serif;font-size:16px;color:#c9962a;letter-spacing:1px">Nuevo Heroe</span>
+      <button onclick="closeHeroModal()" style="background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:50%;width:28px;height:28px;color:#5a504a;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#10005;</button>
     </div>
 
-    <!-- Name field -->
-    <label class="ilb">Nombre del Aventurero</label>
-    <input class="ifl" type="text" id="hinp"
-      placeholder="Como se llama tu heroe..."
-      maxlength="22" autocomplete="off">
+    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#7a5a18;margin-bottom:5px">NOMBRE</div>
+    <input id="hinp" type="text" placeholder="Nombre del heroe..." maxlength="22" autocomplete="off"
+      style="width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(201,150,42,.3);border-radius:4px;color:#f2e8d0;font-size:16px;padding:10px 12px;margin-bottom:16px;outline:none;font-family:'Crimson Pro',serif">
 
-    <!-- Selected class preview (filled by JS) -->
-    <div id="cls-preview-box" class="cls-preview">
-      <div class="cls-preview-ico" id="cpv-ico">&#9876;&#65039;</div>
-      <div class="cls-preview-info">
-        <div class="cls-preview-name" id="cpv-name">Selecciona una clase</div>
-        <div class="cls-preview-cat" id="cpv-cat"></div>
-        <div class="cls-preview-stats" id="cpv-stats"></div>
-        <div class="cls-preview-skills" id="cpv-skills"></div>
-      </div>
-    </div>
+    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#7a5a18;margin-bottom:8px">CLASE</div>
+    <div id="class-grid" style="max-height:44vh;overflow-y:auto;margin-bottom:16px"></div>
 
-    <!-- Label -->
-    <label class="ilb">Clase &#8250; Desplaza para ver todas</label>
-
-    <!-- Class grid (filled by renderClassGrid) -->
-    <div id="class-grid"
-      style="max-height:42vh;overflow-y:auto;
-             padding-right:2px;margin-bottom:16px;
-             scrollbar-width:thin;scrollbar-color:rgba(201,150,42,.3) transparent">
-    </div>
-
-    <!-- Confirm button -->
-    <button class="bpri" onclick="createH()">
-      &#9876;&#65039;&nbsp; UNIRSE A LA AVENTURA &nbsp;&#9876;&#65039;
+    <button onclick="createH()" style="width:100%;background:linear-gradient(135deg,#8b1a1a,#5c0f0f);border:1px solid #8b1a1a;border-radius:5px;color:#f2e8d0;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:2px;padding:13px;cursor:pointer">
+      &#9876;&#65039; UNIRSE A LA AVENTURA
     </button>
-
   </div>
 </div>
 
@@ -830,6 +807,7 @@ function closeMB(e,id){if(e.target===document.getElementById(id))closeM(id)}
 let tT;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2600)}
 function showTab(tab,btn){
+  closeHeroModal();
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
   document.getElementById('view-'+tab).classList.add('active');
@@ -907,72 +885,63 @@ function saveCI(){const nm=document.getElementById('ci-n').value.trim();const ds
 if(ciM==='equip'){const sl=document.getElementById('ci-sl').value;const a=parseInt(document.getElementById('ci-a').value)||0;const d=parseInt(document.getElementById('ci-df').value)||0;const it={sl,nm,ico,ds,r:ciR,a,d,custom:true};if(!ICAL[sl])ICAL[sl]=[];ICAL[sl].push(it);const h=heroes.find(x=>x.id===eHid);if(h){if(eSidx>=0)selEQ(it);else{h.eq.push(it);const c=document.getElementById('d-eq');if(c){c.querySelectorAll('.esl').forEach(x=>x.remove());c.insertAdjacentHTML('beforeend',rEq(h,h.id));}rH();saveS();}}toast('Objeto creado');}
 else if(ciM.includes('spell')){const co=document.getElementById('ci-c').value.trim()||'0 MP';const sp={nm,ico,ds,co,r:ciR};SCATS.push(sp);if(eHid)addSP(sp);else toast('&#10024; Hechizo creado al catalogo');}
 else{const qty=parseInt(document.getElementById('ci-q').value)||1;const it={nm,ico,ds,r:ciR,qty};if(ciM==='inv-hero'&&eHid){const h=heroes.find(x=>x.id===eHid);if(h){if(!h.inv)h.inv=[];h.inv.push(it);saveS();toast('Objeto anadido al heroe');const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}}else{gi.push(it);saveS();toast('Objeto anadido al grupo');renderGI();}}closeM('m-ci');}
-function updateClassPreview(key){
-  const cls = HT[key];
-  if(!cls) return;
-  const el = id => document.getElementById(id);
-  if(el('cpv-ico'))   el('cpv-ico').textContent   = cls.ico;
-  if(el('cpv-name'))  el('cpv-name').textContent   = cls.cls;
-  if(el('cpv-cat'))   el('cpv-cat').textContent    = cls.cat || 'Original';
-  if(el('cpv-stats')) el('cpv-stats').innerHTML    =
-    `<span class="cls-stat-pill" style="color:var(--bl);border-color:var(--bld)">&#10084; ${cls.hp}</span>`+
-    `<span class="cls-stat-pill" style="color:var(--mg);border-color:var(--mb)">&#10024; ${cls.mp}</span>`+
-    `<span class="cls-stat-pill" style="color:var(--go);border-color:var(--god)">&#9876; ${cls.atk}</span>`+
-    `<span class="cls-stat-pill" style="color:var(--gr);border-color:var(--grd)">&#128737; ${cls.def}</span>`;
-  if(el('cpv-skills') && cls.sk && cls.sk.length){
-    el('cpv-skills').innerHTML = cls.sk.map(s=>
-      `<span style="color:${s.pasiva?'var(--gr)':'var(--go)'}">${s.pasiva?'&#9670;':'&#9654;'}</span> ${s.n}`
-    ).join('<br>');
-  }
+function openHeroModal(){
+  sT = Object.keys(HT)[0];
+  renderClassGrid();
+  const inp = document.getElementById('hinp');
+  if(inp){ inp.value=''; }
+  const m = document.getElementById('m-nh');
+  if(m){ m.style.display='flex'; }
+  setTimeout(()=>{ if(inp) inp.focus(); }, 200);
+}
+
+function closeHeroModal(){
+  const m = document.getElementById('m-nh');
+  if(m) m.style.display='none';
 }
 
 function selT(btn){
-  document.querySelectorAll('.htbt').forEach(b => b.classList.remove('sel'));
-  btn.classList.add('sel');
+  document.querySelectorAll('#class-grid button').forEach(b=>{
+    b.style.borderColor='rgba(201,150,42,.2)';
+    b.style.background='linear-gradient(160deg,#1e1810,#2a2010)';
+    b.style.color='#ddd0a8';
+  });
+  btn.style.borderColor='#c9962a';
+  btn.style.background='linear-gradient(160deg,#2a1e0a,#3a2a10)';
+  btn.style.color='#c9962a';
   sT = btn.dataset.type;
-  updateClassPreview(sT);
 }
 
 function renderClassGrid(){
   const grid = document.getElementById('class-grid');
   if(!grid) return;
-
-  // Group by category
   const cats = {};
-  Object.entries(HT).forEach(([key, cls])=>{
-    const cat = cls.cat || 'Original';
-    if(!cats[cat]) cats[cat] = [];
-    cats[cat].push({key, cls});
+  Object.entries(HT).forEach(([key,cls])=>{
+    const cat = cls.cat||'Original';
+    if(!cats[cat]) cats[cat]=[];
+    cats[cat].push({key,cls});
   });
-
-  let out = '';
-  Object.entries(cats).forEach(([cat, list])=>{
-    out += `<div class="cls-cat-hdr">${cat}</div>`;
-    out += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:6px">`;
-    list.forEach(({key, cls})=>{
-      const sel = sT === key;
-      out += `<button class="htbt${sel?' sel':''}" data-type="${key}" onclick="selT(this)"
-        style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;text-align:center">
-        <span class="hti">${cls.ico}</span>
-        <span class="htn">${cls.cls}</span>
-        <span class="hts">HP${cls.hp} &bull; MP${cls.mp} &bull; ATK${cls.atk} &bull; DEF${cls.def}</span>
+  let out='';
+  Object.entries(cats).forEach(([cat,list])=>{
+    out+=`<div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:#7a5a18;text-transform:uppercase;padding:10px 2px 6px;border-bottom:1px solid rgba(201,150,42,.15);margin-bottom:6px">${cat}</div>`;
+    out+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px">`;
+    list.forEach(({key,cls})=>{
+      const isSel = key===sT;
+      out+=`<button data-type="${key}" onclick="selT(this)"
+        style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;
+               background:${isSel?'linear-gradient(160deg,#2a1e0a,#3a2a10)':'linear-gradient(160deg,#1e1810,#2a2010)'};
+               border:1px solid ${isSel?'#c9962a':'rgba(201,150,42,.2)'};
+               border-radius:6px;cursor:pointer;touch-action:manipulation;
+               color:${isSel?'#c9962a':'#ddd0a8'};transition:all .15s">
+        <span style="font-size:28px;line-height:1">${cls.ico}</span>
+        <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:.5px">${cls.cls}</span>
+        <span style="font-size:8px;color:#5a504a;line-height:1.4">HP${cls.hp} &bull; MP${cls.mp} &bull; ATK${cls.atk} &bull; DEF${cls.def}</span>
       </button>`;
     });
-    if(list.length % 2 !== 0) out += `<div></div>`;
-    out += `</div>`;
+    if(list.length%2!==0) out+=`<div></div>`;
+    out+=`</div>`;
   });
-  grid.innerHTML = out;
-}
-
-function openHeroModal(){
-  // Default to first class
-  sT = Object.keys(HT)[0];
-  renderClassGrid();
-  updateClassPreview(sT);
-  const inp = document.getElementById('hinp');
-  if(inp) inp.value = '';
-  openM('m-nh');
-  setTimeout(()=>{ if(inp) inp.focus(); }, 320);
+  grid.innerHTML=out;
 }
 
 
