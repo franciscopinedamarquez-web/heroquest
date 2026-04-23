@@ -299,58 +299,22 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
     <button class="bsec" style="margin-top:7px" onclick="openM('m-ginv')">+ Anadir objeto al grupo</button>
   </div>
 </div>
-<button class="fab" id="fab" onclick="openCharCreator()">+</button>
-<!-- new hero / character creator -->
+<button class="fab" id="fab" onclick="openHeroModal()">+</button>
+<!-- new hero modal -->
 <div class="movl" id="m-nh" onclick="closeMB(event,'m-nh')">
-  <div class="modal" style="padding-bottom:calc(28px + env(safe-area-inset-bottom))">
-    <div class="mtit">Crear Heroe <button class="mcls" onclick="closeM('m-nh')">X</button></div>
+  <div class="modal">
+    <div class="mtit">Nuevo Heroe <button class="mcls" onclick="closeM('m-nh')">X</button></div>
 
-    <!-- PHOTO + NAME row -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-      <div style="position:relative;flex-shrink:0">
-        <div id="cc-avatar" onclick="document.getElementById('cc-photo-inp').click()"
-          style="width:72px;height:72px;border-radius:50%;border:2px solid var(--god);background:radial-gradient(circle,#2a2218,#1a1208);display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;overflow:hidden;position:relative">
-          <span id="cc-avatar-ico">&#129497;</span>
-          <img id="cc-avatar-img" src="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;border-radius:50%">
-        </div>
-        <div onclick="document.getElementById('cc-photo-inp').click()"
-          style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--god);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:2px solid #1a1208">&#128247;</div>
-        <input type="file" id="cc-photo-inp" accept="image/*" style="display:none" onchange="ccLoadPhoto(this)">
-      </div>
-      <div style="flex:1">
-        <label class="ilb">Nombre del Heroe</label>
-        <input class="ifl" type="text" id="hinp" placeholder="Escribe el nombre..." maxlength="20" autocomplete="off" style="margin-bottom:0">
-      </div>
-    </div>
+    <label class="ilb">Nombre</label>
+    <input class="ifl" type="text" id="hinp" placeholder="Nombre del heroe..." maxlength="22" autocomplete="off">
 
-    <!-- CLASS SELECTOR -->
     <label class="ilb">Clase</label>
-    <div class="htgr" style="grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px">
-      <button class="htbt sel" data-type="barbaro" onclick="selT(this);ccRollStats()"><span class="hti">&#129427;</span><span class="htn">BARBARO</span></button>
-      <button class="htbt" data-type="enano" onclick="selT(this);ccRollStats()"><span class="hti">&#9874;&#65039;</span><span class="htn">ENANO</span></button>
-      <button class="htbt" data-type="elfo" onclick="selT(this);ccRollStats()"><span class="hti">&#127993;</span><span class="htn">ELFO</span></button>
-      <button class="htbt" data-type="mago" onclick="selT(this);ccRollStats()"><span class="hti">&#128302;</span><span class="htn">MAGO</span></button>
-    </div>
+    <div id="class-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:14px;max-height:52vh;overflow-y:auto;padding-right:2px"></div>
 
-    <!-- ROLLED STATS DISPLAY -->
-    <div style="background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.2);border-radius:4px;padding:10px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--god)">ATRIBUTOS</span>
-        <button onclick="ccRollStats()" style="background:rgba(201,150,42,.15);border:1px solid var(--god);border-radius:3px;color:var(--go);font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;padding:4px 10px;cursor:pointer;touch-action:manipulation">&#127922; TIRAR DADOS</button>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px" id="cc-stats-grid">
-        <!-- filled by ccRollStats() -->
-      </div>
-      <div id="cc-roll-anim" style="text-align:center;font-size:11px;color:var(--god);font-style:italic;margin-top:6px;min-height:16px"></div>
-    </div>
-
-    <!-- BACKSTORY -->
-    <label class="ilb">Historia (opcional)</label>
-    <input class="ifl" type="text" id="cc-backstory" placeholder="De donde viene tu heroe..." maxlength="60" autocomplete="off">
-
-    <button class="bpri" onclick="createH()">&#9876;&#65039; COMENZAR AVENTURA &#9876;&#65039;</button>
+    <button class="bpri" onclick="createH()">&#9876;&#65039; UNIRSE A LA AVENTURA</button>
   </div>
 </div>
+
 <!-- equip picker -->
 <div class="movl" id="m-eq" onclick="closeM('m-eq')">
   <div class="modal" onclick="event.stopPropagation()">
@@ -434,10 +398,194 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
   <div class="ss-version">v4.0 &bull; PWA</div>
 </div>
 <script>
-const HT={barbaro:{ico:'&#129427;',col:'#8b1a1a',cls:'Barbaro',hp:8,maxHp:8,mp:2,maxMp:2,atk:3,def:2,mov:3,eq:[{sl:'Arma',ico:'&#129427;',nm:'Hacha de Batalla',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura de Cuero',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#128141;',nm:'--',r:'common',a:0,d:0}],sp:[],inv:[],sk:[{n:'Furia Berserker',c:null,d:'Dado adicional en cuerpo a cuerpo.'},{n:'Resistencia',c:null,d:'Una vez por mision ignora un ataque.'}]},
-enano:{ico:'&#9874;&#65039;',col:'#7a5a18',cls:'Enano',hp:7,maxHp:7,mp:3,maxMp:3,atk:2,def:3,mov:2,eq:[{sl:'Arma',ico:'&#9874;&#65039;',nm:'Martillo de Guerra',r:'common',a:0,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Cota de Malla',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#128141;',nm:'Amuleto Runico',r:'rare',a:0,d:1}],sp:[],inv:[],sk:[{n:'Buscar Trampas',c:null,d:'Detecta trampas automaticamente.'},{n:'Reparar',c:null,d:'Repara objetos sin tirada.'}]},
-elfo:{ico:'&#127993;',col:'#2a5a2a',cls:'Elfo',hp:6,maxHp:6,mp:4,maxMp:4,atk:2,def:2,mov:4,eq:[{sl:'Arma',ico:'&#127993;',nm:'Arco Largo Elfico',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Capa de Sigiloso',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#127807;',nm:'Corona de Hojas',r:'uncommon',a:0,d:0}],sp:[{nm:'Flecha de Luz',co:'1 MP',ico:'&#10024;',ds:'Disparo que ignora armadura.',r:'uncommon'}],inv:[],sk:[{n:'Paso Silencioso',c:null,d:'No activa trampas.'},{n:'Tiro Preciso',c:'1 MP',d:'Doble distancia +1 dado.'}]},
-mago:{ico:'&#128302;',col:'#2a4a7f',cls:'Mago',hp:4,maxHp:4,mp:6,maxMp:6,atk:1,def:1,mov:2,eq:[{sl:'Arma',ico:'&#129668;',nm:'Baston Arcano',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#128302;',nm:'Tunica Encantada',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128218;',nm:'Libro de Hechizos',r:'legendary',a:0,d:0}],sp:[{nm:'Bola de Fuego',co:'2 MP',ico:'&#128293;',ds:'2D6 dano en area.',r:'rare'},{nm:'Escudo Arcano',co:'1 MP',ico:'&#128737;&#65039;',ds:'+2 dados defensa.',r:'uncommon'},{nm:'Curar',co:'2 MP',ico:'&#128154;',ds:'Cura 1D4 HP a aliado.',r:'uncommon'}],inv:[],sk:[{n:'Bola de Fuego',c:'2 MP',d:'2D6 dano en area.'},{n:'Escudo Arcano',c:'1 MP',d:'+2 dados defensa.'},{n:'Curar',c:'2 MP',d:'Cura 1D4 HP.'}]}};
+const HT={
+// ── HEROQUEST ORIGINAL ──────────────────────────────────────────────────────
+barbaro:{ico:'&#129427;',col:'#8b1a1a',cls:'Barbaro',cat:'Original',
+  hp:8,maxHp:8,mp:2,maxMp:2,atk:3,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#129427;',nm:'Hacha de Batalla',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura de Cuero',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#128141;',nm:'--',r:'common',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Furia Berserker',c:null,pasiva:true, d:'PASIVA: Cada vez que recibe dano, gana +1 dado de ataque el siguiente turno.'},
+    {n:'Golpe Devastador',c:'1/turno',pasiva:false,d:'ACTIVA: Tira 4 dados de ataque en lugar de 3. Si saca 3+ simbolos de ataque, el enemigo no puede defenderse.'}
+  ]},
+enano:{ico:'&#9874;&#65039;',col:'#7a5a18',cls:'Enano',cat:'Original',
+  hp:7,maxHp:7,mp:3,maxMp:3,atk:2,def:3,mov:2,
+  eq:[{sl:'Arma',ico:'&#9874;&#65039;',nm:'Martillo de Guerra',r:'common',a:0,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Cota de Malla',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#128141;',nm:'Amuleto Runico',r:'rare',a:0,d:1}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Buscar Trampas',c:null,pasiva:true, d:'PASIVA: Al entrar en una sala, detecta automaticamente cualquier trampa antes de activarla.'},
+    {n:'Rompeminas',c:'1/turno',pasiva:false,d:'ACTIVA: Destruye una trampa o mecanismo magico sin tirada. Ademas otorga +1 monedas de oro al grupo.'}
+  ]},
+elfo:{ico:'&#127993;',col:'#2a5a2a',cls:'Elfo',cat:'Original',
+  hp:6,maxHp:6,mp:4,maxMp:4,atk:2,def:2,mov:4,
+  eq:[{sl:'Arma',ico:'&#127993;',nm:'Arco Largo Elfico',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Capa de Sigiloso',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#127807;',nm:'Corona de Hojas',r:'uncommon',a:0,d:0}],
+  sp:[{nm:'Flecha de Luz',co:'1 MP',ico:'&#10024;',ds:'Disparo que ignora armadura.',r:'uncommon'}],inv:[],
+  sk:[
+    {n:'Paso Silencioso',c:null,pasiva:true, d:'PASIVA: El Elfo no activa trampas al moverse y siempre actua primero en iniciativa.'},
+    {n:'Lluvia de Flechas',c:'1/turno',pasiva:false,d:'ACTIVA: Ataca a todos los enemigos visibles en la sala con 1 dado de ataque cada uno.'}
+  ]},
+mago:{ico:'&#128302;',col:'#2a4a7f',cls:'Mago',cat:'Original',
+  hp:4,maxHp:4,mp:6,maxMp:6,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#129668;',nm:'Baston Arcano',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#128302;',nm:'Tunica Encantada',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128218;',nm:'Libro de Hechizos',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Bola de Fuego',co:'2 MP',ico:'&#128293;',ds:'2D6 dano en area.',r:'rare'},{nm:'Escudo Arcano',co:'1 MP',ico:'&#128737;&#65039;',ds:'+2 dados defensa hasta proximo turno.',r:'uncommon'},{nm:'Curar',co:'2 MP',ico:'&#128154;',ds:'Restaura 1D4 HP a aliado adyacente.',r:'uncommon'}],inv:[],
+  sk:[
+    {n:'Reserva Arcana',c:null,pasiva:true, d:'PASIVA: Cuando un hechizo falla, recupera 1 MP automaticamente.'},
+    {n:'Tormenta Magica',c:'1/turno',pasiva:false,d:'ACTIVA: Gasta 3 MP para infligir 1D6 dano a TODOS los enemigos en la mazmorra, sin importar la sala.'}
+  ]},
+
+// ── EXPANSION: KELLARS KEEP / RETURN OF THE WITCH LORD ────────────────────
+caballero:{ico:'&#129463;',col:'#3a5a7f',cls:'Caballero',cat:'Kellars Keep',
+  hp:7,maxHp:7,mp:2,maxMp:2,atk:2,def:4,mov:3,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Espada Larga',r:'uncommon',a:2,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura de Placas',r:'rare',a:0,d:3},{sl:'Accesorio',ico:'&#128737;&#65039;',nm:'Escudo del Imperio',r:'uncommon',a:0,d:1}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Muro de Acero',c:null,pasiva:true, d:'PASIVA: Los aliados adyacentes al Caballero reciben +1 dado de defensa.'},
+    {n:'Carga Heroica',c:'1/turno',pasiva:false,d:'ACTIVA: Avanza hasta 5 casillas en linea recta e impacta a todo enemigo en su camino con 2 dados de ataque.'}
+  ]},
+sacerdote:{ico:'&#128267;',col:'#7a6a1a',cls:'Sacerdote',cat:'Kellars Keep',
+  hp:5,maxHp:5,mp:5,maxMp:5,atk:1,def:2,mov:2,
+  eq:[{sl:'Arma',ico:'&#128267;',nm:'Maza Sagrada',r:'common',a:1,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Vestiduras Santas',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128267;',nm:'Simbolo Sagrado',r:'rare',a:0,d:0}],
+  sp:[{nm:'Bendicion',co:'1 MP',ico:'&#128267;',ds:'+1 dado de ataque a aliado hasta fin de turno.',r:'uncommon'},{nm:'Exorcismo',co:'2 MP',ico:'&#10024;',ds:'Destruye automaticamente a cualquier no-muerto con HP<=3.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Aura Sagrada',c:null,pasiva:true, d:'PASIVA: Los no-muertos en la misma sala tienen -1 dado de ataque contra el grupo.'},
+    {n:'Intervencion Divina',c:'1/turno',pasiva:false,d:'ACTIVA: Revive a un heroe caido con la mitad de sus HP maximos. Solo usable una vez por mision.'}
+  ]},
+explorador:{ico:'&#127993;',col:'#4a6a2a',cls:'Explorador',cat:'Kellars Keep',
+  hp:6,maxHp:6,mp:3,maxMp:3,atk:2,def:2,mov:5,
+  eq:[{sl:'Arma',ico:'&#127993;',nm:'Arco Corto',r:'common',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Ropa de Cuero',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#127956;&#65039;',nm:'Mapa del Dungeon',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Rastrear',c:null,pasiva:true, d:'PASIVA: Al inicio de cada sala, el Explorador sabe cuantos enemigos hay antes de entrar.'},
+    {n:'Emboscada',c:'1/turno',pasiva:false,d:'ACTIVA: Si el grupo aun no ha sido detectado, ataca con 3 dados extra en el primer turno de combate.'}
+  ]},
+
+// ── EXPANSION: AGAINST THE OGRE HORDE ─────────────────────────────────────
+guerrero_ogro:{ico:'&#129499;',col:'#6a2a0a',cls:'Cazaogros',cat:'Ogre Horde',
+  hp:9,maxHp:9,mp:1,maxMp:1,atk:3,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Lanza Rompedora',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura de Trofeos',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#128285;',nm:'Colmillo de Ogro',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Piel de Cuero',c:null,pasiva:true, d:'PASIVA: Reduce el primer punto de dano de cada ataque que recibe a 0.'},
+    {n:'Aplastamiento',c:'1/turno',pasiva:false,d:'ACTIVA: Golpe que inflige 1D6 dano extra. Si el objetivo es un Bestia o Gigante, inflige 2D6 extra.'}
+  ]},
+druida:{ico:'&#127807;',col:'#2a7a3a',cls:'Druida',cat:'Ogre Horde',
+  hp:5,maxHp:5,mp:5,maxMp:5,atk:1,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#127807;',nm:'Baculo Natural',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Capa de Raices',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#127807;',nm:'Amuleto del Bosque',r:'rare',a:0,d:1}],
+  sp:[{nm:'Enredar',co:'1 MP',ico:'&#127807;',ds:'Inmoviliza a un enemigo 1 turno. No puede atacar ni moverse.',r:'uncommon'},{nm:'Llamada Animal',co:'2 MP',ico:'&#128059;',ds:'Invoca a un lobo aliado (HP3 ATK2) que lucha junto al grupo.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Regeneracion',c:null,pasiva:true, d:'PASIVA: Al inicio de cada turno del Druida, recupera 1 HP si esta en zona natural o con plantas.'},
+    {n:'Forma Bestial',c:'1/turno',pasiva:false,d:'ACTIVA: Durante 1 turno, el Druida tira 4 dados de ataque y 1 dado de defensa extra. Pierde acceso a hechizos ese turno.'}
+  ]},
+
+// ── EXPANSION: WIZARDS OF MORCAR / MAGE OF THE MIRROR ─────────────────────
+hechicera:{ico:'&#129497;',col:'#7a2a9a',cls:'Hechicera',cat:'Wizards of Morcar',
+  hp:4,maxHp:4,mp:7,maxMp:7,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#129668;',nm:'Vara de Cristal',r:'rare',a:0,d:0},{sl:'Armadura',ico:'&#128302;',nm:'Manto Espectral',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128142;',nm:'Orbe Arcano',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Espejo de Almas',co:'2 MP',ico:'&#129398;',ds:'Refleja el siguiente ataque recibido de vuelta al atacante.',r:'rare'},{nm:'Vision del Futuro',co:'1 MP',ico:'&#128302;',ds:'Antes de cualquier tirada, puedes ver el resultado y repetirla.',r:'uncommon'}],inv:[],
+  sk:[
+    {n:'Intuicion Arcana',c:null,pasiva:true, d:'PASIVA: La Hechicera siempre sabe si una sala contiene magia, trampa o peligro antes de entrar.'},
+    {n:'Prision Eterea',c:'1/turno',pasiva:false,d:'ACTIVA: Atrapa a un enemigo en una esfera magica. Queda fuera de combate 2 turnos sin poder actuar.'}
+  ]},
+alquimista:{ico:'&#129514;',col:'#5a7a1a',cls:'Alquimista',cat:'Wizards of Morcar',
+  hp:5,maxHp:5,mp:4,maxMp:4,atk:2,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#129514;',nm:'Pistola de Acido',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Abrigo Reforzado',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#129514;',nm:'Cinturon de Frascos',r:'uncommon',a:0,d:0}],
+  sp:[{nm:'Bomba Fumigena',co:'1 MP',ico:'&#129500;',ds:'Todos los enemigos en la sala tienen -2 dados de ataque 1 turno.',r:'uncommon'},{nm:'Elixir de Fuerza',co:'2 MP',ico:'&#129514;',ds:'Un aliado gana +2 dados de ataque durante 2 turnos.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Crear Pocion',c:null,pasiva:true, d:'PASIVA: Al fin de cada mision, el Alquimista crea 1 pocion de curacion de forma gratuita.'},
+    {n:'Gran Explosion',c:'1/turno',pasiva:false,d:'ACTIVA: Lanza una bomba alquimica que inflige 2D6 dano a todos los enemigos en la sala. Destruye objetos fragiles.'}
+  ]},
+
+// ── EXPANSION: FANTASY ─────────────────────────────────────────────────────
+paladin:{ico:'&#128737;&#65039;',col:'#9a8a1a',cls:'Paladin',cat:'Expansiones',
+  hp:8,maxHp:8,mp:3,maxMp:3,atk:2,def:3,mov:3,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Espada Santa',r:'legendary',a:2,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura del Amanecer',r:'legendary',a:0,d:3},{sl:'Accesorio',ico:'&#10026;&#65039;',nm:'Escudo de la Fe',r:'rare',a:0,d:2}],
+  sp:[{nm:'Luz Divina',co:'2 MP',ico:'&#10024;',ds:'Destruye automaticamente hasta 2 no-muertos con cualquier HP.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Imponer Manos',c:null,pasiva:true, d:'PASIVA: Una vez por turno, puede curar 1 HP a un aliado adyacente como accion gratuita.'},
+    {n:'Smite Sagrado',c:'1/turno',pasiva:false,d:'ACTIVA: Ataque de 3 dados que ignora toda armadura. Contra no-muertos y demonios inflige el doble de dano.'}
+  ]},
+ladron:{ico:'&#129695;',col:'#3a3a4a',cls:'Ladron',cat:'Expansiones',
+  hp:5,maxHp:5,mp:2,maxMp:2,atk:2,def:2,mov:5,
+  eq:[{sl:'Arma',ico:'&#129695;',nm:'Daga Envenenada',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Capa de Sombras',r:'rare',a:0,d:1},{sl:'Accesorio',ico:'&#128285;',nm:'Kit de Ganzuas',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Sombras',c:null,pasiva:true, d:'PASIVA: Si el Ladron no ataco el turno anterior, sus ataques reciben +2 dados (ataque por sorpresa).'},
+    {n:'Robo Perfecto',c:'1/turno',pasiva:false,d:'ACTIVA: Roba un objeto al azar de un enemigo derrotado O abre cualquier cerradura sin tirada. Ademas gana 1D6x5 oros.'}
+  ]},
+bardo:{ico:'&#127929;',col:'#8a4a8a',cls:'Bardo',cat:'Expansiones',
+  hp:5,maxHp:5,mp:4,maxMp:4,atk:1,def:2,mov:4,
+  eq:[{sl:'Arma',ico:'&#127929;',nm:'Laud Encantado',r:'rare',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Ropas de Viaje',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#127925;',nm:'Partitura Magica',r:'uncommon',a:0,d:0}],
+  sp:[{nm:'Balada de Coraje',co:'1 MP',ico:'&#127925;',ds:'Todos los heroes reciben +1 dado de ataque y defensa hasta fin de turno.',r:'rare'},{nm:'Cancion de Miedo',co:'2 MP',ico:'&#127926;',ds:'Todos los enemigos en la sala deben superar una tirada o huyen despavoridos.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Inspiracion',c:null,pasiva:true, d:'PASIVA: Cada vez que un aliado consigue un critico (dado maximo), el Bardo recupera 1 MP.'},
+    {n:'Solo Legendario',c:'1/turno',pasiva:false,d:'ACTIVA: Su musica es tan poderosa que paraliza a todos los enemigos 1 turno completo. No pueden atacar ni moverse.'}
+  ]},
+monje:{ico:'&#129333;',col:'#7a5a3a',cls:'Monje',cat:'Expansiones',
+  hp:6,maxHp:6,mp:4,maxMp:4,atk:2,def:3,mov:4,
+  eq:[{sl:'Arma',ico:'&#129333;',nm:'Nudillos de Hierro',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Habito Monastico',r:'common',a:0,d:2},{sl:'Accesorio',ico:'&#128302;',nm:'Sello del Maestro',r:'rare',a:0,d:0}],
+  sp:[{nm:'Mano del Viento',co:'1 MP',ico:'&#128168;',ds:'Empuja a un enemigo hasta 3 casillas. Si choca contra una pared, recibe 1D4 dano.',r:'uncommon'}],inv:[],
+  sk:[
+    {n:'Defensa Activa',c:null,pasiva:true, d:'PASIVA: Por cada dado de defensa que bloquea un ataque, puede contraatacar con 1 dado de ataque gratis.'},
+    {n:'Cien Puños',c:'1/turno',pasiva:false,d:'ACTIVA: Ataca a un enemigo con 5 dados de ataque. El exceso de dano se distribuye entre enemigos adyacentes a ese objetivo.'}
+  ]},
+nigromante:{ico:'&#9760;&#65039;',col:'#3a1a4a',cls:'Nigromante',cat:'Expansiones',
+  hp:4,maxHp:4,mp:6,maxMp:6,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#129668;',nm:'Cetro de Hueso',r:'rare',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Sudario Oscuro',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128128;',nm:'Craneo Parlante',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Invocar No-muerto',co:'2 MP',ico:'&#128128;',ds:'Invoca un esqueleto aliado (HP4 ATK2 DEF1) que lucha junto al grupo.',r:'rare'},{nm:'Drenar Vida',co:'1 MP',ico:'&#9760;&#65039;',ds:'Roba 1D4 HP a un enemigo y los transfiere a si mismo o un aliado.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Senor de los Muertos',c:null,pasiva:true, d:'PASIVA: Los no-muertos enemigos tienen 50% de probabilidad de no atacar al Nigromante (los considera aliado).'},
+    {n:'Ejercito de Sombras',c:'1/turno',pasiva:false,d:'ACTIVA: Gasta 3 MP para invocar 1D3 esqueletos aliados. Permanecen hasta que sean destruidos o acabe la mision.'}
+  ]},
+cazador:{ico:'&#127993;',col:'#5a4a2a',cls:'Cazador',cat:'Expansiones',
+  hp:6,maxHp:6,mp:2,maxMp:2,atk:3,def:2,mov:4,
+  eq:[{sl:'Arma',ico:'&#127993;',nm:'Ballesta de Precision',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Armadura de Caza',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#128285;',nm:'Trampa de Acero',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Marcar Presa',c:null,pasiva:true, d:'PASIVA: Al inicio del combate, el Cazador elige un objetivo. Todos sus ataques contra ese objetivo reciben +1 dado.'},
+    {n:'Tiro Mortal',c:'1/turno',pasiva:false,d:'ACTIVA: Un disparo de precision que ignora toda armadura y escudos. Si el objetivo tiene menos de la mitad del HP, le mata instantaneamente.'}
+  ]},
+berserker_del_norte:{ico:'&#10052;&#65039;',col:'#5a1a1a',cls:'Berserker Norte',cat:'Expansiones',
+  hp:9,maxHp:9,mp:1,maxMp:1,atk:4,def:1,mov:3,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Doble Hacha del Norte',r:'legendary',a:3,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Pieles del Permafrost',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128142;',nm:'Collar de Dientes',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Sed de Sangre',c:null,pasiva:true, d:'PASIVA: Cada vez que mata un enemigo, gana +1 movimiento y +1 dado de ataque hasta fin de turno.'},
+    {n:'Frenesí Total',c:'1/turno',pasiva:false,d:'ACTIVA: Ataca a TODOS los enemigos en la sala con 3 dados de ataque cada uno. Al terminar, el Berserker recibe 1 de dano.'}
+  ]},
+chamana:{ico:'&#127754;',col:'#2a6a5a',cls:'Chamana',cat:'Expansiones',
+  hp:5,maxHp:5,mp:5,maxMp:5,atk:1,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#127803;',nm:'Totem Espiritual',r:'rare',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Vestiduras Tribales',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#127805;',nm:'Plumas del Aguila',r:'uncommon',a:0,d:0}],
+  sp:[{nm:'Vision Espiritual',co:'1 MP',ico:'&#127781;&#65039;',ds:'Revela todo el contenido de las proximas 2 salas sin entrar.',r:'uncommon'},{nm:'Totem de Proteccion',co:'2 MP',ico:'&#127754;',ds:'Crea un campo que reduce todo dano recibido por el grupo en 1 durante 2 turnos.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Vinculo Espiritual',c:null,pasiva:true, d:'PASIVA: La Chamana siente cuando un aliado va a morir. Puede gastar 2 MP para absorber el golpe mortal en su lugar.'},
+    {n:'Invocar Espiritu Ancestral',c:'1/turno',pasiva:false,d:'ACTIVA: Invoca un espiritu de guerra. Este ataca con 3 dados a un enemigo y cura 2 HP al heroe con menos vida.'}
+  ]},
+guardia_real:{ico:'&#128081;',col:'#7a6a0a',cls:'Guardia Real',cat:'Expansiones',
+  hp:7,maxHp:7,mp:2,maxMp:2,atk:2,def:4,mov:2,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Espada del Imperio',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura del Trono',r:'legendary',a:0,d:4},{sl:'Accesorio',ico:'&#128081;',nm:'Estandarte Real',r:'legendary',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Proteger al Vulnerable',c:null,pasiva:true, d:'PASIVA: Si un aliado adyacente recibe un ataque, el Guardia Real puede interceptarlo y recibir el dano en su lugar.'},
+    {n:'Golpe de Escudo',c:'1/turno',pasiva:false,d:'ACTIVA: Usa el escudo como arma. Aturde al enemigo 1 turno y empuja a todos los enemigos adyacentes 2 casillas.'}
+  ]},
+piromante:{ico:'&#128293;',col:'#8a3a0a',cls:'Piromante',cat:'Expansiones',
+  hp:4,maxHp:4,mp:6,maxMp:6,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#128293;',nm:'Guantes de Fuego',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#128302;',nm:'Ropa Ignifuga',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128293;',nm:'Corazon de Llama',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Nova de Fuego',co:'2 MP',ico:'&#128293;',ds:'Bola de fuego expandida: 3D6 dano a todos los enemigos en la sala.',r:'legendary'},{nm:'Escudo Ígneo',co:'1 MP',ico:'&#128293;',ds:'Al recibir un ataque melee, el atacante recibe 1D4 dano de fuego.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Inmunidad al Fuego',c:null,pasiva:true, d:'PASIVA: Inmune a todo dano de fuego, incluyendo trampas y hechizos enemigos de fuego.'},
+    {n:'Meteoro',c:'1/turno',pasiva:false,d:'ACTIVA: Gasta 4 MP para lanzar un meteoro devastador. 4D6 dano a todos en la sala. Destruye objetos fragiles y trampas.'}
+  ]},
+elementalista:{ico:'&#127756;',col:'#1a5a7a',cls:'Elementalista',cat:'Expansiones',
+  hp:4,maxHp:4,mp:7,maxMp:7,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#127756;',nm:'Baston de los Cuatro',r:'legendary',a:1,d:0},{sl:'Armadura',ico:'&#128302;',nm:'Tunica Elemental',r:'rare',a:0,d:2},{sl:'Accesorio',ico:'&#128142;',nm:'Gema de los Cuatro Vientos',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Rayo',co:'1 MP',ico:'&#9889;',ds:'1D6+2 dano a un objetivo. Ignora armadura metalica.',r:'uncommon'},{nm:'Muro de Hielo',co:'2 MP',ico:'&#10052;&#65039;',ds:'Bloquea el paso por una puerta durante 2 turnos. Los enemigos que lo toquen reciben 1D3 dano.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Dominar Elemento',c:null,pasiva:true, d:'PASIVA: Al inicio de cada sala, el Elementalista elige un elemento. Sus hechizos de ese elemento cuestan 1 MP menos.'},
+    {n:'Cataclismo',c:'1/turno',pasiva:false,d:'ACTIVA: Gasta 5 MP para desatar los cuatro elementos. 2D6 dano a todos los enemigos. 2 HP de curacion a todos los aliados.'}
+  ]},
+};
+
 const ICAL={Arma:[{nm:'--',r:'common',a:0,d:0,ico:'&#11036;'},{nm:'Espada Corta',r:'common',a:1,d:0,ico:'&#128505;&#65039;'},{nm:'Espada Larga',r:'uncommon',a:2,d:0,ico:'&#9876;&#65039;'},{nm:'Hacha de Batalla',r:'uncommon',a:1,d:0,ico:'&#129427;'},{nm:'Arco Largo Elfico',r:'rare',a:2,d:0,ico:'&#127993;'},{nm:'Baston Arcano',r:'uncommon',a:1,d:0,ico:'&#129668;'},{nm:'Hacha del Caos',r:'legendary',a:3,d:0,ico:'&#9889;'},{nm:'Espada de Fuego',r:'rare',a:2,d:0,ico:'&#128293;'},{nm:'Lanza Sagrada',r:'rare',a:2,d:0,ico:'&#9881;&#65039;'}],
 Armadura:[{nm:'--',r:'common',a:0,d:0,ico:'&#11036;'},{nm:'Ropa de Viaje',r:'common',a:0,d:0,ico:'&#128085;'},{nm:'Armadura de Cuero',r:'common',a:0,d:1,ico:'&#128737;&#65039;'},{nm:'Cota de Malla',r:'uncommon',a:0,d:2,ico:'&#128737;&#65039;'},{nm:'Armadura de Placas',r:'rare',a:0,d:3,ico:'&#128737;&#65039;'},{nm:'Tunica Encantada',r:'uncommon',a:0,d:1,ico:'&#128302;'},{nm:'Capa de Sigiloso',r:'uncommon',a:0,d:1,ico:'&#129509;'},{nm:'Armadura Sagrada',r:'legendary',a:0,d:4,ico:'&#10024;'}],
 Accesorio:[{nm:'--',r:'common',a:0,d:0,ico:'&#11036;'},{nm:'Amuleto Runico',r:'rare',a:0,d:1,ico:'&#128141;'},{nm:'Libro de Hechizos',r:'legendary',a:0,d:0,ico:'&#128218;'},{nm:'Botas de Velocidad',r:'rare',a:0,d:0,ico:'&#128098;'},{nm:'Anillo de Poder',r:'legendary',a:1,d:1,ico:'&#128142;'},{nm:'Escudo Elfico',r:'rare',a:0,d:2,ico:'&#128737;&#65039;'},{nm:'Pocion de Fuerza',r:'uncommon',a:1,d:0,ico:'&#129514;'}]};
@@ -505,7 +653,7 @@ function rH(){
     d.innerHTML=`<div class="hch"><div class="hav" style="background:radial-gradient(circle at 40% 35%,${h.col}44,${h.col}11);position:relative;overflow:hidden">${avatarInner}</div><div style="flex:1"><div class="hnm" style="${dead?'color:#888':''}">${h.name}${dead?' <small>&#128128;</small>':''}</div><div class="hcl">${h.notes&&h.notes.length<40?`<span style="color:var(--stl);font-style:italic;font-size:10px">${h.notes}</span>`:h.cls}${h.sp?.length?' &bull; <span style="color:var(--mg);font-size:10px">&#10024;'+h.sp.length+'</span>':''}</div></div><div class="hlv">NV ${h.level}</div></div>
     <div class="hsts"><div class="sb"><span class="slb">VIDA</span><span class="sv hp">${h.hp}</span><span class="smx">/${h.maxHp}</span></div><div class="sb"><span class="slb">MANA</span><span class="sv mp">${h.mp}</span><span class="smx">/${h.maxMp}</span></div><div class="sb"><span class="slb">ATAQUE</span><span class="sv atk">${h.atk}</span><span class="smx">dados</span></div><div class="sb"><span class="slb">DEFENSA</span><span class="sv def">${h.def}</span><span class="smx">dados</span></div></div>
     <div class="hbrs"><div class="brow"><span class="blb">HP</span><div class="btk"><div class="bf hpb" style="width:${hpp}%"></div></div><span class="btx">${h.hp}/${h.maxHp}</span></div><div class="brow"><span class="blb">MP</span><div class="btk"><div class="bf mpb" style="width:${mpp}%"></div></div><span class="btx">${h.mp}/${h.maxMp}</span></div></div>
-    <div class="cact"><button class="cab" style="color:var(--bl)" onclick="qs(${h.id},'hp',-1)">&#128148;</button><button class="cab" style="color:var(--gr)" onclick="qs(${h.id},'hp',1)">&#10084;&#65039;</button><button class="cab" style="color:var(--mg)" onclick="qs(${h.id},'mp',-1)">&#128309;</button><button class="cab" onclick="showD(${h.id})">VER &#8250;</button></div>`;
+    <div class="cact" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr"><button class="cab" style="color:var(--bl)" onclick="qs(${h.id},'hp',-1)">&#128148;</button><button class="cab" style="color:var(--gr)" onclick="qs(${h.id},'hp',1)">&#10084;&#65039;</button><button class="cab" style="color:var(--mg)" onclick="qs(${h.id},'mp',-1)">&#128309;</button><button class="cab" onclick="showD(${h.id})">VER &#8250;</button><button class="cab" style="color:rgba(139,26,26,.7);font-size:14px" onclick="if(confirm('Eliminar a ${h.name}?')){ heroes=heroes.filter(x=>x.id!==${h.id});rH();saveS();toast('&#128128; ${h.name} eliminado');}">&#10005;</button></div>`;
     c.appendChild(d);
   });
 }
@@ -533,9 +681,9 @@ function showD(id){
   <div class="scard" id="d-eq"><div class="sct">EQUIPAMIENTO <button class="sctb" onclick="openEQ(${id},-1)">+ ANADIR</button></div>${rEq(h,id)}</div>
   <div class="scard" id="d-sp"><div class="sct">HECHIZOS <button class="sctb" onclick="openSP(${id})">+ HECHIZO</button></div>${rSp(h,id)}</div>
   <div class="scard" id="d-iv"><div class="sct">INVENTARIO <button class="sctb" onclick="openCI('inv-hero')">+ ANADIR</button></div>${rInv(h,id)}</div>
-  <div class="scard"><div class="sct">HABILIDADES</div>${h.sk.map(s=>`<div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-family:'Cinzel',serif;font-size:11px;color:var(--pa)">${s.n}</span>${s.c?`<span style="font-size:10px;color:var(--mg)">${s.c}</span>`:''}</div><div style="font-size:11px;color:var(--stl);font-style:italic">${s.d}</div></div>`).join('')}</div>
+  <div class="scard"><div class="sct">HABILIDADES</div>${h.sk.map(s=>`<div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:'Cinzel',serif;font-size:11px;color:var(--pa)">${s.n}</span><span style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:2px;border:1px solid;${s.pasiva?'color:var(--gr);border-color:var(--grd);background:rgba(42,90,42,.2)':'color:var(--go);border-color:var(--god);background:rgba(201,150,42,.15)'}">${s.pasiva?'PASIVA':'ACTIVA'}</span></div>${s.c?`<div style="font-size:9px;color:var(--mg);margin-bottom:2px">${s.c}</div>`:''}<div style="font-size:11px;color:var(--stl);font-style:italic">${s.d}</div></div>`).join('')}</div>
   <div class="scard"><div class="sct">NOTAS DEL HEROE</div><textarea class="nfld" placeholder="Anotaciones personales..." rows="3" onblur="saveHN(${id},this.value)" onchange="saveHN(${id},this.value)">${h.notes||''}</textarea></div>
-  <div style="padding:13px"><button class="bpri bdng" onclick="delH(${id})">ELIMINAR HEROE</button></div>`;
+  <div style="padding:13px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><button onclick="revive(${id})" style="background:linear-gradient(135deg,var(--grd),#1a3010);border:1px solid var(--grd);border-radius:4px;color:var(--gr);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;padding:11px;cursor:pointer;touch-action:manipulation">&#10024; REVIVIR</button><button onclick="delH(${id})" style="background:linear-gradient(135deg,rgba(80,15,15,.7),rgba(50,10,10,.7));border:1px solid var(--bl);border-radius:4px;color:var(--bl);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;padding:11px;cursor:pointer;touch-action:manipulation">&#128128; ELIMINAR</button></div>`;
   document.body.appendChild(p);
 }
 function closeD(){const p=document.getElementById('dpanel');if(p){p.style.opacity='0';p.style.transform='translateX(28px)';setTimeout(()=>p.remove(),200)}}
@@ -563,700 +711,394 @@ function saveCI(){const nm=document.getElementById('ci-n').value.trim();const ds
 if(ciM==='equip'){const sl=document.getElementById('ci-sl').value;const a=parseInt(document.getElementById('ci-a').value)||0;const d=parseInt(document.getElementById('ci-df').value)||0;const it={sl,nm,ico,ds,r:ciR,a,d,custom:true};if(!ICAL[sl])ICAL[sl]=[];ICAL[sl].push(it);const h=heroes.find(x=>x.id===eHid);if(h){if(eSidx>=0)selEQ(it);else{h.eq.push(it);const c=document.getElementById('d-eq');if(c){c.querySelectorAll('.esl').forEach(x=>x.remove());c.insertAdjacentHTML('beforeend',rEq(h,h.id));}rH();saveS();}}toast('Objeto creado');}
 else if(ciM.includes('spell')){const co=document.getElementById('ci-c').value.trim()||'0 MP';const sp={nm,ico,ds,co,r:ciR};SCATS.push(sp);if(eHid)addSP(sp);else toast('&#10024; Hechizo creado al catalogo');}
 else{const qty=parseInt(document.getElementById('ci-q').value)||1;const it={nm,ico,ds,r:ciR,qty};if(ciM==='inv-hero'&&eHid){const h=heroes.find(x=>x.id===eHid);if(h){if(!h.inv)h.inv=[];h.inv.push(it);saveS();toast('Objeto anadido al heroe');const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}}else{gi.push(it);saveS();toast('Objeto anadido al grupo');renderGI();}}closeM('m-ci');}
-function selT(btn){document.querySelectorAll('.htbt').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');sT=btn.dataset.type;}
-
-// ── CHARACTER CREATOR ──────────────────────────────────────────
-let ccRolledStats = null;
-let ccPhotoData = null;
-
-// Stat definitions per class: [base, variance] — final = base + roll(1,variance) + luck bonus
-const CC_STAT_DEFS = {
-  barbaro:{hp:[6,4],mp:[1,2],atk:[2,2],def:[1,2],mov:[2,2]},
-  enano:  {hp:[5,4],mp:[2,2],atk:[1,2],def:[2,2],mov:[1,2]},
-  elfo:   {hp:[4,4],mp:[3,2],atk:[1,2],def:[1,2],mov:[3,2]},
-  mago:   {hp:[2,4],mp:[5,2],atk:[1,1],def:[0,2],mov:[1,2]}
-};
-const CC_STAT_LABELS = {hp:{n:'Puntos de Vida',ico:'&#10084;',col:'var(--bl)',max:12},mp:{n:'Mana',ico:'&#10024;',col:'var(--mg)',max:10},atk:{n:'Ataque',ico:'&#9876;&#65039;',col:'var(--go)',max:6},def:{n:'Defensa',ico:'&#128737;&#65039;',col:'var(--gr)',max:6},mov:{n:'Movimiento',ico:'&#128694;',col:'var(--pad)',max:6}};
-const CC_BONUS_NAMES = ['Nacido bajo mal signo','Hijo de la guerra','Bendecido por los dioses','Sangre de campeones','Sobreviviente','El elegido'];
-const CC_BACKSTORY_SAMPLES = ['Dejo atras su aldea en llamas.','Busca venganza contra Zargon.','Un mercenario sin patria.','Descendiente de reyes caidos.','Exilado de su propia tierra.','El ultimo de su linaje.'];
-
-function ccLoadPhoto(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    ccPhotoData=e.target.result;
-    const img=document.getElementById('cc-avatar-img');
-    const ico=document.getElementById('cc-avatar-ico');
-    img.src=ccPhotoData;img.style.display='block';ico.style.display='none';
-  };
-  reader.readAsDataURL(file);
+function selT(btn){
+  document.querySelectorAll('.htbt').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  sT=btn.dataset.type;
+  // Update class preview panel
+  renderClassPreview(sT);
 }
 
-function ccRollStats(){
-  const cls=sT||'barbaro';
-  const defs=CC_STAT_DEFS[cls];
-  const luckRoll=Math.random();
-  const bonusName=CC_BONUS_NAMES[Math.floor(Math.random()*CC_BONUS_NAMES.length)];
-  const rolled={};
-  for(const [stat,[base,variance]] of Object.entries(defs)){
-    let val=base+Math.floor(Math.random()*(variance+1));
-    // 20% chance of luck bonus on a stat
-    if(luckRoll>0.8&&stat===Object.keys(defs)[Math.floor(Math.random()*5)])val=Math.min(val+1,CC_STAT_LABELS[stat].max);
-    rolled[stat]=val;
-  }
-  rolled.maxHp=rolled.hp;rolled.maxMp=rolled.mp;
-  rolled._bonusName=bonusName;
-  rolled._luckStat=luckRoll>0.8;
-  ccRolledStats=rolled;
-  renderCCStats(rolled,bonusName);
+function renderClassGrid(){
+  const grid = document.getElementById('class-grid');
+  if(!grid) return;
+  // Group by category
+  const cats = {};
+  Object.entries(HT).forEach(([key,cls])=>{
+    const cat = cls.cat||'Original';
+    if(!cats[cat]) cats[cat]=[];
+    cats[cat].push({key,cls});
+  });
+  let html='';
+  Object.entries(cats).forEach(([cat,list])=>{
+    html+=`<div style="grid-column:span 2;font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--god);padding:6px 2px 2px;text-transform:uppercase;border-bottom:1px solid rgba(201,150,42,.15);margin-bottom:2px">${cat}</div>`;
+    list.forEach(({key,cls})=>{
+      const isSel = sT===key;
+      html+=`<button class="htbt${isSel?' sel':''}" data-type="${key}" onclick="selT(this)" style="padding:10px 6px;text-align:center">
+        <span class="hti">${cls.ico}</span>
+        <span class="htn" style="font-size:9px">${cls.cls}</span>
+        <span class="hts" style="font-size:8px">HP${cls.hp} MP${cls.mp} ATK${cls.atk} DEF${cls.def}</span>
+      </button>`;
+    });
+    // pad to even columns
+    if(list.length%2!==0) html+=`<div></div>`;
+  });
+  grid.innerHTML=html;
 }
 
-function renderCCStats(stats,bonusName){
-  const grid=document.getElementById('cc-stats-grid');
-  if(!grid)return;
-  const order=['hp','mp','atk','def','mov'];
-  grid.innerHTML=order.map(stat=>{
-    const v=stats[stat],lb=CC_STAT_LABELS[stat],pct=Math.min(100,(v/lb.max)*100);
-    return`<div class="cc-stat cc-rolling">
-      <span class="cc-stat-ico">${lb.ico}</span>
-      <div class="cc-stat-info">
-        <span class="cc-stat-name">${lb.n}</span>
-        <div class="cc-stat-track"><div class="cc-stat-fill" style="width:${pct}%;background:${lb.col}"></div></div>
-      </div>
-      <span class="cc-stat-val" style="color:${lb.col}">${v}</span>
-    </div>`;
-  }).join('');
-  const anim=document.getElementById('cc-roll-anim');
-  if(anim){
-    anim.textContent=bonusName;
-    anim.style.color=stats._luckStat?'var(--go)':'var(--stl)';
-  }
+function renderClassPreview(key){
+  // No preview panel — class info shown in hero detail after creation
+}
+
+function openHeroModal(){
+  sT = Object.keys(HT)[0];
+  renderClassGrid();
+  openM('m-nh');
 }
 
 function createH(){
-  const nm=document.getElementById('hinp').value.trim();
+  const nm = document.getElementById('hinp').value.trim();
   if(!nm){toast('Escribe un nombre');return;}
-  if(heroes.length>=4){toast('Maximo 4 heroes');return;}
-  if(!ccRolledStats)ccRollStats();
-  const t=HT[sT];
-  const backstory=document.getElementById('cc-backstory')?.value.trim()||rnd(CC_BACKSTORY_SAMPLES);
-  // Build hero merging template with rolled stats
-  const h={
-    id:Date.now(),
-    name:nm,
-    type:sT,
-    notes:backstory,
-    gold:ri(80,130),
-    level:1,
-    xp:0,
-    photo:ccPhotoData||null,
-    bonusName:ccRolledStats._bonusName||'',
-    ...JSON.parse(JSON.stringify(t)),
-    // Override with rolled stats
-    hp:ccRolledStats.hp,
-    maxHp:ccRolledStats.maxHp,
-    mp:ccRolledStats.mp,
-    maxMp:ccRolledStats.maxMp,
-    atk:ccRolledStats.atk,
-    def:ccRolledStats.def,
-    mov:ccRolledStats.mov||2,
+  if(heroes.length>=6){toast('Maximo 6 heroes');return;}
+  const t = HT[sT];
+  if(!t){toast('Selecciona una clase');return;}
+  const h = {
+    id:Date.now(), name:nm, type:sT, notes:'', gold:100, level:1, xp:0, photo:null,
+    ...JSON.parse(JSON.stringify(t))
   };
   heroes.push(h);
-  // Reset creator state
-  ccRolledStats=null;ccPhotoData=null;
-  const img=document.getElementById('cc-avatar-img');if(img)img.style.display='none';
-  const ico=document.getElementById('cc-avatar-ico');if(ico)ico.style.display='';
-  rH();closeM('m-nh');saveS();
-  toast('&#9876;&#65039; '+nm+' se une a la aventura');
-}
-
-// Auto-roll when modal opens
-function openCharCreator(){
-  sT='barbaro';
-  document.querySelectorAll('.htbt').forEach(b=>b.classList.remove('sel'));
-  document.querySelector('.htbt[data-type=barbaro]')?.classList.add('sel');
-  ccPhotoData=null;
-  const img=document.getElementById('cc-avatar-img');if(img){img.src='';img.style.display='none';}
-  const ico=document.getElementById('cc-avatar-ico');if(ico)ico.style.display='';
   document.getElementById('hinp').value='';
-  document.getElementById('cc-backstory').value='';
-  ccRollStats();
-  openM('m-nh');
+  rH(); closeM('m-nh'); saveS();
+  toast(t.ico+' '+nm+' se une a la aventura');
 }
-// SKIRMISH
-// ── REAL HEROQUEST BOARD: 26 named rooms with % positions on the board image ──
-// Each room: id, name, desc, x%, y%, w%, h%, type
 
 // ══════════════════════════════════════════════════════════════════════════
 //  ORACLE SYSTEM — Adventure lore + question-based gameplay
 // ══════════════════════════════════════════════════════════════════════════
 
-// ── LORE POOL ─────────────────────────────────────────────────────────────
 const LORE_POOL = [
-  {
-    tl:'La Tumba del Rey Olvidado',
-    ty:'Cripta',badge:'Oscuridad',bcol:'#5a3a8a',
-    in:'Los aldeanos de Millhaven hablan en susurros de una tumba maldita al norte del bosque. Hace mil anos, el rey Aldric fue enterrado con sus tesoros y sus guardias... que juraron protegerle incluso en la muerte. Esta noche, vosotros cruzais ese umbral.',
-    ob:'Alcanzad la camara central. Recuperad el Sello Real de Aldric.',
-    tags:['&#128128; No-muertos','&#128293; Trampas','&#128176; Gran tesoro'],
-    tagcols:['var(--bl)','var(--go)','var(--gol)'],
-    enemies:['Esqueletos','Zombies','Espiritu del Rey'],
-    location:'Cripta subterranea',threat:'Alta',
-    atmosphere:'El aire huele a polvo de siglos. Antorchas que nadie encendio arden solas.'
-  },
-  {
-    tl:'El Mercader Desaparecido',
-    ty:'Mazmorra',badge:'Misterio',bcol:'#2a4a7f',
-    in:'Torvin, comerciante de especias, partio hace cinco dias hacia el mercado de Greyvale. No llego. Su esposa lloro ante el concejo: "Los tuneles del Paso Norte son los mas cortos, el siempre los usaba". Los tuneles tienen fama de seguros. Ya no.',
-    ob:'Encontrad a Torvin vivo o muerto. Traed prueba de su destino.',
-    tags:['&#128121; Goblins','&#9888;&#65039; Trampas ocultas','&#128285; Pistas'],
-    tagcols:['#5a8a2a','var(--pad)','var(--mg)'],
-    enemies:['Goblins','Orco lider','Vermin'],
-    location:'Tuneles del Paso Norte',threat:'Media',
-    atmosphere:'Pisadas en el barro. Algunas humanas, otras no. La luz de vuestra antorcha tiembla sin viento.'
-  },
-  {
-    tl:'La Forja del Caos',
-    ty:'Forja',badge:'Peligro Extremo',bcol:'#8b1a1a',
-    in:'Bajo el Monte Karrath existe una forja donde se forjaron las Espadas del Caos hace tres eras. Un culto la ha reactivado. Si completan el ritual, el proximo ejercito de Zargon portara armas que ningun escudo puede detener. Teneis una noche.',
-    ob:'Destruid la Forja del Caos. Matad al Forjador antes del amanecer.',
-    tags:['&#128165; Demonios','&#128293; Fuego','&#9889; Magia oscura'],
-    tagcols:['var(--bl)','#d4621a','var(--pul)'],
-    enemies:['Cultistas','Demonio forjador','Golem de lava'],
-    location:'Forja subterranea del Monte Karrath',threat:'Critica',
-    atmosphere:'El calor es insoportable incluso a esta distancia. El metal rojo incandescente chorrea por las paredes.'
-  },
-  {
-    tl:'El Oraculo Encadenado',
-    ty:'Santuario',badge:'Urgencia',bcol:'#2a6a2a',
-    in:'La vidente Sera lleva tres semanas sin hablar. Sus ojos ven algo que no puede decir: esta hechizada. El hechizo viene de las profundidades de su propio santuario, corrompido por una entidad que se llama a si misma El Murmurante. Debeis romper el vinculo.',
-    ob:'Descended al nivel inferior del santuario. Destruid el Vinculo del Murmullo.',
-    tags:['&#128064; Ilusiones','&#128302; Magia','&#9760;&#65039; Trampa mental'],
-    tagcols:['var(--mg)','var(--pul)','var(--pad)'],
-    enemies:['Espectros','El Murmurante','Guardianes ilusorios'],
-    location:'Santuario de la Vidente',threat:'Media-Alta',
-    atmosphere:'Vuestras voces se repiten solas. Cada sombra parece moverse cuando no la miráis directamente.'
-  },
-  {
-    tl:'El Pozo Envenenado',
-    ty:'Caverna',badge:'Urgencia Popular',bcol:'#4a7a2a',
-    in:'Tres ninos del pueblo de Ashford enfermaron en un dia. Luego cinco adultos. El medico lo confirmo: veneno en las aguas. El pozo del pueblo se alimenta de un acuifero subterraneo. Alguien, o algo, esta contaminando el agua desde dentro de la tierra.',
-    ob:'Localizad la fuente del veneno. Destruid o sellad el origen.',
-    tags:['&#129500; Veneno','&#128027; Criaturas','&#128167; Agua corrompida'],
-    tagcols:['#5a8a2a','var(--stl)','var(--mg)'],
-    enemies:['Serpientes gigantes','Slime toxico','Brujo de pantano'],
-    location:'Cavernas del Acuifero de Ashford',threat:'Media',
-    atmosphere:'El goteo del agua es constante. Tiene un color levemente verdoso. Oler es suficiente para marearse.'
-  },
-  {
-    tl:'La Biblioteca de los Prohibidos',
-    ty:'Biblioteca',badge:'Conocimiento Oscuro',bcol:'#5a2a7f',
-    in:'El mago Aldous lleva decadas buscando el Grimorio de Kael-Noth, texto de poder inmenso y peligro absoluto. Lo encontro. Tambien encontro que la biblioteca donde descansaba fue sellada por una razon: sus guardianes golem siguen activos, y el Grimorio... tiene opinion propia.',
-    ob:'Entrad en la biblioteca sellada. Recovered el Grimorio de Kael-Noth sin leerlo.',
-    tags:['&#129302; Golems','&#128218; Magia arcana','&#128064; Vigilancia'],
-    tagcols:['var(--stl)','var(--pul)','var(--mg)'],
-    enemies:['Golems de papel','Guardas arcanos','Manifestacion del Grimorio'],
-    location:'Biblioteca Sellada de Kael-Noth',threat:'Alta',
-    atmosphere:'Silencio absoluto. Los libros se mueven solos entre los estantes. Uno de ellos os esta mirando.'
-  },
+  {tl:'La Tumba del Rey Olvidado',ty:'Cripta',badge:'Oscuridad',bcol:'#5a3a8a',
+   in:'Los aldeanos de Millhaven hablan en susurros de una tumba maldita al norte del bosque. Hace mil anos, el rey Aldric fue enterrado con sus tesoros y sus guardias... que juraron protegerle incluso en la muerte. Esta noche, vosotros cruzais ese umbral.',
+   ob:'Alcanzad la camara central. Recuperad el Sello Real de Aldric.',
+   tags:['&#128128; No-muertos','&#128293; Trampas','&#128176; Gran tesoro'],tagcols:['var(--bl)','var(--go)','var(--gol)'],
+   atmosphere:'El aire huele a polvo de siglos. Antorchas que nadie encendio arden solas.'},
+  {tl:'El Mercader Desaparecido',ty:'Mazmorra',badge:'Misterio',bcol:'#2a4a7f',
+   in:'Torvin, comerciante de especias, partio hace cinco dias. No llego. Los tuneles del Paso Norte son los mas cortos, el siempre los usaba. Ya no.',
+   ob:'Encontrad a Torvin vivo o muerto. Traed prueba de su destino.',
+   tags:['&#128121; Goblins','&#9888;&#65039; Trampas ocultas','&#128285; Pistas'],tagcols:['#5a8a2a','var(--pad)','var(--mg)'],
+   atmosphere:'Pisadas en el barro. Algunas humanas, otras no.'},
+  {tl:'La Forja del Caos',ty:'Forja',badge:'Peligro Extremo',bcol:'#8b1a1a',
+   in:'Bajo el Monte Karrath existe una forja donde se forjaron las Espadas del Caos. Un culto la ha reactivado. Si completan el ritual, el proximo ejercito de Zargon portara armas que ningun escudo puede detener.',
+   ob:'Destruid la Forja del Caos. Matad al Forjador antes del amanecer.',
+   tags:['&#128165; Demonios','&#128293; Fuego','&#9889; Magia oscura'],tagcols:['var(--bl)','#d4621a','var(--pul)'],
+   atmosphere:'El calor es insoportable. El metal rojo incandescente chorrea por las paredes.'},
+  {tl:'El Oraculo Encadenado',ty:'Santuario',badge:'Urgencia',bcol:'#2a6a2a',
+   in:'La vidente Sera lleva tres semanas sin hablar. Sus ojos ven algo que no puede decir: esta hechizada. El hechizo viene de las profundidades de su propio santuario, corrompido por una entidad llamada El Murmurante.',
+   ob:'Descended al nivel inferior. Destruid el Vinculo del Murmullo.',
+   tags:['&#128064; Ilusiones','&#128302; Magia','&#9760;&#65039; Trampa mental'],tagcols:['var(--mg)','var(--pul)','var(--pad)'],
+   atmosphere:'Vuestras voces se repiten solas. Cada sombra parece moverse cuando no la mirais.'},
+  {tl:'El Pozo Envenenado',ty:'Caverna',badge:'Urgencia Popular',bcol:'#4a7a2a',
+   in:'Tres ninos del pueblo enfermaron en un dia. Luego cinco adultos. El medico lo confirmo: veneno en las aguas. Alguien, o algo, esta contaminando el agua desde dentro de la tierra.',
+   ob:'Localizad la fuente del veneno. Destruid o sellad el origen.',
+   tags:['&#129500; Veneno','&#128027; Criaturas','&#128167; Agua corrompida'],tagcols:['#5a8a2a','var(--stl)','var(--mg)'],
+   atmosphere:'El goteo del agua es constante. Tiene un color levemente verdoso.'},
+  {tl:'La Biblioteca de los Prohibidos',ty:'Biblioteca',badge:'Conocimiento Oscuro',bcol:'#5a2a7f',
+   in:'El mago Aldous encontro el Grimorio de Kael-Noth. Tambien encontro que la biblioteca fue sellada por una razon: sus guardianes golem siguen activos, y el Grimorio tiene opinion propia.',
+   ob:'Entrad en la biblioteca sellada. Recovered el Grimorio sin leerlo.',
+   tags:['&#129302; Golems','&#128218; Magia arcana','&#128064; Vigilancia'],tagcols:['var(--stl)','var(--pul)','var(--mg)'],
+   atmosphere:'Silencio absoluto. Los libros se mueven solos entre los estantes. Uno os esta mirando.'},
 ];
 
-// ── ORACLE QUESTIONS ────────────────────────────────────────────────────
-const ORACLE_QUESTIONS = [
-  // EXPLORACIÓN
-  { cat:'Exploracion', ico:'&#128682;', lbl:'¿Veo alguna puerta?', hint:'Al entrar o mirar alrededor',
-    rolls:[
-      { range:[1,2], res:'No hay puertas visibles', det:'Las paredes son de piedra maciza. Esta sala parece un callejon sin salida... o hay algo que no veis.', fx:null },
-      { range:[3,4], res:'Hay una puerta', det:'Una puerta de madera reforzada con hierro. Tiene cerradura pero no llave a la vista.', fx:{ico:'&#128682;',txt:'Puerta encontrada'} },
-      { range:[5,5], res:'Hay dos puertas', det:'Una al norte y otra al este. La del norte tiene marcas de arañazos recientes en la madera.', fx:{ico:'&#128682;&#128682;',txt:'Dos salidas disponibles'} },
-      { range:[6,6], res:'Puerta secreta detectada', det:'El Enano nota una corriente de aire en la pared sur. Hay una puerta oculta. Solo visible si se busca activamente.', fx:{ico:'&#128285;',txt:'Puerta secreta — +1 Llave si se abre'} },
-    ]
-  },
-  { cat:'Exploracion', ico:'&#128064;', lbl:'¿Que contiene esta sala?', hint:'Al explorar una habitacion nueva',
-    rolls:[
-      { range:[1,1], res:'Sala vacia', det:'Polvo y silencio. Nada de valor, nada de peligro. Solo piedra y oscuridad.', fx:null },
-      { range:[2,3], res:'Objetos abandonados', det:'Restos de un campamento: sacos rasgados, huesos de comida, una antorcha apagada. Alguien vivio aqui.', fx:{ico:'&#128220;',txt:'Inspeccion posible (+tirada)'} },
-      { range:[4,4], res:'Trampa oculta', det:'El suelo suena distinto bajo un pie. Hay una trampa de presion. El Enano puede intentar desactivarla.', fx:{ico:'&#9888;&#65039;',txt:'Trampa detectada antes de activarse'} },
-      { range:[5,5], res:'Enemigos en emboscada', det:'Demasiado silencioso. Hay siluetas en las sombras. Os han visto antes que vosotros a ellos. Tirad iniciativa.', fx:{ico:'&#9876;&#65039;',txt:'COMBATE — Enemigos con ventaja de inicio'} },
-      { range:[6,6], res:'Algo valioso', det:'Una caja fuerte empotrada en la pared, medio oculta tras una piedra suelta. Cerrada con runas.', fx:{ico:'&#128176;',txt:'Tesoro — requiere tirada de magia o fuerza'} },
-    ]
-  },
-  { cat:'Exploracion', ico:'&#128270;', lbl:'¿Hay algo oculto aqui?', hint:'Buscar activamente en la sala',
-    rolls:[
-      { range:[1,3], res:'Nada que encontrar', det:'Registrais cada rincon. Paredes solidas, suelo firme. Si habia algo, ya no esta.', fx:null },
-      { range:[4,4], res:'Pasaje secreto', det:'Una piedra se mueve al presionarla. Detras hay un pasadizo estrecho que lleva a... otra parte.', fx:{ico:'&#128285;',txt:'Pasaje secreto descubierto'} },
-      { range:[5,5], res:'Objeto escondido', det:'Bajo una baldosa suelta: una bolsa de cuero con monedas y un pergamino enrollado.', fx:{ico:'&#128176;',txt:'+25 oros + 1 pergamino'} },
-      { range:[6,6], res:'Altar oculto', det:'Detras de un tapiz podrido hay un altar antiguo con una ofrenda intacta. Emana energia magica debil.', fx:{ico:'&#128302;',txt:'+1 MP a quien lo active (tirada)'} },
-    ]
-  },
-  { cat:'Exploracion', ico:'&#128483;', lbl:'¿Esta tranquila la zona?', hint:'Antes de avanzar a territorio nuevo',
-    rolls:[
-      { range:[1,2], res:'Peligro inminente', det:'Ruidos cercanos. Algo se mueve al otro lado de la pared. Sonido metalico, como armadura.', fx:{ico:'&#9888;&#65039;',txt:'Prepararse para combate'} },
-      { range:[3,4], res:'Relativa calma', det:'Silencio. Solo vuestros propios pasos. Nada visible ni audible en un radio cercano.', fx:null },
-      { range:[5,5], res:'Completamente despejado', det:'La zona esta limpia. Incluso el polvo esta sin disturbar. Este camino no ha sido pisado en mucho tiempo.', fx:{ico:'&#10003;',txt:'Avance seguro garantizado'} },
-      { range:[6,6], res:'Trampa de ruido', det:'Hay campanillas de alarma atadas a un hilo casi invisible. Si no se ve, al cruzar alertara a toda la zona.', fx:{ico:'&#128278;',txt:'Detectado: desactivar o evitar'} },
-    ]
-  },
-  // COMBATE
-  { cat:'Combate', ico:'&#9876;&#65039;', lbl:'¿Cuantos enemigos hay?', hint:'Al entrar en una sala con presencia',
-    rolls:[
-      { range:[1,2], res:'1 enemigo solitario', det:'Un guardian solo. Parece descansado y alerta. No sera facil por sorpresa.', fx:{ico:'&#128121;',txt:'1 enemigo — Combate normal'} },
-      { range:[3,4], res:'2 o 3 enemigos', det:'Un grupo pequeno. Dos en primera linea, uno en retaguardia con arco o vara.', fx:{ico:'&#128121;&#128121;',txt:'2-3 enemigos — Distribuir ataques'} },
-      { range:[5,5], res:'Patrulla de 4', det:'Una patrulla completa. Coordinados. Si uno grita, vienen refuerzos en 1D3 turnos.', fx:{ico:'&#9760;&#65039;',txt:'4 enemigos — PELIGRO, posibles refuerzos'} },
-      { range:[6,6], res:'Emboscada numerosa', det:'Mas de los que esperabais. Salen de las sombras, de detras de columnas, del techo.', fx:{ico:'&#128128;',txt:'5+ enemigos — Retirada puede ser necesaria'} },
-    ]
-  },
-  { cat:'Combate', ico:'&#128128;', lbl:'¿Que tipo de enemigo es?', hint:'Para identificar la amenaza',
-    rolls:[
-      { range:[1,2], res:'No-muerto fragil', det:'Esqueletos o zombies basicos. Lentos, predecibles. Vulnerables a magia de luz y armas contundentes.', fx:{ico:'&#9876;&#65039;',txt:'Ataque contundente +1 dado'} },
-      { range:[3,3], res:'Bestia salvaje', det:'Lobo gigante, rata enorme, o arana monstruosa. Rapida y agresiva. Prioriza al heroe con menos armadura.', fx:{ico:'&#9888;&#65039;',txt:'Objetivo al heroe mas debil'} },
-      { range:[4,4], res:'Humanoide armado', det:'Goblin, orco o bandido. Tiene tactica. Usa cobertura, bloquea puertas, llama refuerzos.', fx:{ico:'&#128737;&#65039;',txt:'Defensa activa — tira 1 dado extra'} },
-      { range:[5,5], res:'Guerrero elite', det:'Un campeon enemigo. Armadura pesada, arma de dos manos. Reduce el primer dano recibido a la mitad.', fx:{ico:'&#9889;',txt:'Resistencia — primer ataque -2 dano'} },
-      { range:[6,6], res:'Criatura magica', det:'Espectro, demonio menor o elemental. Inmune a armas no magicas. Solo el Mago o el Elfo pueden herirlo directamente.', fx:{ico:'&#128302;',txt:'Solo dano magico efectivo'} },
-    ]
-  },
-  { cat:'Combate', ico:'&#128165;', lbl:'¿El enemigo huye o lucha?', hint:'Cuando un enemigo esta debilitado',
-    rolls:[
-      { range:[1,2], res:'Lucha hasta la muerte', det:'Este enemigo no siente miedo ni dolor. Seguira combatiendo mientras pueda moverse.', fx:{ico:'&#9876;&#65039;',txt:'Sin opcion de huida'} },
-      { range:[3,4], res:'Intenta retroceder', det:'Busca distancia pero no huye. Se reagrupa con otro enemigo cercano si puede.', fx:{ico:'&#128694;',txt:'Movimiento defensivo'} },
-      { range:[5,5], res:'Huye y avisa', det:'Se da la vuelta y corre gritando. En 2 turnos llegaran 1D2 refuerzos al lugar.', fx:{ico:'&#9888;&#65039;',txt:'ALERTA — refuerzos en 2 turnos'} },
-      { range:[6,6], res:'Se rinde', det:'Cae de rodillas. Puede que tenga informacion sobre la zona, un objeto, o simplemente pide clemencia.', fx:{ico:'&#128172;',txt:'Posible interrogatorio o botin extra'} },
-    ]
-  },
-  { cat:'Combate', ico:'&#128148;', lbl:'¿Que pasa si caigo?', hint:'Cuando un heroe llega a 0 HP',
-    rolls:[
-      { range:[1,2], res:'Herida grave', det:'El heroe cae inconsciente pero estable. Sus companeros pueden revivirle con una pocion. Sin pocion: permanece caido hasta fin de combate.', fx:{ico:'&#129514;',txt:'Necesita pocion o turno de aliado'} },
-      { range:[3,4], res:'Aturdido', det:'No cae, pero queda aturdido 1 turno. No puede atacar ni moverse. Su defensa se reduce a la mitad.', fx:{ico:'&#11015;&#65039;',txt:'-2 defensa, sin acciones 1 turno'} },
-      { range:[5,5], res:'Herida de combate', det:'Cae pero se recupera solo al final del combate con 1 HP. Recibe una cicatriz narrativa permanente.', fx:{ico:'&#128137;',txt:'Recuperacion automatica a 1 HP'} },
-      { range:[6,6], res:'Sacrificio heroico', det:'Al caer, el heroe realiza un ultimo ataque con toda su fuerza. Tira 3 dados de combate de golpe final antes de quedar fuera.', fx:{ico:'&#9876;&#65039;',txt:'Ataque final: 3 dados antes de caer'} },
-    ]
-  },
-  // TESORO
-  { cat:'Tesoro y Recompensa', ico:'&#128176;', lbl:'¿Que hay en el cofre?', hint:'Al abrir un cofre o encontrar un tesoro',
-    rolls:[
-      { range:[1,1], res:'Cofre trampa', det:'Una trampa de gas. El primero en abrirlo recibe 1D4 de dano. El cofre esta vacio o contiene basura.', fx:{ico:'&#129500;',txt:'1D4 dano al abridor'} },
-      { range:[2,3], res:'Monedas y nada mas', det:'Oros. Entre 20 y 60 monedas de oro segun el tamano del cofre. Nada mas interesante.', fx:{ico:'&#128176;',txt:'+1D6x10 oros'} },
-      { range:[4,4], res:'Equipo util', det:'Una pocion de curacion, un frasco de aceite de antorcha, y vendas limpias. Suministros de aventurero.', fx:{ico:'&#129514;',txt:'+1 pocion +1 pocion menor'} },
-      { range:[5,5], res:'Arma o armadura', det:'Una pieza de equipo en buen estado. Puede ser un arma corta, un escudo pequeno, o una pieza de armadura parcial.', fx:{ico:'&#9876;&#65039;',txt:'Equipo utilizable — ver tabla'} },
-      { range:[6,6], res:'Objeto magico', det:'Algo que brilla incluso en la oscuridad. No parece un objeto ordinario. Podria ser muy valioso... o muy peligroso.', fx:{ico:'&#128302;',txt:'Objeto magico — identificar antes de usar'} },
-    ]
-  },
-  { cat:'Tesoro y Recompensa', ico:'&#129514;', lbl:'¿Hay pociones aqui?', hint:'Al buscar en una sala o sobre un enemigo',
-    rolls:[
-      { range:[1,3], res:'Sin pociones', det:'Nada de valor liquido. Ni frascos, ni elixires, ni siquiera agua.', fx:null },
-      { range:[4,5], res:'1 pocion de curacion', det:'Un frasco de vidrio con liquido rojo. Restaura 1D4+2 HP al beberla.', fx:{ico:'&#129514;',txt:'+1 Pocion de Curacion'} },
-      { range:[6,6], res:'Pocion especial', det:'Un frasco de color inusual. Podria ser fuerza, velocidad, invisibilidad o veneno. Hay que identificarla.', fx:{ico:'&#128302;',txt:'Pocion especial — tirada de Mago para identificar'} },
-    ]
-  },
-  // MAGIA Y EVENTOS
-  { cat:'Magia y Eventos', ico:'&#10024;', lbl:'¿Siento magia en la sala?', hint:'El Mago o el Elfo pueden preguntar esto',
-    rolls:[
-      { range:[1,2], res:'Sin presencia magica', det:'Esta zona esta magicamente muerta. Los hechizos costaran 1 MP extra mientras esteis aqui.', fx:{ico:'&#128683;',txt:'Zona sin magia — hechizos +1 MP'} },
-      { range:[3,4], res:'Residuos arcanos', det:'Alguien uso magia aqui recientemente. Los rastros se estan disipando. Util para rastrear.', fx:{ico:'&#128302;',txt:'Rastro magico detectable'} },
-      { range:[5,5], res:'Campo magico activo', det:'Hay una trampa magica o un escudo en esta sala. El Mago puede intentar neutralizarla (tirada de MP).', fx:{ico:'&#9889;',txt:'Trampa magica — tirada 4+ para desactivar'} },
-      { range:[6,6], res:'Fuente de poder', det:'Un nexo de energia arcana. El Mago y el Elfo recuperan 2 MP al entrar. Solo funciona una vez.', fx:{ico:'&#10024;',txt:'+2 MP para Mago y Elfo (una vez)'} },
-    ]
-  },
-  { cat:'Magia y Eventos', ico:'&#127792;', lbl:'¿Que tiene el altar?', hint:'Al encontrar un altar o altar oscuro',
-    rolls:[
-      { range:[1,2], res:'Altar corrupto', det:'Emana energia oscura. Quien se acerque a menos de un paso pierde 1 HP por turno que permanezca.', fx:{ico:'&#9760;&#65039;',txt:'-1 HP/turno en zona del altar'} },
-      { range:[3,4], res:'Altar neutro', det:'Antiguo, sin uso. Solo piedra y polvo. Podria activarse si el Mago lo intenta, sin garantias.', fx:{ico:'&#128302;',txt:'Activacion posible — tirada de Mago'} },
-      { range:[5,5], res:'Altar de curacion', det:'El simbolo grabado es de una deidad de la luz. Tocar el altar recupera 1D3 HP a un heroe. Solo una vez.', fx:{ico:'&#128154;',txt:'+1D3 HP a un heroe (una vez)'} },
-      { range:[6,6], res:'Altar de poder', det:'La energia que emana es inmensa. Un heroe puede absorberla para ganar +1 a todos sus dados de ataque durante el resto de la mision.', fx:{ico:'&#128293;',txt:'+1 dado ataque hasta fin de mision'} },
-    ]
-  },
-  { cat:'Magia y Eventos', ico:'&#127922;', lbl:'¿Que dice el pergamino?', hint:'Al encontrar un pergamino o libro',
-    rolls:[
-      { range:[1,2], res:'Ilegible o trampa', det:'El texto se borra al tocarlo, o al leerlo, el lector sufre una maldicion temporal: -1 ataque durante 2 turnos.', fx:{ico:'&#128128;',txt:'Maldicion — -1 ataque 2 turnos al lector'} },
-      { range:[3,4], res:'Mapa parcial', det:'Un mapa a medias de una zona desconocida. Indica la ubicacion de una sala con botin, pero sin marcar trampas.', fx:{ico:'&#128205;',txt:'Mapa — se puede usar en proxima pregunta de exploracion'} },
-      { range:[5,5], res:'Hechizo escrito', det:'El Mago puede aprender este hechizo sin coste de MP la primera vez que lo lance. Requiere 1 turno de lectura.', fx:{ico:'&#10024;',txt:'Hechizo gratis (primer uso)'} },
-      { range:[6,6], res:'Informacion critica', det:'Contiene datos sobre el jefe de la mision: sus debilidades, donde esta, y que le teme. +1 dado en el primer ataque contra el jefe.', fx:{ico:'&#9889;',txt:'+1 dado contra el jefe de esta mision'} },
-    ]
-  },
-  // PNJ Y NARRATIVA
-  { cat:'Narrativa', ico:'&#128172;', lbl:'¿Encuentro a alguien vivo?', hint:'Al entrar en una sala inesperadamente habitada',
-    rolls:[
-      { range:[1,2], res:'Solo enemigos', det:'Quien hay aqui no tiene buenas intenciones. No hay supervivientes inocentes en esta zona.', fx:null },
-      { range:[3,3], res:'Prisionero aterrado', det:'Una persona encadenada a la pared. Esta viva pero en estado de shock. Puede soltar informacion util si se la tranquiliza.', fx:{ico:'&#128172;',txt:'PNJ rescatable — informacion disponible'} },
-      { range:[4,4], res:'Mercenario neutral', det:'Un aventurero como vosotros, solo que con peor suerte. Herido pero combativo. Podria unirse o vender informacion.', fx:{ico:'&#9876;&#65039;',txt:'Aliado potencial o informante'} },
-      { range:[5,5], res:'Comerciante perdido', det:'Un mercader con su mula ha acabado aqui por error. Tiene pociones y equipo basico a la venta, a precio de emergencia.', fx:{ico:'&#128176;',txt:'Tienda de emergencia disponible'} },
-      { range:[6,6], res:'Sabio o mago aliado', det:'Un mago anciano que lleva semanas explorando estos mismos pasillos. Conoce el camino al objetivo. Puede acompanarles.', fx:{ico:'&#128302;',txt:'Guia con conocimiento del dungeon'} },
-    ]
-  },
-  { cat:'Narrativa', ico:'&#128483;', lbl:'¿Que ruido oigo?', hint:'Al detenerse y escuchar activamente',
-    rolls:[
-      { range:[1,1], res:'Silencio absoluto', det:'Ni siquiera el goteo del agua. Este nivel esta completamente muerto. Eso puede ser bueno... o muy malo.', fx:null },
-      { range:[2,3], res:'Sonidos lejanos', det:'Pasos, voces, metal chocando contra metal. Hay actividad, pero a distancia. La proxima sala puede estar ocupada.', fx:{ico:'&#9888;&#65039;',txt:'Actividad detectada — avanzar con cuidado'} },
-      { range:[4,4], res:'Crujidos en el techo', det:'Vibracion en la roca sobre vuestras cabezas. Inestabilidad estructural o algo muy pesado moviendose encima.', fx:{ico:'&#127968;',txt:'Posible derrumbe o criatura grande encima'} },
-      { range:[5,5], res:'Respiracion cercana', det:'A menos de diez pasos. Algo esta en la misma sala que vosotros y no os ha visto aun. Ventaja de sorpresa.', fx:{ico:'&#128064;',txt:'Ataque por sorpresa disponible (+2 dados primer turno)'} },
-      { range:[6,6], res:'Mecanismo activado', det:'Un click. Luego otro. Algo se ha puesto en marcha bajo vuestros pies. Teneis 2 turnos antes de que ocurra algo.', fx:{ico:'&#9201;&#65039;',txt:'CUENTA ATRAS — 2 turnos antes del evento'} },
-    ]
-  },
-  { cat:'Narrativa', ico:'&#128293;', lbl:'¿Que presiente el grupo?', hint:'Pregunta narrativa general de atmsfera',
-    rolls:[
-      { range:[1,2], res:'Mal presentimiento', det:'La tension es palpable. Alguien va a salir herido de esta sala. Preparad pociones.', fx:{ico:'&#9888;&#65039;',txt:'El master puede activar un encuentro dificil'} },
-      { range:[3,4], res:'Calma tensa', det:'Todo parece estar bajo control, pero la experiencia dice que esto es demasiado facil. Quiza la dificultad aun no ha llegado.', fx:null },
-      { range:[5,5], res:'Sensacion de progreso', det:'Estais en el camino correcto. La oscuridad retrocede levemente. El objetivo esta cerca.', fx:{ico:'&#10003;',txt:'El objetivo de mision esta a 1-2 salas'} },
-      { range:[6,6], res:'Momento heroico', det:'Algo en el ambiente eleva el animo. Un heroe puede declarar un Momento Heroico: un acto extraordinario que va mas alla de los dados.', fx:{ico:'&#11088;',txt:'Momento Heroico — el jugador narra una accion libre'} },
-    ]
-  },
-];
-
-// Group by category
-const ORACLE_CATS = [...new Set(ORACLE_QUESTIONS.map(q=>q.cat))];
-
-// ── EXTENDED LORE ELEMENTS ──────────────────────────────────────────────
 const LORE_INTROS_EXTRA = [
-  'La luna esta roja esta noche. Los viejos del pueblo dicen que eso no augura nada bueno.',
-  'Vuestro cliente pago por adelantado y en oro. Eso, en este oficio, suele significar que el peligro es real.',
-  'El ultimo grupo que entro aqui no volvio. Sus armas aparecieron en la puerta del pueblo. Sin sangre. Sin rastro.',
+  'La luna esta roja esta noche. Los viejos dicen que eso no augura nada bueno.',
+  'Vuestro cliente pago por adelantado y en oro. Eso suele significar que el peligro es real.',
+  'El ultimo grupo que entro aqui no volvio. Sus armas aparecieron en la puerta del pueblo. Sin sangre.',
   'Un cuervo negro os ha seguido desde el pueblo. Se ha detenido justo ante la entrada. No pasa.',
   'El Enano ya ha estado aqui. Hace veinte anos. No quiere hablar de lo que vio.',
   'Segun los mapas del Imperio, este lugar no existe. Pero vosotros estais ante sus puertas.',
 ];
 
-// ── STATE ───────────────────────────────────────────────────────────────
+const ORACLE_QUESTIONS = [
+  {cat:'Exploracion',ico:'&#128682;',lbl:'Veo alguna puerta?',hint:'Al entrar o mirar alrededor',
+   rolls:[
+     {range:[1,2],res:'No hay puertas visibles',det:'Las paredes son de piedra maciza. Callejon sin salida... o hay algo que no veis.',fx:null},
+     {range:[3,4],res:'Hay una puerta',det:'Una puerta de madera reforzada con hierro. Tiene cerradura pero no llave a la vista.',fx:{ico:'&#128682;',txt:'Puerta encontrada'}},
+     {range:[5,5],res:'Hay dos puertas',det:'Una al norte y otra al este. La del norte tiene marcas de arañazos recientes.',fx:{ico:'&#128682;&#128682;',txt:'Dos salidas disponibles'}},
+     {range:[6,6],res:'Puerta secreta detectada',det:'El Enano nota una corriente de aire en la pared sur. Solo visible si se busca activamente.',fx:{ico:'&#128285;',txt:'Puerta secreta — +1 Llave si se abre'}},
+   ]},
+  {cat:'Exploracion',ico:'&#128064;',lbl:'Que contiene esta sala?',hint:'Al explorar una habitacion nueva',
+   rolls:[
+     {range:[1,1],res:'Sala vacia',det:'Polvo y silencio. Nada de valor, nada de peligro.',fx:null},
+     {range:[2,3],res:'Objetos abandonados',det:'Restos de un campamento: sacos rasgados, huesos de comida. Alguien vivio aqui.',fx:{ico:'&#128220;',txt:'Inspeccion posible (+tirada)'}},
+     {range:[4,4],res:'Trampa oculta',det:'El suelo suena distinto. Hay una trampa de presion. El Enano puede intentar desactivarla.',fx:{ico:'&#9888;&#65039;',txt:'Trampa detectada antes de activarse'}},
+     {range:[5,5],res:'Enemigos en emboscada',det:'Demasiado silencioso. Siluetas en las sombras. Os han visto antes que vosotros a ellos.',fx:{ico:'&#9876;&#65039;',txt:'COMBATE — Enemigos con ventaja de inicio'}},
+     {range:[6,6],res:'Algo valioso',det:'Una caja fuerte empotrada en la pared, medio oculta tras una piedra suelta.',fx:{ico:'&#128176;',txt:'Tesoro — requiere tirada de magia o fuerza'}},
+   ]},
+  {cat:'Exploracion',ico:'&#128270;',lbl:'Hay algo oculto aqui?',hint:'Buscar activamente en la sala',
+   rolls:[
+     {range:[1,3],res:'Nada que encontrar',det:'Registrais cada rincon. Paredes solidas, suelo firme.',fx:null},
+     {range:[4,4],res:'Pasaje secreto',det:'Una piedra se mueve al presionarla. Detras hay un pasadizo estrecho.',fx:{ico:'&#128285;',txt:'Pasaje secreto descubierto'}},
+     {range:[5,5],res:'Objeto escondido',det:'Bajo una baldosa suelta: una bolsa de cuero con monedas y un pergamino.',fx:{ico:'&#128176;',txt:'+25 oros + 1 pergamino'}},
+     {range:[6,6],res:'Altar oculto',det:'Detras de un tapiz podrido hay un altar antiguo que emana energia magica debil.',fx:{ico:'&#128302;',txt:'+1 MP a quien lo active (tirada)'}},
+   ]},
+  {cat:'Exploracion',ico:'&#128483;',lbl:'Esta tranquila la zona?',hint:'Antes de avanzar a territorio nuevo',
+   rolls:[
+     {range:[1,2],res:'Peligro inminente',det:'Ruidos cercanos. Algo se mueve al otro lado de la pared.',fx:{ico:'&#9888;&#65039;',txt:'Prepararse para combate'}},
+     {range:[3,4],res:'Relativa calma',det:'Silencio. Solo vuestros propios pasos.',fx:null},
+     {range:[5,5],res:'Completamente despejado',det:'La zona esta limpia. El polvo esta sin disturbar. Este camino no ha sido pisado en mucho tiempo.',fx:{ico:'&#10003;',txt:'Avance seguro garantizado'}},
+     {range:[6,6],res:'Trampa de ruido',det:'Hay campanillas de alarma atadas a un hilo casi invisible.',fx:{ico:'&#128278;',txt:'Detectado: desactivar o evitar'}},
+   ]},
+  {cat:'Combate',ico:'&#9876;&#65039;',lbl:'Cuantos enemigos hay?',hint:'Al entrar en una sala con presencia',
+   rolls:[
+     {range:[1,2],res:'1 enemigo solitario',det:'Un guardian solo. Alerta pero no ha visto al grupo.',fx:{ico:'&#128121;',txt:'1 enemigo — Combate normal'}},
+     {range:[3,4],res:'2 o 3 enemigos',det:'Un grupo pequeno. Dos en primera linea, uno en retaguardia.',fx:{ico:'&#128121;&#128121;',txt:'2-3 enemigos — Distribuir ataques'}},
+     {range:[5,5],res:'Patrulla de 4',det:'Una patrulla coordinada. Si uno grita, vienen refuerzos en 1D3 turnos.',fx:{ico:'&#9760;&#65039;',txt:'4 enemigos — PELIGRO, posibles refuerzos'}},
+     {range:[6,6],res:'Emboscada numerosa',det:'Mas de los esperados. Salen de las sombras, de columnas, del techo.',fx:{ico:'&#128128;',txt:'5+ enemigos — Retirada puede ser necesaria'}},
+   ]},
+  {cat:'Combate',ico:'&#128128;',lbl:'Que tipo de enemigo es?',hint:'Para identificar la amenaza',
+   rolls:[
+     {range:[1,2],res:'No-muerto fragil',det:'Esqueletos o zombies basicos. Lentos, predecibles. Vulnerables a magia de luz.',fx:{ico:'&#9876;&#65039;',txt:'Ataque contundente +1 dado'}},
+     {range:[3,3],res:'Bestia salvaje',det:'Lobo gigante o arana monstruosa. Rapida y agresiva. Va al heroe con menos armadura.',fx:{ico:'&#9888;&#65039;',txt:'Objetivo al heroe mas debil'}},
+     {range:[4,4],res:'Humanoide armado',det:'Goblin u orco con tactica. Usa cobertura, bloquea puertas.',fx:{ico:'&#128737;&#65039;',txt:'Defensa activa — tira 1 dado extra'}},
+     {range:[5,5],res:'Guerrero elite',det:'Armadura pesada, arma de dos manos. Reduce el primer dano recibido a la mitad.',fx:{ico:'&#9889;',txt:'Resistencia — primer ataque -2 dano'}},
+     {range:[6,6],res:'Criatura magica',det:'Espectro o demonio menor. Inmune a armas no magicas.',fx:{ico:'&#128302;',txt:'Solo dano magico efectivo'}},
+   ]},
+  {cat:'Combate',ico:'&#128165;',lbl:'El enemigo huye o lucha?',hint:'Cuando un enemigo esta debilitado',
+   rolls:[
+     {range:[1,2],res:'Lucha hasta la muerte',det:'Este enemigo no siente miedo. Seguira combatiendo mientras pueda moverse.',fx:{ico:'&#9876;&#65039;',txt:'Sin opcion de huida'}},
+     {range:[3,4],res:'Intenta retroceder',det:'Busca distancia pero no huye. Se reagrupa con otro enemigo.',fx:{ico:'&#128694;',txt:'Movimiento defensivo'}},
+     {range:[5,5],res:'Huye y avisa',det:'Se da la vuelta y corre gritando. En 2 turnos llegaran 1D2 refuerzos.',fx:{ico:'&#9888;&#65039;',txt:'ALERTA — refuerzos en 2 turnos'}},
+     {range:[6,6],res:'Se rinde',det:'Cae de rodillas. Puede tener informacion, un objeto, o pide clemencia.',fx:{ico:'&#128172;',txt:'Posible interrogatorio o botin extra'}},
+   ]},
+  {cat:'Combate',ico:'&#128148;',lbl:'Que pasa si caigo?',hint:'Cuando un heroe llega a 0 HP',
+   rolls:[
+     {range:[1,2],res:'Herida grave',det:'El heroe cae inconsciente pero estable. Sus companeros pueden revivirle con una pocion.',fx:{ico:'&#129514;',txt:'Necesita pocion o turno de aliado'}},
+     {range:[3,4],res:'Aturdido',det:'No cae, pero queda aturdido 1 turno. No puede atacar ni moverse.',fx:{ico:'&#11015;&#65039;',txt:'-2 defensa, sin acciones 1 turno'}},
+     {range:[5,5],res:'Herida de combate',det:'Cae pero se recupera solo al final del combate con 1 HP.',fx:{ico:'&#128137;',txt:'Recuperacion automatica a 1 HP'}},
+     {range:[6,6],res:'Sacrificio heroico',det:'Al caer, realiza un ultimo ataque con 3 dados de golpe final.',fx:{ico:'&#9876;&#65039;',txt:'Ataque final: 3 dados antes de caer'}},
+   ]},
+  {cat:'Tesoro',ico:'&#128176;',lbl:'Que hay en el cofre?',hint:'Al abrir un cofre o encontrar un tesoro',
+   rolls:[
+     {range:[1,1],res:'Cofre trampa',det:'Una trampa de gas. El primero en abrirlo recibe 1D4 dano.',fx:{ico:'&#129500;',txt:'1D4 dano al abridor'}},
+     {range:[2,3],res:'Monedas',det:'Entre 20 y 60 monedas de oro segun el tamano del cofre.',fx:{ico:'&#128176;',txt:'+1D6x10 oros'}},
+     {range:[4,4],res:'Equipo util',det:'Una pocion de curacion, un frasco de aceite, vendas limpias.',fx:{ico:'&#129514;',txt:'+1 pocion +1 pocion menor'}},
+     {range:[5,5],res:'Arma o armadura',det:'Una pieza de equipo en buen estado.',fx:{ico:'&#9876;&#65039;',txt:'Equipo utilizable — ver tabla'}},
+     {range:[6,6],res:'Objeto magico',det:'Algo que brilla en la oscuridad. Valioso... o peligroso.',fx:{ico:'&#128302;',txt:'Objeto magico — identificar antes de usar'}},
+   ]},
+  {cat:'Tesoro',ico:'&#129514;',lbl:'Hay pociones aqui?',hint:'Al buscar en una sala o sobre un enemigo',
+   rolls:[
+     {range:[1,3],res:'Sin pociones',det:'Nada de valor liquido. Ni frascos, ni elixires.',fx:null},
+     {range:[4,5],res:'1 pocion de curacion',det:'Un frasco de vidrio con liquido rojo. Restaura 1D4+2 HP.',fx:{ico:'&#129514;',txt:'+1 Pocion de Curacion'}},
+     {range:[6,6],res:'Pocion especial',det:'Un frasco de color inusual. Podria ser fuerza, velocidad o invisibilidad.',fx:{ico:'&#128302;',txt:'Pocion especial — tirada de Mago para identificar'}},
+   ]},
+  {cat:'Magia',ico:'&#10024;',lbl:'Siento magia en la sala?',hint:'El Mago o el Elfo pueden preguntar esto',
+   rolls:[
+     {range:[1,2],res:'Sin presencia magica',det:'Zona magicamente muerta. Los hechizos costaran 1 MP extra.',fx:{ico:'&#128683;',txt:'Zona sin magia — hechizos +1 MP'}},
+     {range:[3,4],res:'Residuos arcanos',det:'Alguien uso magia aqui recientemente. Los rastros se estan disipando.',fx:{ico:'&#128302;',txt:'Rastro magico detectable'}},
+     {range:[5,5],res:'Campo magico activo',det:'Hay una trampa magica o un escudo. El Mago puede intentar neutralizarla.',fx:{ico:'&#9889;',txt:'Trampa magica — tirada 4+ para desactivar'}},
+     {range:[6,6],res:'Fuente de poder',det:'Un nexo de energia arcana. El Mago y el Elfo recuperan 2 MP al entrar.',fx:{ico:'&#10024;',txt:'+2 MP para Mago y Elfo (una vez)'}},
+   ]},
+  {cat:'Magia',ico:'&#127792;',lbl:'Que tiene el altar?',hint:'Al encontrar un altar',
+   rolls:[
+     {range:[1,2],res:'Altar corrupto',det:'Emana energia oscura. -1 HP por turno en zona del altar.',fx:{ico:'&#9760;&#65039;',txt:'-1 HP/turno en zona del altar'}},
+     {range:[3,4],res:'Altar neutro',det:'Antiguo, sin uso. Podria activarse si el Mago lo intenta.',fx:{ico:'&#128302;',txt:'Activacion posible — tirada de Mago'}},
+     {range:[5,5],res:'Altar de curacion',det:'Simbolo de deidad de la luz. Toca para recuperar 1D3 HP (una vez).',fx:{ico:'&#128154;',txt:'+1D3 HP a un heroe (una vez)'}},
+     {range:[6,6],res:'Altar de poder',det:'La energia emana con fuerza. Un heroe gana +1 a todos sus dados de ataque esta mision.',fx:{ico:'&#128293;',txt:'+1 dado ataque hasta fin de mision'}},
+   ]},
+  {cat:'Magia',ico:'&#127922;',lbl:'Que dice el pergamino?',hint:'Al encontrar un pergamino o libro',
+   rolls:[
+     {range:[1,2],res:'Ilegible o trampa',det:'El texto se borra al tocarlo, o al leerlo el lector sufre -1 ataque 2 turnos.',fx:{ico:'&#128128;',txt:'Maldicion — -1 ataque 2 turnos al lector'}},
+     {range:[3,4],res:'Mapa parcial',det:'Un mapa a medias que indica la ubicacion de una sala con botin.',fx:{ico:'&#128205;',txt:'Mapa — ventaja en proxima exploracion'}},
+     {range:[5,5],res:'Hechizo escrito',det:'El Mago puede aprender este hechizo y lanzarlo gratis una vez.',fx:{ico:'&#10024;',txt:'Hechizo gratis (primer uso)'}},
+     {range:[6,6],res:'Informacion critica',det:'Contiene datos sobre el jefe: debilidades y donde esta.',fx:{ico:'&#9889;',txt:'+1 dado contra el jefe de esta mision'}},
+   ]},
+  {cat:'Narrativa',ico:'&#128172;',lbl:'Encuentro a alguien vivo?',hint:'Al entrar en una sala inesperadamente habitada',
+   rolls:[
+     {range:[1,2],res:'Solo enemigos',det:'Quien hay aqui no tiene buenas intenciones.',fx:null},
+     {range:[3,3],res:'Prisionero aterrado',det:'Una persona encadenada, viva pero en shock. Puede soltar informacion.',fx:{ico:'&#128172;',txt:'PNJ rescatable — informacion disponible'}},
+     {range:[4,4],res:'Mercenario neutral',det:'Un aventurero herido pero combativo. Podria unirse o vender informacion.',fx:{ico:'&#9876;&#65039;',txt:'Aliado potencial o informante'}},
+     {range:[5,5],res:'Comerciante perdido',det:'Un mercader con pociones y equipo basico a precio de emergencia.',fx:{ico:'&#128176;',txt:'Tienda de emergencia disponible'}},
+     {range:[6,6],res:'Sabio o mago aliado',det:'Un mago anciano que conoce el camino al objetivo. Puede acompañarles.',fx:{ico:'&#128302;',txt:'Guia con conocimiento del dungeon'}},
+   ]},
+  {cat:'Narrativa',ico:'&#128483;',lbl:'Que ruido oigo?',hint:'Al detenerse y escuchar activamente',
+   rolls:[
+     {range:[1,1],res:'Silencio absoluto',det:'Ni siquiera el goteo del agua. Esto puede ser muy malo.',fx:null},
+     {range:[2,3],res:'Sonidos lejanos',det:'Pasos, voces, metal chocando. Hay actividad pero a distancia.',fx:{ico:'&#9888;&#65039;',txt:'Actividad detectada — avanzar con cuidado'}},
+     {range:[4,4],res:'Crujidos en el techo',det:'Vibracion en la roca sobre vuestras cabezas.',fx:{ico:'&#127968;',txt:'Posible derrumbe o criatura grande encima'}},
+     {range:[5,5],res:'Respiracion cercana',det:'A menos de diez pasos. Algo en la misma sala que vosotros y no os ha visto aun.',fx:{ico:'&#128064;',txt:'Ataque por sorpresa: +2 dados primer turno'}},
+     {range:[6,6],res:'Mecanismo activado',det:'Un click. Algo se ha puesto en marcha. Teneis 2 turnos.',fx:{ico:'&#9201;&#65039;',txt:'CUENTA ATRAS — 2 turnos antes del evento'}},
+   ]},
+  {cat:'Narrativa',ico:'&#128293;',lbl:'Que presiente el grupo?',hint:'Pregunta narrativa general de atmosfera',
+   rolls:[
+     {range:[1,2],res:'Mal presentimiento',det:'La tension es palpable. Alguien va a salir herido de esta sala.',fx:{ico:'&#9888;&#65039;',txt:'El master puede activar un encuentro dificil'}},
+     {range:[3,4],res:'Calma tensa',det:'Todo parece bajo control, pero esto es demasiado facil.',fx:null},
+     {range:[5,5],res:'Sensacion de progreso',det:'Estais en el camino correcto. El objetivo esta cerca.',fx:{ico:'&#10003;',txt:'El objetivo esta a 1-2 salas'}},
+     {range:[6,6],res:'Momento heroico',det:'Algo eleva el animo. Un heroe puede declarar un Momento Heroico: acto extraordinario mas alla de los dados.',fx:{ico:'&#11088;',txt:'Momento Heroico — el jugador narra una accion libre'}},
+   ]},
+];
+
+const ORACLE_CATS = [...new Set(ORACLE_QUESTIONS.map(q=>q.cat))];
+
 let currentAdventure = null;
 let oracleLog = [];
 let usedQuestions = new Set();
 
-// ── FUNCTIONS ────────────────────────────────────────────────────────────
 function startSk(){
   const lore = rnd(LORE_POOL);
   const extraIntro = rnd(LORE_INTROS_EXTRA);
-  currentAdventure = {
-    lore,
-    extraIntro,
-    started: Date.now(),
-    phase: 'explore',
-  };
-  oracleLog = [];
-  usedQuestions = new Set();
-  if(!sk) sk = {};
-  sk.adventure = currentAdventure;
-  sk.oracleLog = oracleLog;
-  saveS();
-  renderSk();
+  currentAdventure = {lore, extraIntro, started:Date.now(), phase:'explore'};
+  oracleLog=[];usedQuestions=new Set();
+  if(!sk)sk={};
+  sk.adventure=currentAdventure;sk.oracleLog=oracleLog;
+  saveS();renderSk();
 }
 
 function renderSk(){
-  const c = document.getElementById('skcon');
+  const c=document.getElementById('skcon');
   if(!currentAdventure){
-    c.innerHTML = `
-      <div style="padding:40px 20px;text-align:center">
-        <div style="font-size:56px;margin-bottom:16px;opacity:.4">&#128302;</div>
-        <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--god);letter-spacing:2px;margin-bottom:8px">EL ORACULO ESPERA</div>
-        <div style="font-size:12px;color:var(--stl);font-style:italic;line-height:1.7;margin-bottom:24px">
-          Cada pregunta genera una respuesta aleatoria<br>con contexto narrativo y efectos de juego.<br>Usa el oraculo durante tu turno de HeroQuest.
-        </div>
-      </div>
-      <button class="new-adv-btn" onclick="startSk()">&#128302; NUEVA AVENTURA &#9876;&#65039;</button>`;
+    c.innerHTML=`<div style="padding:40px 20px;text-align:center">
+      <div style="font-size:56px;margin-bottom:16px;opacity:.4">&#128302;</div>
+      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--god);letter-spacing:2px;margin-bottom:8px">EL ORACULO ESPERA</div>
+      <div style="font-size:12px;color:var(--stl);font-style:italic;line-height:1.7;margin-bottom:24px">Cada pregunta genera una respuesta aleatoria<br>con contexto narrativo y efectos de juego.<br>Usalo durante tu turno de HeroQuest.</div>
+    </div>
+    <button class="new-adv-btn" onclick="startSk()">&#128302; NUEVA AVENTURA &#9876;&#65039;</button>`;
     return;
   }
-  const adv = currentAdventure;
-  const lore = adv.lore;
-
-  // Build lore card
-  const tagsHtml = (lore.tags||[]).map((t,i)=>`<span class="lore-tag" style="color:${lore.tagcols?lore.tagcols[i]:'var(--pad)'};border-color:${lore.tagcols?lore.tagcols[i]+'66':'rgba(201,150,42,.3)'}">${t}</span>`).join('');
-
-  // Build oracle sections
-  const questionsHtml = ORACLE_CATS.map(cat=>{
-    const qs = ORACLE_QUESTIONS.filter(q=>q.cat===cat);
-    const qBtns = qs.map((q,qi)=>{
-      const qKey = cat+'_'+qi;
-      const isUsed = usedQuestions.has(qKey);
-      return `<button class="oq-btn${isUsed?' used':''}" onclick="askOracle('${cat}',${ORACLE_QUESTIONS.indexOf(q)}, '${qKey}')">
-        <div class="oq-inner">
-          <span class="oq-ico">${q.ico}</span>
-          <div class="oq-text">
-            <span class="oq-label">${q.lbl}</span>
-            <span class="oq-hint">${q.hint}</span>
-          </div>
-          <span class="oq-arrow">&#8250;</span>
-        </div>
+  const adv=currentAdventure,lore=adv.lore;
+  const tagsHtml=(lore.tags||[]).map((t,i)=>`<span class="lore-tag" style="color:${lore.tagcols?lore.tagcols[i]:'var(--pad)'};border-color:${lore.tagcols?lore.tagcols[i]+'66':'rgba(201,150,42,.3)'}">${t}</span>`).join('');
+  const questionsHtml=ORACLE_CATS.map(cat=>{
+    const qs=ORACLE_QUESTIONS.filter(q=>q.cat===cat);
+    const qBtns=qs.map((q,qi)=>{
+      const qKey=cat+'_'+qi,isUsed=usedQuestions.has(qKey);
+      return`<button class="oq-btn${isUsed?' used':''}" onclick="askOracle(${ORACLE_QUESTIONS.indexOf(q)},'${qKey}')">
+        <div class="oq-inner"><span class="oq-ico">${q.ico}</span><div class="oq-text"><span class="oq-label">${q.lbl}</span><span class="oq-hint">${q.hint}</span></div><span class="oq-arrow">&#8250;</span></div>
       </button>`;
     }).join('');
-    return `<div class="oracle-section">
-      <div class="oracle-cat-title">${cat}</div>
-      <div class="oracle-questions">${qBtns}</div>
-    </div>`;
+    return`<div class="oracle-section"><div class="oracle-cat-title">${cat}</div><div class="oracle-questions">${qBtns}</div></div>`;
   }).join('');
-
-  // Build log
-  const logHtml = oracleLog.length ? `
-    <div class="sk-log" style="margin-top:14px">
-      <div class="sk-log-title">&#128220; Registro de la sesion</div>
-      ${oracleLog.slice(0,8).map(l=>`<div class="sk-log-item">${l}</div>`).join('')}
-    </div>` : '';
-
-  c.innerHTML = `
+  const logHtml=oracleLog.length?`<div class="sk-log" style="margin-top:14px"><div class="sk-log-title">&#128220; Registro de la sesion</div>${oracleLog.slice(0,8).map(l=>`<div class="sk-log-item">${l}</div>`).join('')}</div>`:'';
+  c.innerHTML=`
     <div class="lore-card">
-      <div class="lore-header">
-        <div style="flex:1">
-          <div class="lore-title">${lore.tl}</div>
-          <div class="lore-obj">&#127919; ${lore.ob}</div>
-        </div>
-        <span class="lore-badge" style="color:${lore.bcol||'var(--go)'};border-color:${lore.bcol||'var(--god)'}66;background:${lore.bcol||'#2a1a08'}22">${lore.badge}</span>
-      </div>
-      <div class="lore-body">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--god);margin-bottom:6px">&#128304; LORE DE INICIO</div>
-        ${lore.in}
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(201,150,42,.1);font-size:11px;color:var(--stl);font-style:italic">&#128293; ${adv.extraIntro}</div>
-      </div>
+      <div class="lore-header"><div style="flex:1"><div class="lore-title">${lore.tl}</div><div class="lore-obj">&#127919; ${lore.ob}</div></div>
+        <span class="lore-badge" style="color:${lore.bcol||'var(--go)'};border-color:${lore.bcol||'var(--god)'}66;background:${lore.bcol||'#2a1a08'}22">${lore.badge}</span></div>
+      <div class="lore-body"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--god);margin-bottom:6px">&#128304; LORE</div>${lore.in}<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(201,150,42,.1);font-size:11px;color:var(--stl);font-style:italic">&#128293; ${adv.extraIntro}</div></div>
       <div class="lore-footer">${tagsHtml}</div>
     </div>
-
     <div id="oracle-answer-slot"></div>
-
     ${questionsHtml}
-
     ${logHtml}
-
-    <button class="new-adv-btn" style="margin-top:20px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);color:var(--god)" onclick="if(confirm('Iniciar nueva aventura? Se perdera el registro actual.')){currentAdventure=null;sk=null;usedQuestions=new Set();oracleLog=[];saveS();renderSk();}">
-      &#9876;&#65039; NUEVA AVENTURA
-    </button>`;
+    <button class="new-adv-btn" style="margin-top:20px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);color:var(--god)" onclick="if(confirm('Iniciar nueva aventura?')){currentAdventure=null;sk=null;usedQuestions=new Set();oracleLog=[];saveS();renderSk();}">&#9876;&#65039; NUEVA AVENTURA</button>`;
 }
 
-function askOracle(cat, qIdx, qKey){
-  const q = ORACLE_QUESTIONS[qIdx];
-  if(!q) return;
-
-  // Roll 1D6
-  const roll = ri(1,6);
-
-  // Find matching result
-  let result = q.rolls[q.rolls.length-1]; // default to last
-  for(const r of q.rolls){
-    if(roll >= r.range[0] && roll <= r.range[1]){ result=r; break; }
-  }
-
-  // Mark as used (but still clickable for re-roll)
+function askOracle(qIdx,qKey){
+  const q=ORACLE_QUESTIONS[qIdx];if(!q)return;
+  const roll=ri(1,6);
+  let result=q.rolls[q.rolls.length-1];
+  for(const r of q.rolls){if(roll>=r.range[0]&&roll<=r.range[1]){result=r;break;}}
   usedQuestions.add(qKey);
-
-  // Build answer HTML
-  const fxHtml = result.fx ? `
-    <div class="oa-effect">
-      <span class="oa-effect-ico">${result.fx.ico}</span>
-      <span class="oa-effect-txt">${result.fx.txt}</span>
-    </div>` : '';
-
-  // Determine result color
-  const col = roll<=2?'var(--bl)':roll<=4?'var(--pad)':roll===5?'var(--go)':'var(--gol)';
-  const rollLabel = roll<=2?'ADVERSO':roll<=4?'NEUTRO':roll===5?'FAVORABLE':'&#11088; CRITICO';
-
-  const answerHtml = `
-    <div class="oracle-answer" id="oracle-answer-box">
-      <div class="oa-header">
-        <span class="oa-question">${q.ico} ${q.lbl}</span>
-        <span class="oa-dice" style="color:${col}">&#127922; ${roll} — ${rollLabel}</span>
-      </div>
-      <div class="oa-body">
-        <div class="oa-result" style="color:${col}">${result.res}</div>
-        <div class="oa-detail">${result.det}</div>
-        ${fxHtml}
-      </div>
-      <div class="oa-actions">
-        <button class="oa-act-btn" onclick="askOracle('${cat}',${qIdx},'${qKey}')">&#127922; Volver a tirar</button>
-        <button class="oa-act-btn gre" onclick="document.getElementById('oracle-answer-slot').innerHTML='';usedQuestions.delete('${qKey}');renderSk()">&#10003; Cerrar</button>
-      </div>
-    </div>`;
-
-  // Insert into slot
-  const slot = document.getElementById('oracle-answer-slot');
-  if(slot){
-    slot.innerHTML = answerHtml;
-    setTimeout(()=>slot.scrollIntoView({behavior:'smooth',block:'start'}),80);
-  }
-
-  // Add to log
-  const logEntry = `${q.ico} <strong style="color:${col}">${result.res}</strong> — ${q.lbl} (&#127922;${roll})`;
-  oracleLog.unshift(logEntry);
-  if(oracleLog.length>20) oracleLog.pop();
-
-  // Persist
-  if(sk){ sk.oracleLog=oracleLog; }
+  const fxHtml=result.fx?`<div class="oa-effect"><span class="oa-effect-ico">${result.fx.ico}</span><span class="oa-effect-txt">${result.fx.txt}</span></div>`:'';
+  const col=roll<=2?'var(--bl)':roll<=4?'var(--pad)':roll===5?'var(--go)':'var(--gol)';
+  const rollLabel=roll<=2?'ADVERSO':roll<=4?'NEUTRO':roll===5?'FAVORABLE':'&#11088; CRITICO';
+  const answerHtml=`<div class="oracle-answer" id="oracle-answer-box">
+    <div class="oa-header"><span class="oa-question">${q.ico} ${q.lbl}</span><span class="oa-dice" style="color:${col}">&#127922; ${roll} — ${rollLabel}</span></div>
+    <div class="oa-body"><div class="oa-result" style="color:${col}">${result.res}</div><div class="oa-detail">${result.det}</div>${fxHtml}</div>
+    <div class="oa-actions">
+      <button class="oa-act-btn" onclick="askOracle(${qIdx},'${qKey}')">&#127922; Volver a tirar</button>
+      <button class="oa-act-btn gre" onclick="document.getElementById('oracle-answer-slot').innerHTML='';renderSk();">&#10003; Cerrar</button>
+    </div>
+  </div>`;
+  oracleLog.unshift(`${q.ico} <strong style="color:${col}">${result.res}</strong> — ${q.lbl} (&#127922;${roll})`);
+  if(oracleLog.length>20)oracleLog.pop();
+  if(sk){sk.oracleLog=oracleLog;}
   saveS();
-
-  // Re-render question buttons to mark used
   renderSk();
-  // Re-insert answer (renderSk clears it)
-  const slot2 = document.getElementById('oracle-answer-slot');
-  if(slot2) slot2.innerHTML = answerHtml;
+  const slot2=document.getElementById('oracle-answer-slot');
+  if(slot2){slot2.innerHTML=answerHtml;setTimeout(()=>slot2.scrollIntoView({behavior:'smooth',block:'start'}),80);}
 }
 
-
-// DICE
-function addDH(t){dh.unshift({tx:t,ti:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})});if(dh.length>20)dh.pop();renderDH();saveS();}
-function renderDH(){const l=document.getElementById('dhls');if(!l)return;l.innerHTML=dh.length?dh.map(d=>`<div class="dhi"><span style="color:var(--stl);font-size:9px">${d.ti}</span> ${d.tx}</div>`).join(''):'<span style="color:var(--stl);font-size:11px;font-style:italic">Sin tiradas aun...</span>';}
-function animD(v,l){const e=document.getElementById('dres');e.classList.remove('rolling');void e.offsetWidth;e.classList.add('rolling');document.getElementById('dval').textContent=v;document.getElementById('dlbl').textContent=l;}
-function rollD(s,l){const r=ri(1,s);animD(r,l+' - '+r);addDH(`${l}: <strong style="color:var(--go)">${r}</strong>`);}
-function rollC(n){const res=Array.from({length:n},()=>CF[Math.floor(Math.random()*6)]);const sk2=res.filter(r=>r.includes('128128')).length,sw=res.filter(r=>r.includes('9876')).length,sh=res.filter(r=>r.includes('128737')).length;animD(res.join(' '),sw+'&#9876; '+sk2+'&#128128; '+sh+'&#128737;');addDH(`Combate x${n}: <strong style="color:var(--bl)">${sw}&#9876; ${sk2}&#128128; ${sh}&#128737;</strong>`);}
-function rollMagic(){const fs=['&#10024; Exito','&#127752; Magia','&#128171; Arcano','&#9889; Fallo','&#10024; Exito','&#127752; Magia'];const r=rnd(fs);animD(r,'Dado de Magia');addDH(`Magia: <strong style="color:var(--mg)">${r}</strong>`);}
-// NOTES
-function renderN(){document.getElementById('cnotes').value=cn;renderTR();renderGI();}
-function renderTR(){const l=document.getElementById('tlist');l.innerHTML=TDEF.map(t=>`<div class="trit"><span class="ttic">${t.i}</span><span class="ttn">${t.n}</span><span class="ttq" id="t-${t.k}">${gt[t.k]} ${t.u}</span><div class="ttc"><button class="ttb" onclick="adjT('${t.k}',-${t.s})">-</button><button class="ttb" onclick="adjT('${t.k}',${t.s})">+</button></div></div>`).join('');}
-function adjT(k,d){const t=TDEF.find(x=>x.k===k);gt[k]=Math.max(0,gt[k]+d);const e=document.getElementById('t-'+k);if(e)e.textContent=gt[k]+' '+t.u;saveS();}
-function renderGI(){const c=document.getElementById('ginv');if(!c)return;c.innerHTML=gi.length?gi.map((it,i)=>`<div class="ivrow"><span class="ivico">${it.ico||'&#128230;'}</span><div style="flex:1"><div class="ivnm">${it.nm}</div><div class="ivds">${it.ds||''}</div></div><div class="ivqt">${it.qty||1}</div><div class="iva"><button class="ibt" onclick="adjGI(${i},-1)">-</button><button class="ibt" onclick="adjGI(${i},1)">+</button><button class="ibt del" onclick="remGI(${i})">X</button></div></div>`).join(''):'<div style="padding:8px 0;font-size:11px;color:var(--stl);font-style:italic">Inventario del grupo vacio.</div>';}
-function adjGI(i,d){if(!gi[i])return;gi[i].qty=Math.max(0,(gi[i].qty||1)+d);if(gi[i].qty===0)gi.splice(i,1);saveS();renderGI();}
-function remGI(i){gi.splice(i,1);saveS();renderGI();}
-function saveGI(){const nm=document.getElementById('gn').value.trim();if(!nm){toast('Escribe un nombre');return;}const it={nm,ds:document.getElementById('gd').value.trim(),ico:document.getElementById('gi2').value.trim()||'&#128230;',qty:parseInt(document.getElementById('gq').value)||1,r:giR};gi.push(it);saveS();toast('Objeto anadido al grupo');closeM('m-ginv');renderGI();}
-document.getElementById('cnotes').addEventListener('blur',function(){cn=this.value;saveS();});
-document.getElementById('cnotes').addEventListener('input',function(){cn=this.value;});
-// SW
-if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 // ══════════════════════════════════════════════════════
 // SESSION SCREEN
 // ══════════════════════════════════════════════════════
 
 function initSessionScreen(){
-  const raw = localStorage.getItem(LSK);
-  const hasSave = !!raw;
-  let saveData = null;
-  if(hasSave){ try{ saveData = JSON.parse(raw); }catch(e){} }
-
-  const slotEl   = document.getElementById('ss-save-slot');
-  const btnsEl   = document.getElementById('ss-buttons');
-
-  if(hasSave && saveData && (saveData.heroes?.length > 0 || saveData.cn || saveData.gi?.length)){
-    // Show save preview
-    const heroChips = (saveData.heroes||[]).map(h=>{
-      const avatarContent = h.photo
-        ? `<img src="${h.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-        : `<span>${h.ico||'&#129497;'}</span>`;
-      return `<div class="ss-hero-chip">
-        <div class="ss-hero-avatar">${avatarContent}</div>
-        <span class="ss-hero-name">${h.name}</span>
-      </div>`;
+  const raw=localStorage.getItem(LSK);
+  const hasSave=!!raw;
+  let saveData=null;
+  if(hasSave){try{saveData=JSON.parse(raw);}catch(e){}}
+  const slotEl=document.getElementById('ss-save-slot');
+  const btnsEl=document.getElementById('ss-buttons');
+  if(hasSave&&saveData&&(saveData.heroes?.length>0||saveData.cn||saveData.gi?.length)){
+    const heroChips=(saveData.heroes||[]).map(h=>{
+      const av=h.photo?`<img src="${h.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`<span>${h.ico||'&#129497;'}</span>`;
+      return`<div class="ss-hero-chip"><div class="ss-hero-avatar">${av}</div><span class="ss-hero-name">${h.name}</span></div>`;
     }).join('');
-
-    const heroCount  = saveData.heroes?.length || 0;
-    const adventure  = saveData.sk?.adventure;
-    const advName    = adventure?.lore?.tl || null;
-    const gold       = saveData.gt?.gold || 0;
-
-    slotEl.innerHTML = `<div class="ss-save-preview">
+    const heroCount=saveData.heroes?.length||0;
+    const advName=saveData.sk?.adventure?.lore?.tl||null;
+    const gold=saveData.gt?.gold||0;
+    slotEl.innerHTML=`<div class="ss-save-preview">
       <div class="ss-save-label">&#128190; Partida guardada</div>
-      ${heroCount ? `<div class="ss-save-heroes">${heroChips}</div>` : ''}
-      <div class="ss-save-meta">
-        ${heroCount} heroe${heroCount!==1?'s':''} &bull; ${gold} oros
-        ${advName ? ` &bull; Aventura: ${advName}` : ''}
-      </div>
+      ${heroCount?`<div class="ss-save-heroes">${heroChips}</div>`:''}
+      <div class="ss-save-meta">${heroCount} heroe${heroCount!==1?'s':''} &bull; ${gold} oros${advName?` &bull; ${advName}`:''}</div>
     </div>`;
-
-    btnsEl.innerHTML = `
-      <button class="ss-btn ss-btn-continue" onclick="continueSession()">
-        &#128190; CONTINUAR PARTIDA
-      </button>
-      <button class="ss-btn ss-btn-new" onclick="confirmNewSession()">
-        &#9876;&#65039; NUEVA SESION
-      </button>
-      <button class="ss-btn ss-btn-delete" onclick="confirmDeleteSave()">
-        &#128465;&#65039; Borrar datos guardados
-      </button>`;
+    btnsEl.innerHTML=`
+      <button class="ss-btn ss-btn-continue" onclick="continueSession()">&#128190; CONTINUAR PARTIDA</button>
+      <button class="ss-btn ss-btn-new" onclick="confirmNewSession()">&#9876;&#65039; NUEVA SESION</button>
+      <button class="ss-btn ss-btn-delete" onclick="confirmDeleteSave()">&#128465;&#65039; Borrar datos guardados</button>`;
   } else {
-    // No save or empty save
-    slotEl.innerHTML = `<div class="ss-save-preview">
-      <div class="ss-no-save">&#128302; No hay partida guardada.<br>Crea tus heroes y comienza la aventura.</div>
-    </div>`;
-
-    btnsEl.innerHTML = `
-      <button class="ss-btn ss-btn-new" onclick="continueSession()">
-        &#9876;&#65039; NUEVA PARTIDA
-      </button>`;
+    slotEl.innerHTML=`<div class="ss-save-preview"><div class="ss-no-save">&#128302; No hay partida guardada.<br>Crea tus heroes y comienza la aventura.</div></div>`;
+    btnsEl.innerHTML=`<button class="ss-btn ss-btn-new" onclick="continueSession()">&#9876;&#65039; NUEVA PARTIDA</button>`;
   }
 }
 
 function continueSession(){
-  // Load saved state into vars
-  const raw = localStorage.getItem(LSK);
-  if(raw){
-    try{
-      const d = JSON.parse(raw);
-      heroes = d.heroes ?? [];
-      gt     = d.gt     ?? {gold:0,potions:0,scrolls:0,keys:0};
-      gi     = d.gi     ?? [];
-      cn     = d.cn     ?? '';
-      dh     = d.dh     ?? [];
-      sk     = d.sk     ?? null;
-      // Restore oracle state
-      if(sk?.adventure){ currentAdventure = sk.adventure; }
-      if(sk?.oracleLog){ oracleLog = sk.oracleLog; }
-    }catch(e){}
-  }
+  const raw=localStorage.getItem(LSK);
+  if(raw){try{const d=JSON.parse(raw);heroes=d.heroes??[];gt=d.gt??{gold:0,potions:0,scrolls:0,keys:0};gi=d.gi??[];cn=d.cn??'';dh=d.dh??[];sk=d.sk??null;if(sk?.adventure)currentAdventure=sk.adventure;if(sk?.oracleLog)oracleLog=sk.oracleLog;}catch(e){}}
   dismissSessionScreen();
 }
-
 function confirmNewSession(){
-  // Show confirmation inside session screen
-  const btnsEl = document.getElementById('ss-buttons');
-  btnsEl.innerHTML = `
+  document.getElementById('ss-buttons').innerHTML=`
     <div style="background:rgba(139,26,26,.15);border:1px solid var(--bld);border-radius:5px;padding:14px;margin-bottom:14px;text-align:center">
       <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--bl);margin-bottom:6px">&#9888;&#65039; NUEVA SESION</div>
-      <div style="font-size:11px;color:var(--pad);line-height:1.5">Se creara una nueva partida.<br>Los datos actuales se guardaran aparte<br>y podras recuperarlos si no los borras.</div>
+      <div style="font-size:11px;color:var(--pad);line-height:1.5">Se creara una nueva partida.<br>Los datos actuales quedaran guardados<br>hasta que los borres explicitamente.</div>
     </div>
-    <button class="ss-btn ss-btn-new" onclick="startNewSession()">
-      &#9876;&#65039; CONFIRMAR NUEVA SESION
-    </button>
-    <button class="ss-btn ss-btn-delete" onclick="initSessionScreen()">
-      &#8249; Cancelar
-    </button>`;
+    <button class="ss-btn ss-btn-new" onclick="startNewSession()">&#9876;&#65039; CONFIRMAR</button>
+    <button class="ss-btn ss-btn-delete" onclick="initSessionScreen()">&#8249; Cancelar</button>`;
 }
-
 function startNewSession(){
-  // Reset all state but keep save key so user can notice next time
-  heroes = []; gt = {gold:0,potions:0,scrolls:0,keys:0};
-  gi = []; cn = ''; dh = []; sk = null;
-  currentAdventure = null; oracleLog = []; usedQuestions = new Set();
-  saveS();
-  dismissSessionScreen();
+  heroes=[];gt={gold:0,potions:0,scrolls:0,keys:0};gi=[];cn='';dh=[];sk=null;
+  currentAdventure=null;oracleLog=[];usedQuestions=new Set();
+  saveS();dismissSessionScreen();
 }
-
 function confirmDeleteSave(){
-  const btnsEl = document.getElementById('ss-buttons');
-  btnsEl.innerHTML = `
+  document.getElementById('ss-buttons').innerHTML=`
     <div style="background:rgba(139,26,26,.2);border:1px solid var(--bl);border-radius:5px;padding:14px;margin-bottom:14px;text-align:center">
       <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--bl);margin-bottom:6px">&#128128; BORRAR TODO</div>
-      <div style="font-size:11px;color:var(--pad);line-height:1.5">Esta accion es irreversible.<br>Se perderan heroes, inventario,<br>notas y el historial completo.</div>
+      <div style="font-size:11px;color:var(--pad);line-height:1.5">Esta accion es irreversible.<br>Se perderan heroes, inventario, notas e historial.</div>
     </div>
-    <button class="ss-btn" style="background:linear-gradient(135deg,var(--bl),var(--bld));border:1px solid var(--bl);color:var(--pa)" onclick="deleteSaveAndStart()">
-      &#128128; BORRAR Y EMPEZAR DE CERO
-    </button>
-    <button class="ss-btn ss-btn-delete" onclick="initSessionScreen()">
-      &#8249; Cancelar
-    </button>`;
+    <button class="ss-btn" style="background:linear-gradient(135deg,var(--bl),var(--bld));border:1px solid var(--bl);color:var(--pa)" onclick="deleteSaveAndStart()">&#128128; BORRAR Y EMPEZAR DE CERO</button>
+    <button class="ss-btn ss-btn-delete" onclick="initSessionScreen()">&#8249; Cancelar</button>`;
 }
-
 function deleteSaveAndStart(){
   localStorage.removeItem(LSK);
-  heroes=[]; gt={gold:0,potions:0,scrolls:0,keys:0};
-  gi=[]; cn=''; dh=[]; sk=null;
-  currentAdventure=null; oracleLog=[]; usedQuestions=new Set();
+  heroes=[];gt={gold:0,potions:0,scrolls:0,keys:0};gi=[];cn='';dh=[];sk=null;
+  currentAdventure=null;oracleLog=[];usedQuestions=new Set();
   dismissSessionScreen();
 }
-
 function dismissSessionScreen(){
-  const el = document.getElementById('session-screen');
-  if(!el) return;
-  el.style.transition = 'opacity .4s ease, transform .4s ease';
-  el.style.opacity = '0';
-  el.style.transform = 'scale(1.04)';
-  setTimeout(()=>{ el.remove(); bootApp(); }, 380);
+  const el=document.getElementById('session-screen');
+  if(!el)return;
+  el.style.transition='opacity .4s ease,transform .4s ease';
+  el.style.opacity='0';el.style.transform='scale(1.04)';
+  setTimeout(()=>{el.remove();bootApp();},380);
 }
-
 function bootApp(){
-  rH(); renderDH(); renderN(); renderSk();
-  // PWA install hint
+  rH();renderDH();renderN();renderSk();
   if(!localStorage.getItem('hq_pwa_hint')){
-    setTimeout(()=>{
-      if(!window.matchMedia('(display-mode: standalone)').matches){
-        toast('&#128247; Instala la app: Menu → Anadir a pantalla de inicio');
-        localStorage.setItem('hq_pwa_hint','1');
-      }
-    }, 2000);
+    setTimeout(()=>{if(!window.matchMedia('(display-mode: standalone)').matches){toast('&#128247; Instala: Menu → Anadir a pantalla de inicio');localStorage.setItem('hq_pwa_hint','1');}},2000);
   }
 }
 
-// INIT — show session screen first, DON'T boot app yet
+// INIT
 initSessionScreen();
 </script>
 </body>
