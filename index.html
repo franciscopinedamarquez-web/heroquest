@@ -107,6 +107,73 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .ph-cm{color:var(--bl);border-color:var(--bld);background:rgba(139,26,26,.1)}
 .ph-ev{color:var(--mg);border-color:var(--mb);background:rgba(42,74,127,.15)}
 .ph-rw{color:var(--gr);border-color:var(--grd);background:rgba(42,90,42,.15)}
+/* ── SESSION SCREEN ── */
+#session-screen{
+  position:fixed;inset:0;z-index:1000;
+  background:linear-gradient(180deg,#0d0a07 0%,#1a1208 50%,#0d0a07 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:30px 24px;max-width:430px;margin:0 auto;
+  animation:fIn .4s ease;
+}
+.ss-logo{font-family:'Cinzel',serif;font-size:32px;font-weight:700;color:var(--go);
+  text-shadow:0 0 30px rgba(201,150,42,.5),0 2px 6px rgba(0,0,0,.9);
+  letter-spacing:4px;margin-bottom:4px;text-align:center}
+.ss-logo span{color:var(--bl)}
+.ss-sub{font-family:'Cinzel',serif;font-size:9px;letter-spacing:8px;color:var(--god);
+  text-align:center;margin-bottom:40px}
+.ss-emblem{font-size:64px;margin-bottom:8px;
+  filter:drop-shadow(0 0 16px rgba(201,150,42,.4));
+  animation:emblemPulse 3s ease-in-out infinite}
+@keyframes emblemPulse{0%,100%{filter:drop-shadow(0 0 10px rgba(201,150,42,.3))}
+  50%{filter:drop-shadow(0 0 24px rgba(201,150,42,.7))}}
+.ss-divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--god),transparent);margin:0 auto 28px}
+/* Save slot preview */
+.ss-save-preview{
+  width:100%;background:rgba(0,0,0,.5);
+  border:1px solid rgba(201,150,42,.3);border-radius:6px;
+  padding:12px 14px;margin-bottom:20px;position:relative;overflow:hidden
+}
+.ss-save-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--go),transparent)}
+.ss-save-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;
+  color:var(--god);text-transform:uppercase;margin-bottom:8px}
+.ss-save-heroes{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.ss-hero-chip{display:flex;align-items:center;gap:5px;
+  background:rgba(42,30,18,.8);border:1px solid rgba(201,150,42,.25);
+  border-radius:20px;padding:4px 9px 4px 4px}
+.ss-hero-avatar{width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;border:1px solid var(--god);overflow:hidden;flex-shrink:0}
+.ss-hero-name{font-family:'Cinzel',serif;font-size:10px;color:var(--pa);letter-spacing:.5px}
+.ss-save-meta{font-size:10px;color:var(--stl);font-style:italic}
+.ss-no-save{font-size:12px;color:var(--stl);font-style:italic;
+  text-align:center;padding:8px 0}
+/* Buttons */
+.ss-btn{
+  width:100%;padding:15px;border-radius:5px;border:none;
+  font-family:'Cinzel',serif;font-size:13px;font-weight:600;
+  letter-spacing:2px;cursor:pointer;touch-action:manipulation;
+  transition:all .18s;margin-bottom:10px;display:flex;
+  align-items:center;justify-content:center;gap:10px
+}
+.ss-btn:active{transform:scale(.97)}
+.ss-btn-continue{
+  background:linear-gradient(135deg,#3a2810,#2a1e08);
+  border:2px solid var(--go);color:var(--go);
+  box-shadow:0 0 20px rgba(201,150,42,.2)
+}
+.ss-btn-continue:active{box-shadow:0 0 30px rgba(201,150,42,.4)}
+.ss-btn-new{
+  background:linear-gradient(135deg,var(--bl),var(--bld));
+  border:1px solid var(--bl);color:var(--pa)
+}
+.ss-btn-delete{
+  background:none;border:1px solid rgba(255,255,255,.1);
+  color:var(--stl);font-size:10px;padding:10px;margin-bottom:0
+}
+.ss-version{font-size:9px;color:rgba(90,80,74,.6);
+  font-family:'Cinzel',serif;letter-spacing:1px;
+  position:absolute;bottom:16px;text-align:center}
 /* ── ORACLE / SKIRMISH ── */
 .skv{padding:14px;padding-bottom:80px}
 /* Lore card */
@@ -350,6 +417,22 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- SESSION SCREEN (shown on first load) -->
+<div id="session-screen">
+  <div class="ss-emblem">&#9876;&#65039;</div>
+  <div class="ss-logo">HERO<span>QUEST</span></div>
+  <div class="ss-sub">GESTOR DE HEROES</div>
+  <div class="ss-divider"></div>
+
+  <!-- Save preview filled by JS -->
+  <div id="ss-save-slot" style="width:100%"></div>
+
+  <!-- Buttons filled by JS -->
+  <div id="ss-buttons" style="width:100%"></div>
+
+  <div class="ss-version">v4.0 &bull; PWA</div>
+</div>
 <script>
 const HT={barbaro:{ico:'&#129427;',col:'#8b1a1a',cls:'Barbaro',hp:8,maxHp:8,mp:2,maxMp:2,atk:3,def:2,mov:3,eq:[{sl:'Arma',ico:'&#129427;',nm:'Hacha de Batalla',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura de Cuero',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#128141;',nm:'--',r:'common',a:0,d:0}],sp:[],inv:[],sk:[{n:'Furia Berserker',c:null,d:'Dado adicional en cuerpo a cuerpo.'},{n:'Resistencia',c:null,d:'Una vez por mision ignora un ataque.'}]},
 enano:{ico:'&#9874;&#65039;',col:'#7a5a18',cls:'Enano',hp:7,maxHp:7,mp:3,maxMp:3,atk:2,def:3,mov:2,eq:[{sl:'Arma',ico:'&#9874;&#65039;',nm:'Martillo de Guerra',r:'common',a:0,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Cota de Malla',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#128141;',nm:'Amuleto Runico',r:'rare',a:0,d:1}],sp:[],inv:[],sk:[{n:'Buscar Trampas',c:null,d:'Detecta trampas automaticamente.'},{n:'Reparar',c:null,d:'Repara objetos sin tirada.'}]},
@@ -392,8 +475,8 @@ function dpUpdatePhoto(id,input){
 
 function saveS(){try{localStorage.setItem(LSK,JSON.stringify({heroes,gt,gi,cn,dh,sk}));fl()}catch(e){}}
 let stim;function fl(){const e=document.getElementById('sind');e.classList.add('v');clearTimeout(stim);stim=setTimeout(()=>e.classList.remove('v'),1800)}
-const S=loadS();
-let heroes=S?.heroes??[],gt=S?.gt??{gold:0,potions:0,scrolls:0,keys:0},gi=S?.gi??[],cn=S?.cn??'',dh=S?.dh??[],sk=S?.sk??null;
+// State starts empty — loaded by session screen
+let heroes=[],gt={gold:0,potions:0,scrolls:0,keys:0},gi=[],cn='',dh=[],sk=null;
 let sT='barbaro',eHid=null,eSidx=-1,ciM='equip',ciR='common',giR='common';
 function rnd(a){return a[Math.floor(Math.random()*a.length)]}
 function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a}
@@ -1021,9 +1104,160 @@ document.getElementById('cnotes').addEventListener('blur',function(){cn=this.val
 document.getElementById('cnotes').addEventListener('input',function(){cn=this.value;});
 // SW
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-// INIT
-rH();renderDH();renderN();renderSk();
-if(!localStorage.getItem('hq_v4_shown')){setTimeout(()=>{if(!window.matchMedia('(display-mode: standalone)').matches){toast('Instala: Menu → Anadir a pantalla de inicio');localStorage.setItem('hq_v4_shown','1');}},3000);}
+// ══════════════════════════════════════════════════════
+// SESSION SCREEN
+// ══════════════════════════════════════════════════════
+
+function initSessionScreen(){
+  const raw = localStorage.getItem(LSK);
+  const hasSave = !!raw;
+  let saveData = null;
+  if(hasSave){ try{ saveData = JSON.parse(raw); }catch(e){} }
+
+  const slotEl   = document.getElementById('ss-save-slot');
+  const btnsEl   = document.getElementById('ss-buttons');
+
+  if(hasSave && saveData && (saveData.heroes?.length > 0 || saveData.cn || saveData.gi?.length)){
+    // Show save preview
+    const heroChips = (saveData.heroes||[]).map(h=>{
+      const avatarContent = h.photo
+        ? `<img src="${h.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+        : `<span>${h.ico||'&#129497;'}</span>`;
+      return `<div class="ss-hero-chip">
+        <div class="ss-hero-avatar">${avatarContent}</div>
+        <span class="ss-hero-name">${h.name}</span>
+      </div>`;
+    }).join('');
+
+    const heroCount  = saveData.heroes?.length || 0;
+    const adventure  = saveData.sk?.adventure;
+    const advName    = adventure?.lore?.tl || null;
+    const gold       = saveData.gt?.gold || 0;
+
+    slotEl.innerHTML = `<div class="ss-save-preview">
+      <div class="ss-save-label">&#128190; Partida guardada</div>
+      ${heroCount ? `<div class="ss-save-heroes">${heroChips}</div>` : ''}
+      <div class="ss-save-meta">
+        ${heroCount} heroe${heroCount!==1?'s':''} &bull; ${gold} oros
+        ${advName ? ` &bull; Aventura: ${advName}` : ''}
+      </div>
+    </div>`;
+
+    btnsEl.innerHTML = `
+      <button class="ss-btn ss-btn-continue" onclick="continueSession()">
+        &#128190; CONTINUAR PARTIDA
+      </button>
+      <button class="ss-btn ss-btn-new" onclick="confirmNewSession()">
+        &#9876;&#65039; NUEVA SESION
+      </button>
+      <button class="ss-btn ss-btn-delete" onclick="confirmDeleteSave()">
+        &#128465;&#65039; Borrar datos guardados
+      </button>`;
+  } else {
+    // No save or empty save
+    slotEl.innerHTML = `<div class="ss-save-preview">
+      <div class="ss-no-save">&#128302; No hay partida guardada.<br>Crea tus heroes y comienza la aventura.</div>
+    </div>`;
+
+    btnsEl.innerHTML = `
+      <button class="ss-btn ss-btn-new" onclick="continueSession()">
+        &#9876;&#65039; NUEVA PARTIDA
+      </button>`;
+  }
+}
+
+function continueSession(){
+  // Load saved state into vars
+  const raw = localStorage.getItem(LSK);
+  if(raw){
+    try{
+      const d = JSON.parse(raw);
+      heroes = d.heroes ?? [];
+      gt     = d.gt     ?? {gold:0,potions:0,scrolls:0,keys:0};
+      gi     = d.gi     ?? [];
+      cn     = d.cn     ?? '';
+      dh     = d.dh     ?? [];
+      sk     = d.sk     ?? null;
+      // Restore oracle state
+      if(sk?.adventure){ currentAdventure = sk.adventure; }
+      if(sk?.oracleLog){ oracleLog = sk.oracleLog; }
+    }catch(e){}
+  }
+  dismissSessionScreen();
+}
+
+function confirmNewSession(){
+  // Show confirmation inside session screen
+  const btnsEl = document.getElementById('ss-buttons');
+  btnsEl.innerHTML = `
+    <div style="background:rgba(139,26,26,.15);border:1px solid var(--bld);border-radius:5px;padding:14px;margin-bottom:14px;text-align:center">
+      <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--bl);margin-bottom:6px">&#9888;&#65039; NUEVA SESION</div>
+      <div style="font-size:11px;color:var(--pad);line-height:1.5">Se creara una nueva partida.<br>Los datos actuales se guardaran aparte<br>y podras recuperarlos si no los borras.</div>
+    </div>
+    <button class="ss-btn ss-btn-new" onclick="startNewSession()">
+      &#9876;&#65039; CONFIRMAR NUEVA SESION
+    </button>
+    <button class="ss-btn ss-btn-delete" onclick="initSessionScreen()">
+      &#8249; Cancelar
+    </button>`;
+}
+
+function startNewSession(){
+  // Reset all state but keep save key so user can notice next time
+  heroes = []; gt = {gold:0,potions:0,scrolls:0,keys:0};
+  gi = []; cn = ''; dh = []; sk = null;
+  currentAdventure = null; oracleLog = []; usedQuestions = new Set();
+  saveS();
+  dismissSessionScreen();
+}
+
+function confirmDeleteSave(){
+  const btnsEl = document.getElementById('ss-buttons');
+  btnsEl.innerHTML = `
+    <div style="background:rgba(139,26,26,.2);border:1px solid var(--bl);border-radius:5px;padding:14px;margin-bottom:14px;text-align:center">
+      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--bl);margin-bottom:6px">&#128128; BORRAR TODO</div>
+      <div style="font-size:11px;color:var(--pad);line-height:1.5">Esta accion es irreversible.<br>Se perderan heroes, inventario,<br>notas y el historial completo.</div>
+    </div>
+    <button class="ss-btn" style="background:linear-gradient(135deg,var(--bl),var(--bld));border:1px solid var(--bl);color:var(--pa)" onclick="deleteSaveAndStart()">
+      &#128128; BORRAR Y EMPEZAR DE CERO
+    </button>
+    <button class="ss-btn ss-btn-delete" onclick="initSessionScreen()">
+      &#8249; Cancelar
+    </button>`;
+}
+
+function deleteSaveAndStart(){
+  localStorage.removeItem(LSK);
+  heroes=[]; gt={gold:0,potions:0,scrolls:0,keys:0};
+  gi=[]; cn=''; dh=[]; sk=null;
+  currentAdventure=null; oracleLog=[]; usedQuestions=new Set();
+  dismissSessionScreen();
+}
+
+function dismissSessionScreen(){
+  const el = document.getElementById('session-screen');
+  if(!el) return;
+  el.style.transition = 'opacity .4s ease, transform .4s ease';
+  el.style.opacity = '0';
+  el.style.transform = 'scale(1.04)';
+  setTimeout(()=>{ el.remove(); bootApp(); }, 380);
+}
+
+function bootApp(){
+  rH(); renderDH(); renderN(); renderSk();
+  // PWA install hint
+  if(!localStorage.getItem('hq_pwa_hint')){
+    setTimeout(()=>{
+      if(!window.matchMedia('(display-mode: standalone)').matches){
+        toast('&#128247; Instala la app: Menu → Anadir a pantalla de inicio');
+        localStorage.setItem('hq_pwa_hint','1');
+      }
+    }, 2000);
+  }
+}
+
+// INIT — show session screen first, DON'T boot app yet
+initSessionScreen();
 </script>
 </body>
 </html>
