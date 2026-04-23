@@ -234,6 +234,172 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .empty{padding:52px 26px;text-align:center}
 .eico{font-size:48px;margin-bottom:12px;opacity:.4}
 .etxt{font-family:'Cinzel',serif;font-size:10px;color:var(--stl);letter-spacing:1px;line-height:1.8}
+
+/* ── MODAL OVERLAY ── */
+.movl{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:none;align-items:flex-end;justify-content:center}
+.movl.open{display:flex}
+.modal{
+  background:linear-gradient(180deg,#1e1810 0%,#140f08 100%);
+  border:1px solid var(--god);border-top:2px solid var(--go);
+  border-bottom:none;border-radius:10px 10px 0 0;
+  width:100%;max-width:430px;
+  padding:20px 18px calc(18px + env(safe-area-inset-bottom));
+  animation:slUp .28s cubic-bezier(.34,1.2,.64,1);
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 -8px 40px rgba(0,0,0,.8);
+}
+@keyframes slUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.mtit{
+  font-family:'Cinzel',serif;font-size:16px;font-weight:700;
+  color:var(--go);letter-spacing:1px;
+  margin-bottom:16px;
+  display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(201,150,42,.2);
+}
+.mcls{
+  background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);
+  border-radius:50%;width:28px;height:28px;
+  color:var(--stl);font-size:14px;
+  cursor:pointer;touch-action:manipulation;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.mcls:active{background:rgba(201,150,42,.15);color:var(--go)}
+
+/* ── FORM FIELDS ── */
+.ilb{
+  font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;
+  color:var(--god);text-transform:uppercase;
+  display:block;margin-bottom:5px;
+}
+.ifl{
+  width:100%;
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(201,150,42,.3);
+  border-bottom:2px solid var(--god);
+  border-radius:4px;
+  color:var(--pa);
+  font-family:'Crimson Pro',serif;font-size:16px;
+  padding:10px 12px;
+  margin-bottom:14px;
+  outline:none;
+  transition:border-color .2s;
+}
+.ifl:focus{border-color:var(--go);border-bottom-color:var(--go);background:rgba(0,0,0,.6)}
+.ifl::placeholder{color:var(--stl);font-style:italic}
+.slf{
+  width:100%;background:rgba(0,0,0,.5);
+  border:1px solid rgba(201,150,42,.3);border-radius:4px;
+  color:var(--pa);font-size:14px;padding:9px 11px;
+  margin-bottom:11px;outline:none;appearance:none;
+}
+
+/* ── PRIMARY BUTTON ── */
+.bpri{
+  width:100%;
+  background:linear-gradient(135deg,var(--bl) 0%,var(--bld) 100%);
+  border:1px solid rgba(139,26,26,.6);
+  border-top:1px solid rgba(180,50,50,.4);
+  border-radius:5px;
+  color:var(--pa);
+  font-family:'Cinzel',serif;font-size:12px;font-weight:700;
+  letter-spacing:2px;padding:13px;
+  cursor:pointer;margin-top:8px;
+  touch-action:manipulation;
+  transition:all .15s;
+  box-shadow:0 2px 12px rgba(139,26,26,.3),inset 0 1px 0 rgba(255,100,100,.1);
+}
+.bpri:active{transform:scale(.98);box-shadow:none}
+.bsec{
+  width:100%;background:rgba(0,0,0,.4);
+  border:1px solid rgba(201,150,42,.25);border-radius:4px;
+  color:var(--god);font-family:'Cinzel',serif;font-size:11px;
+  letter-spacing:1px;padding:10px;
+  cursor:pointer;touch-action:manipulation;
+  transition:all .15s;margin-top:6px;
+}
+.bsec:active{background:rgba(201,150,42,.1);color:var(--go)}
+.bdng{background:rgba(70,10,10,.5);border-color:rgba(139,26,26,.5);font-size:10px;padding:11px}
+
+/* ── RARITY BUTTONS ── */
+.rgrd{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
+.rbt{
+  background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);
+  border-radius:3px;color:#888;
+  font-family:'Cinzel',serif;font-size:8px;
+  padding:7px 2px;cursor:pointer;text-align:center;touch-action:manipulation;
+  transition:all .15s;
+}
+.rbt.sel{color:var(--go);border-color:var(--god);background:rgba(201,150,42,.12)}
+.rbt[data-r=common].sel{color:#bbb;border-color:#666;background:rgba(100,100,100,.1)}
+.rbt[data-r=uncommon].sel{color:var(--gr);border-color:var(--grd);background:rgba(42,90,42,.12)}
+.rbt[data-r=rare].sel{color:var(--mg);border-color:var(--mb);background:rgba(42,74,127,.12)}
+.rbt[data-r=legendary].sel{color:var(--go);border-color:var(--god);background:rgba(201,150,42,.12)}
+
+/* ── HERO CLASS BUTTONS ── */
+.htbt{
+  background:linear-gradient(160deg,#1e1810,#2a2010);
+  border:1px solid rgba(201,150,42,.25);
+  border-radius:6px;
+  color:var(--pad);
+  cursor:pointer;touch-action:manipulation;
+  transition:all .18s;
+  position:relative;overflow:hidden;
+}
+.htbt::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,150,42,.04),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.htbt.sel{
+  border-color:var(--go);border-width:2px;
+  background:linear-gradient(160deg,#2a1e0a,#3a2a10);
+  box-shadow:0 0 14px rgba(201,150,42,.25),inset 0 1px 0 rgba(201,150,42,.15);
+}
+.htbt.sel::before{opacity:1}
+.htbt:active{transform:scale(.96)}
+.hti{font-size:30px;line-height:1;display:block;margin-bottom:4px}
+.htn{
+  font-family:'Cinzel',serif;font-size:10px;font-weight:600;
+  letter-spacing:.5px;display:block;margin-bottom:3px;
+  color:var(--pa);
+}
+.htbt.sel .htn{color:var(--go)}
+.hts{font-size:8px;color:var(--stl);display:block;line-height:1.4}
+.htbt.sel .hts{color:var(--god)}
+
+/* ── CLASS CATEGORY HEADER ── */
+.cls-cat-hdr{
+  font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;
+  color:var(--god);text-transform:uppercase;
+  padding:10px 0 6px;
+  display:flex;align-items:center;gap:8px;
+}
+.cls-cat-hdr::before,.cls-cat-hdr::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,150,42,.3),transparent);
+}
+
+/* ── SELECTED CLASS PREVIEW STRIP ── */
+.cls-preview{
+  background:linear-gradient(135deg,rgba(201,150,42,.08),rgba(0,0,0,.3));
+  border:1px solid rgba(201,150,42,.2);border-radius:5px;
+  padding:10px 12px;margin-bottom:14px;
+  display:flex;align-items:center;gap:12px;
+  min-height:60px;
+}
+.cls-preview-ico{font-size:34px;line-height:1;flex-shrink:0}
+.cls-preview-info{flex:1}
+.cls-preview-name{font-family:'Cinzel',serif;font-size:14px;color:var(--go);font-weight:700;margin-bottom:2px}
+.cls-preview-cat{font-size:10px;color:var(--god);font-family:'Cinzel',serif;letter-spacing:1px;margin-bottom:4px}
+.cls-preview-stats{display:flex;gap:8px;flex-wrap:wrap}
+.cls-stat-pill{
+  font-family:'Cinzel',serif;font-size:9px;
+  padding:2px 7px;border-radius:10px;border:1px solid;
+}
+.cls-preview-skills{font-size:10px;color:var(--stl);font-style:italic;margin-top:4px;line-height:1.4}
+
 </style>
 </head>
 <body>
@@ -303,15 +469,45 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 <!-- new hero modal -->
 <div class="movl" id="m-nh" onclick="closeMB(event,'m-nh')">
   <div class="modal">
-    <div class="mtit">Nuevo Heroe <button class="mcls" onclick="closeM('m-nh')">X</button></div>
 
-    <label class="ilb">Nombre</label>
-    <input class="ifl" type="text" id="hinp" placeholder="Nombre del heroe..." maxlength="22" autocomplete="off">
+    <!-- Header -->
+    <div class="mtit">
+      <span>&#9876;&#65039; Nuevo Heroe</span>
+      <button class="mcls" onclick="closeM('m-nh')">&#10005;</button>
+    </div>
 
-    <label class="ilb">Clase</label>
-    <div id="class-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:14px;max-height:52vh;overflow-y:auto;padding-right:2px"></div>
+    <!-- Name field -->
+    <label class="ilb">Nombre del Aventurero</label>
+    <input class="ifl" type="text" id="hinp"
+      placeholder="Como se llama tu heroe..."
+      maxlength="22" autocomplete="off">
 
-    <button class="bpri" onclick="createH()">&#9876;&#65039; UNIRSE A LA AVENTURA</button>
+    <!-- Selected class preview (filled by JS) -->
+    <div id="cls-preview-box" class="cls-preview">
+      <div class="cls-preview-ico" id="cpv-ico">&#9876;&#65039;</div>
+      <div class="cls-preview-info">
+        <div class="cls-preview-name" id="cpv-name">Selecciona una clase</div>
+        <div class="cls-preview-cat" id="cpv-cat"></div>
+        <div class="cls-preview-stats" id="cpv-stats"></div>
+        <div class="cls-preview-skills" id="cpv-skills"></div>
+      </div>
+    </div>
+
+    <!-- Label -->
+    <label class="ilb">Clase &#8250; Desplaza para ver todas</label>
+
+    <!-- Class grid (filled by renderClassGrid) -->
+    <div id="class-grid"
+      style="max-height:42vh;overflow-y:auto;
+             padding-right:2px;margin-bottom:16px;
+             scrollbar-width:thin;scrollbar-color:rgba(201,150,42,.3) transparent">
+    </div>
+
+    <!-- Confirm button -->
+    <button class="bpri" onclick="createH()">
+      &#9876;&#65039;&nbsp; UNIRSE A LA AVENTURA &nbsp;&#9876;&#65039;
+    </button>
+
   </div>
 </div>
 
@@ -711,50 +907,74 @@ function saveCI(){const nm=document.getElementById('ci-n').value.trim();const ds
 if(ciM==='equip'){const sl=document.getElementById('ci-sl').value;const a=parseInt(document.getElementById('ci-a').value)||0;const d=parseInt(document.getElementById('ci-df').value)||0;const it={sl,nm,ico,ds,r:ciR,a,d,custom:true};if(!ICAL[sl])ICAL[sl]=[];ICAL[sl].push(it);const h=heroes.find(x=>x.id===eHid);if(h){if(eSidx>=0)selEQ(it);else{h.eq.push(it);const c=document.getElementById('d-eq');if(c){c.querySelectorAll('.esl').forEach(x=>x.remove());c.insertAdjacentHTML('beforeend',rEq(h,h.id));}rH();saveS();}}toast('Objeto creado');}
 else if(ciM.includes('spell')){const co=document.getElementById('ci-c').value.trim()||'0 MP';const sp={nm,ico,ds,co,r:ciR};SCATS.push(sp);if(eHid)addSP(sp);else toast('&#10024; Hechizo creado al catalogo');}
 else{const qty=parseInt(document.getElementById('ci-q').value)||1;const it={nm,ico,ds,r:ciR,qty};if(ciM==='inv-hero'&&eHid){const h=heroes.find(x=>x.id===eHid);if(h){if(!h.inv)h.inv=[];h.inv.push(it);saveS();toast('Objeto anadido al heroe');const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}}else{gi.push(it);saveS();toast('Objeto anadido al grupo');renderGI();}}closeM('m-ci');}
+function updateClassPreview(key){
+  const cls = HT[key];
+  if(!cls) return;
+  const el = id => document.getElementById(id);
+  if(el('cpv-ico'))   el('cpv-ico').textContent   = cls.ico;
+  if(el('cpv-name'))  el('cpv-name').textContent   = cls.cls;
+  if(el('cpv-cat'))   el('cpv-cat').textContent    = cls.cat || 'Original';
+  if(el('cpv-stats')) el('cpv-stats').innerHTML    =
+    `<span class="cls-stat-pill" style="color:var(--bl);border-color:var(--bld)">&#10084; ${cls.hp}</span>`+
+    `<span class="cls-stat-pill" style="color:var(--mg);border-color:var(--mb)">&#10024; ${cls.mp}</span>`+
+    `<span class="cls-stat-pill" style="color:var(--go);border-color:var(--god)">&#9876; ${cls.atk}</span>`+
+    `<span class="cls-stat-pill" style="color:var(--gr);border-color:var(--grd)">&#128737; ${cls.def}</span>`;
+  if(el('cpv-skills') && cls.sk && cls.sk.length){
+    el('cpv-skills').innerHTML = cls.sk.map(s=>
+      `<span style="color:${s.pasiva?'var(--gr)':'var(--go)'}">${s.pasiva?'&#9670;':'&#9654;'}</span> ${s.n}`
+    ).join('<br>');
+  }
+}
+
 function selT(btn){
-  document.querySelectorAll('.htbt').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('.htbt').forEach(b => b.classList.remove('sel'));
   btn.classList.add('sel');
-  sT=btn.dataset.type;
-  // Update class preview panel
-  renderClassPreview(sT);
+  sT = btn.dataset.type;
+  updateClassPreview(sT);
 }
 
 function renderClassGrid(){
   const grid = document.getElementById('class-grid');
   if(!grid) return;
+
   // Group by category
   const cats = {};
-  Object.entries(HT).forEach(([key,cls])=>{
-    const cat = cls.cat||'Original';
-    if(!cats[cat]) cats[cat]=[];
-    cats[cat].push({key,cls});
+  Object.entries(HT).forEach(([key, cls])=>{
+    const cat = cls.cat || 'Original';
+    if(!cats[cat]) cats[cat] = [];
+    cats[cat].push({key, cls});
   });
-  let html='';
-  Object.entries(cats).forEach(([cat,list])=>{
-    html+=`<div style="grid-column:span 2;font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--god);padding:6px 2px 2px;text-transform:uppercase;border-bottom:1px solid rgba(201,150,42,.15);margin-bottom:2px">${cat}</div>`;
-    list.forEach(({key,cls})=>{
-      const isSel = sT===key;
-      html+=`<button class="htbt${isSel?' sel':''}" data-type="${key}" onclick="selT(this)" style="padding:10px 6px;text-align:center">
+
+  let out = '';
+  Object.entries(cats).forEach(([cat, list])=>{
+    out += `<div class="cls-cat-hdr">${cat}</div>`;
+    out += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:6px">`;
+    list.forEach(({key, cls})=>{
+      const sel = sT === key;
+      out += `<button class="htbt${sel?' sel':''}" data-type="${key}" onclick="selT(this)"
+        style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;text-align:center">
         <span class="hti">${cls.ico}</span>
-        <span class="htn" style="font-size:9px">${cls.cls}</span>
-        <span class="hts" style="font-size:8px">HP${cls.hp} MP${cls.mp} ATK${cls.atk} DEF${cls.def}</span>
+        <span class="htn">${cls.cls}</span>
+        <span class="hts">HP${cls.hp} &bull; MP${cls.mp} &bull; ATK${cls.atk} &bull; DEF${cls.def}</span>
       </button>`;
     });
-    // pad to even columns
-    if(list.length%2!==0) html+=`<div></div>`;
+    if(list.length % 2 !== 0) out += `<div></div>`;
+    out += `</div>`;
   });
-  grid.innerHTML=html;
-}
-
-function renderClassPreview(key){
-  // No preview panel — class info shown in hero detail after creation
+  grid.innerHTML = out;
 }
 
 function openHeroModal(){
+  // Default to first class
   sT = Object.keys(HT)[0];
   renderClassGrid();
+  updateClassPreview(sT);
+  const inp = document.getElementById('hinp');
+  if(inp) inp.value = '';
   openM('m-nh');
+  setTimeout(()=>{ if(inp) inp.focus(); }, 320);
 }
+
 
 function createH(){
   const nm = document.getElementById('hinp').value.trim();
