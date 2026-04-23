@@ -232,6 +232,100 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .eopt:last-child{border-bottom:none}
 .eopt:active{background:rgba(201,150,42,.08)}
 .eopt.cur{border-left:3px solid var(--go)}
+/* CHARACTER CREATOR */
+.cc-stat{background:rgba(0,0,0,.3);border:1px solid rgba(201,150,42,.15);border-radius:4px;padding:8px 10px;display:flex;align-items:center;gap:8px}
+.cc-stat-ico{font-size:18px;width:22px;text-align:center}
+.cc-stat-info{flex:1}
+.cc-stat-name{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;color:var(--stl);text-transform:uppercase;display:block;margin-bottom:3px}
+.cc-stat-track{height:6px;background:rgba(0,0,0,.5);border-radius:2px;overflow:hidden;position:relative}
+.cc-stat-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.cc-stat-val{font-family:'Cinzel',serif;font-size:16px;font-weight:700;min-width:24px;text-align:right}
+.cc-stat-bonus{font-size:9px;color:var(--god);min-width:30px;text-align:right;font-family:'Cinzel',serif}
+.cc-rolling{animation:ccRoll .4s ease}
+@keyframes ccRoll{0%{opacity:0;transform:scale(1.2)}100%{opacity:1;transform:scale(1)}}
+/* BOARD REDESIGN */
+.bmap-wrap{position:relative;width:100%;overflow:hidden;background:#0d0a07;border-bottom:1px solid rgba(201,150,42,.2)}
+.bmap-img{width:100%;display:block;opacity:.85}
+.bmap-overlay{position:absolute;inset:0;pointer-events:none}
+.bmap-overlay *{pointer-events:auto}
+/* Room zones - now only dots/doors, minimal */
+.room-zone{position:absolute;border-radius:50%;cursor:pointer;touch-action:manipulation;transition:all .25s;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%)}
+/* start marker */
+.rz-start{width:28px;height:28px;background:rgba(201,150,42,.25);border:2px solid var(--go);box-shadow:0 0 10px rgba(201,150,42,.5);animation:rzStart 1.5s infinite}
+@keyframes rzStart{0%,100%{box-shadow:0 0 6px rgba(201,150,42,.4)}50%{box-shadow:0 0 16px rgba(201,150,42,.8)}}
+/* door markers */
+.rz-door{width:14px;height:14px;background:rgba(42,30,18,.85);border:2px solid rgba(201,150,42,.6);box-shadow:0 0 4px rgba(0,0,0,.6);border-radius:3px}
+.rz-door:active{transform:translate(-50%,-50%) scale(.85)}
+/* room dot markers - only appear when unlocked */
+.rz-room{width:20px;height:20px;background:rgba(26,15,8,.8);border:1px solid rgba(201,150,42,.3);border-radius:50%}
+.rz-room.has-enemy{background:rgba(80,15,15,.8);border-color:var(--bl);animation:rzEnemy 1.2s infinite}
+@keyframes rzEnemy{0%,100%{box-shadow:0 0 4px rgba(139,26,26,.4)}50%{box-shadow:0 0 10px rgba(139,26,26,.8)}}
+.rz-room.has-event{background:rgba(20,30,70,.8);border-color:var(--mg);animation:rzEvent 1.5s infinite}
+@keyframes rzEvent{0%,100%{box-shadow:0 0 4px rgba(74,128,212,.3)}50%{box-shadow:0 0 10px rgba(74,128,212,.7)}}
+.rz-room.hero-here{background:rgba(42,30,10,.9);border-color:var(--go);border-width:2px;animation:rzHero 1s infinite}
+@keyframes rzHero{0%,100%{box-shadow:0 0 6px rgba(201,150,42,.5)}50%{box-shadow:0 0 14px rgba(201,150,42,.9)}}
+.rz-room.explored{background:rgba(20,40,20,.7);border-color:rgba(90,176,90,.4)}
+.rz-room.locked{opacity:0;pointer-events:none}
+/* token inside marker */
+.rz-token{font-size:13px;line-height:1;pointer-events:none}
+.rz-start-flag{font-size:16px;animation:flagWave .8s ease-in-out infinite}
+@keyframes flagWave{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+/* door tooltip */
+.door-tip{position:absolute;background:rgba(0,0,0,.85);border:1px solid var(--god);border-radius:3px;padding:3px 7px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.5px;color:var(--go);white-space:nowrap;pointer-events:none;transform:translate(-50%,-130%);z-index:10}
+/* ROOM DETAIL MODAL */
+.rdoverlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:800;display:flex;align-items:flex-end;justify-content:center;animation:fIn .2s ease}
+.rdmodal{background:linear-gradient(180deg,#120e08,#1e1810);border:2px solid var(--god);border-radius:12px 12px 0 0;width:100%;max-width:430px;max-height:92vh;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom));animation:slUp .25s ease}
+.rdheader{background:linear-gradient(135deg,#0d0a07,#1a1208);padding:14px 16px;border-bottom:1px solid var(--god);position:sticky;top:0;z-index:5}
+.rdclose{position:absolute;top:12px;right:14px;background:rgba(0,0,0,.5);border:1px solid var(--god);border-radius:50%;width:30px;height:30px;color:var(--go);font-size:16px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;line-height:1}
+.rdtype{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.rdname{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--go)}
+.rddesc{font-size:13px;color:var(--pad);font-style:italic;line-height:1.5;margin-top:3px}
+/* room visual */
+.rdroom-visual{position:relative;margin:12px 14px;border-radius:6px;overflow:hidden;border:2px solid rgba(201,150,42,.3);background:#0d0a07;min-height:200px}
+.rdroom-bg{width:100%;display:block;border-radius:4px}
+.rdroom-grid{position:absolute;inset:0;display:grid;gap:4px;padding:10px}
+/* interactive elements inside room */
+.rd-element{position:absolute;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;touch-action:manipulation;transition:transform .15s;z-index:3}
+.rd-element:active{transform:scale(.88)}
+.rd-elem-icon{font-size:26px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));position:relative}
+.rd-elem-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.5px;color:var(--pa);background:rgba(0,0,0,.75);padding:2px 5px;border-radius:2px;white-space:nowrap;text-align:center;max-width:70px;line-height:1.2}
+.rd-elem-badge{position:absolute;top:-4px;right:-4px;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-family:'Cinzel',serif;font-weight:700;border:1px solid rgba(255,255,255,.3)}
+.rd-elem-enemy .rd-elem-icon{animation:eFloat 2s ease-in-out infinite}
+@keyframes eFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.rd-elem-enemy .rd-elem-badge{background:var(--bl);color:var(--pa)}
+.rd-elem-hero .rd-elem-badge{background:var(--go);color:#000}
+.rd-elem-treasure .rd-elem-badge{background:var(--gol);color:#000}
+.rd-elem-trap .rd-elem-icon{animation:tPulse 1.5s ease-in-out infinite}
+@keyframes tPulse{0%,100%{opacity:.7}50%{opacity:1;filter:drop-shadow(0 0 6px rgba(255,100,0,.7))}}
+.rd-elem-event .rd-elem-icon{animation:evPulse 1.2s ease-in-out infinite}
+@keyframes evPulse{0%,100%{filter:drop-shadow(0 0 3px rgba(74,128,212,.5))}50%{filter:drop-shadow(0 0 10px rgba(74,128,212,.9))}}
+/* element action sheet */
+.rdaction{background:linear-gradient(135deg,#1e1810,#2a2218);border-top:1px solid var(--god);padding:12px 14px}
+.rdact-title{font-family:'Cinzel',serif;font-size:13px;color:var(--go);margin-bottom:4px}
+.rdact-desc{font-size:12px;color:var(--pad);font-style:italic;margin-bottom:10px;line-height:1.4}
+.rdact-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.rdact-stat{background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.15);border-radius:3px;padding:6px;text-align:center}
+.rdact-slb{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;color:var(--stl);text-transform:uppercase;display:block;margin-bottom:2px}
+.rdact-val{font-family:'Cinzel',serif;font-size:16px;font-weight:700}
+.rdact-hp{color:var(--bl)}.rdact-atk{color:var(--go)}.rdact-def{color:var(--gr)}
+.rdact-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.rdact-btn{padding:11px;border:none;border-radius:4px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;cursor:pointer;touch-action:manipulation;transition:all .15s}
+.rdact-btn:active{transform:scale(.96);opacity:.9}
+.rdact-btn.atk{background:linear-gradient(135deg,var(--bl),var(--bld));color:var(--pa)}
+.rdact-btn.move{background:linear-gradient(135deg,#2a4a1a,#1a3010);border:1px solid var(--grd);color:var(--gr)}
+.rdact-btn.ev{background:linear-gradient(135deg,var(--mb),#1a2a50);color:var(--mg);border:1px solid var(--mb)}
+.rdact-btn.loot{background:linear-gradient(135deg,#4a3a0a,#2a2008);border:1px solid var(--god);color:var(--gol)}
+.rdact-btn.full{grid-column:span 2}
+/* room section */
+.rdsec{padding:10px 14px;border-top:1px solid rgba(201,150,42,.1)}
+.rdsec-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--god);text-transform:uppercase;margin-bottom:8px}
+/* status bar at top of room visual */
+.rd-room-status{position:absolute;top:6px;left:6px;right:6px;display:flex;gap:4px;z-index:4;flex-wrap:wrap}
+.rd-status-pill{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.5px;padding:3px 7px;border-radius:10px;border:1px solid;backdrop-filter:blur(4px)}
+.rd-status-hero{color:var(--go);border-color:var(--god);background:rgba(201,150,42,.2)}
+.rd-status-danger{color:var(--bl);border-color:var(--bld);background:rgba(139,26,26,.2)}
+.rd-status-event{color:var(--mg);border-color:var(--mb);background:rgba(42,74,127,.2)}
+.rd-status-safe{color:var(--gr);border-color:var(--grd);background:rgba(42,90,42,.2)}
 /* toast */
 .toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-16px);background:rgba(20,12,0,.97);border:1px solid var(--god);color:var(--pa);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;padding:8px 16px;border-radius:4px;opacity:0;pointer-events:none;transition:all .3s;z-index:700;white-space:nowrap;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -303,21 +397,56 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
     <button class="bsec" style="margin-top:7px" onclick="openM('m-ginv')">+ Anadir objeto al grupo</button>
   </div>
 </div>
-<button class="fab" id="fab" onclick="openM('m-nh')">+</button>
-<!-- new hero -->
+<button class="fab" id="fab" onclick="openCharCreator()">+</button>
+<!-- new hero / character creator -->
 <div class="movl" id="m-nh" onclick="closeMB(event,'m-nh')">
-  <div class="modal">
-    <div class="mtit">Nuevo Heroe <button class="mcls" onclick="closeM('m-nh')">X</button></div>
-    <label class="ilb">Nombre</label>
-    <input class="ifl" type="text" id="hinp" placeholder="Escribe el nombre..." maxlength="20" autocomplete="off">
-    <label class="ilb">Clase</label>
-    <div class="htgr">
-      <button class="htbt sel" data-type="barbaro" onclick="selT(this)"><span class="hti">&#129427;</span><span class="htn">BARBARO</span><span class="hts">HP8 MP2 ATK3 DEF2</span></button>
-      <button class="htbt" data-type="enano" onclick="selT(this)"><span class="hti">&#9874;&#65039;</span><span class="htn">ENANO</span><span class="hts">HP7 MP3 ATK2 DEF3</span></button>
-      <button class="htbt" data-type="elfo" onclick="selT(this)"><span class="hti">&#127993;</span><span class="htn">ELFO</span><span class="hts">HP6 MP4 ATK2 DEF2</span></button>
-      <button class="htbt" data-type="mago" onclick="selT(this)"><span class="hti">&#128302;</span><span class="htn">MAGO</span><span class="hts">HP4 MP6 ATK1 DEF1</span></button>
+  <div class="modal" style="padding-bottom:calc(28px + env(safe-area-inset-bottom))">
+    <div class="mtit">Crear Heroe <button class="mcls" onclick="closeM('m-nh')">X</button></div>
+
+    <!-- PHOTO + NAME row -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="position:relative;flex-shrink:0">
+        <div id="cc-avatar" onclick="document.getElementById('cc-photo-inp').click()"
+          style="width:72px;height:72px;border-radius:50%;border:2px solid var(--god);background:radial-gradient(circle,#2a2218,#1a1208);display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;overflow:hidden;position:relative">
+          <span id="cc-avatar-ico">&#129497;</span>
+          <img id="cc-avatar-img" src="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;border-radius:50%">
+        </div>
+        <div onclick="document.getElementById('cc-photo-inp').click()"
+          style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--god);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:2px solid #1a1208">&#128247;</div>
+        <input type="file" id="cc-photo-inp" accept="image/*" style="display:none" onchange="ccLoadPhoto(this)">
+      </div>
+      <div style="flex:1">
+        <label class="ilb">Nombre del Heroe</label>
+        <input class="ifl" type="text" id="hinp" placeholder="Escribe el nombre..." maxlength="20" autocomplete="off" style="margin-bottom:0">
+      </div>
     </div>
-    <button class="bpri" onclick="createH()">COMENZAR AVENTURA</button>
+
+    <!-- CLASS SELECTOR -->
+    <label class="ilb">Clase</label>
+    <div class="htgr" style="grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px">
+      <button class="htbt sel" data-type="barbaro" onclick="selT(this);ccRollStats()"><span class="hti">&#129427;</span><span class="htn">BARBARO</span></button>
+      <button class="htbt" data-type="enano" onclick="selT(this);ccRollStats()"><span class="hti">&#9874;&#65039;</span><span class="htn">ENANO</span></button>
+      <button class="htbt" data-type="elfo" onclick="selT(this);ccRollStats()"><span class="hti">&#127993;</span><span class="htn">ELFO</span></button>
+      <button class="htbt" data-type="mago" onclick="selT(this);ccRollStats()"><span class="hti">&#128302;</span><span class="htn">MAGO</span></button>
+    </div>
+
+    <!-- ROLLED STATS DISPLAY -->
+    <div style="background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.2);border-radius:4px;padding:10px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--god)">ATRIBUTOS</span>
+        <button onclick="ccRollStats()" style="background:rgba(201,150,42,.15);border:1px solid var(--god);border-radius:3px;color:var(--go);font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;padding:4px 10px;cursor:pointer;touch-action:manipulation">&#127922; TIRAR DADOS</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px" id="cc-stats-grid">
+        <!-- filled by ccRollStats() -->
+      </div>
+      <div id="cc-roll-anim" style="text-align:center;font-size:11px;color:var(--god);font-style:italic;margin-top:6px;min-height:16px"></div>
+    </div>
+
+    <!-- BACKSTORY -->
+    <label class="ilb">Historia (opcional)</label>
+    <input class="ifl" type="text" id="cc-backstory" placeholder="De donde viene tu heroe..." maxlength="60" autocomplete="off">
+
+    <button class="bpri" onclick="createH()">&#9876;&#65039; COMENZAR AVENTURA &#9876;&#65039;</button>
   </div>
 </div>
 <!-- equip picker -->
@@ -408,6 +537,26 @@ const CF=['&#128128;','&#9876;&#65039;','&#128737;&#65039;','&#9876;&#65039;','&
 // state
 const LSK='hq_v4';
 function loadS(){try{const r=localStorage.getItem(LSK);if(r)return JSON.parse(r)}catch(e){}return null}
+function dpUpdatePhoto(id,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const h=heroes.find(x=>x.id===id);
+    if(!h)return;
+    h.photo=e.target.result;
+    // Update visible avatar in detail panel
+    const dav=document.querySelector('.dpanel .dav');
+    if(dav){
+      let img=dav.querySelector('img');
+      if(!img){img=document.createElement('img');img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%';dav.appendChild(img);}
+      img.src=h.photo;
+      const ico=dav.querySelector('span');if(ico)ico.style.display='none';
+    }
+    rH();saveS();toast('&#128247; Foto actualizada');
+  };
+  reader.readAsDataURL(file);
+}
+
 function saveS(){try{localStorage.setItem(LSK,JSON.stringify({heroes,gt,gi,cn,dh,sk}));fl()}catch(e){}}
 let stim;function fl(){const e=document.getElementById('sind');e.classList.add('v');clearTimeout(stim);stim=setTimeout(()=>e.classList.remove('v'),1800)}
 const S=loadS();
@@ -436,7 +585,8 @@ function rH(){
   heroes.forEach(h=>{
     const hpp=(h.hp/h.maxHp)*100,mpp=(h.mp/h.maxMp)*100,dead=h.hp<=0;
     const d=document.createElement('div');d.className='hcard'+(dead?' dead':'');
-    d.innerHTML=`<div class="hch"><div class="hav" style="background:radial-gradient(circle at 40% 35%,${h.col}44,${h.col}11)">${h.ico}</div><div style="flex:1"><div class="hnm" style="${dead?'color:#888':''}">${h.name}${dead?' <small>&#128128;</small>':''}</div><div class="hcl">${h.cls}${h.sp?.length?' &bull; <span style="color:var(--mg);font-size:10px">&#10024;'+h.sp.length+'</span>':''}</div></div><div class="hlv">NV ${h.level}</div></div>
+    const avatarInner=h.photo?`<img src="${h.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0">`:`${h.ico}`;
+    d.innerHTML=`<div class="hch"><div class="hav" style="background:radial-gradient(circle at 40% 35%,${h.col}44,${h.col}11);position:relative;overflow:hidden">${avatarInner}</div><div style="flex:1"><div class="hnm" style="${dead?'color:#888':''}">${h.name}${dead?' <small>&#128128;</small>':''}</div><div class="hcl">${h.notes&&h.notes.length<40?`<span style="color:var(--stl);font-style:italic;font-size:10px">${h.notes}</span>`:h.cls}${h.sp?.length?' &bull; <span style="color:var(--mg);font-size:10px">&#10024;'+h.sp.length+'</span>':''}</div></div><div class="hlv">NV ${h.level}</div></div>
     <div class="hsts"><div class="sb"><span class="slb">VIDA</span><span class="sv hp">${h.hp}</span><span class="smx">/${h.maxHp}</span></div><div class="sb"><span class="slb">MANA</span><span class="sv mp">${h.mp}</span><span class="smx">/${h.maxMp}</span></div><div class="sb"><span class="slb">ATAQUE</span><span class="sv atk">${h.atk}</span><span class="smx">dados</span></div><div class="sb"><span class="slb">DEFENSA</span><span class="sv def">${h.def}</span><span class="smx">dados</span></div></div>
     <div class="hbrs"><div class="brow"><span class="blb">HP</span><div class="btk"><div class="bf hpb" style="width:${hpp}%"></div></div><span class="btx">${h.hp}/${h.maxHp}</span></div><div class="brow"><span class="blb">MP</span><div class="btk"><div class="bf mpb" style="width:${mpp}%"></div></div><span class="btx">${h.mp}/${h.maxMp}</span></div></div>
     <div class="cact"><button class="cab" style="color:var(--bl)" onclick="qs(${h.id},'hp',-1)">&#128148;</button><button class="cab" style="color:var(--gr)" onclick="qs(${h.id},'hp',1)">&#10084;&#65039;</button><button class="cab" style="color:var(--mg)" onclick="qs(${h.id},'mp',-1)">&#128309;</button><button class="cab" onclick="showD(${h.id})">VER &#8250;</button></div>`;
@@ -451,8 +601,13 @@ function showD(id){
   const h=heroes.find(x=>x.id===id);if(!h)return;
   if(!h.sp)h.sp=[];if(!h.inv)h.inv=[];
   const p=document.createElement('div');p.className='dpanel';p.id='dpanel';
+  const dAvatarContent=h.photo?`<img src="${h.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0">`:`${h.ico}`;
   p.innerHTML=`<div class="dtb"><button class="bbtn" onclick="closeD()">&#8249;</button><span class="dttl">FICHA DE HEROE</span><button onclick="revive(${id})" style="background:none;border:1px solid var(--grd);border-radius:3px;color:var(--gr);font-family:'Cinzel',serif;font-size:8px;padding:4px 8px;cursor:pointer;touch-action:manipulation">REVIVIR</button></div>
-  <div class="dhdr"><div class="dav" style="background:radial-gradient(circle at 40% 35%,${h.col}55,${h.col}11)">${h.ico}</div><div><div class="dname">${h.name}</div><div class="dsubt">${h.cls} &bull; Nivel <span id="d-lv">${h.level}</span></div><div class="dgold">&#128176; <span id="d-go">${h.gold}</span> oros</div></div></div>
+  <div class="dhdr"><div style="position:relative;flex-shrink:0">
+      <div class="dav" style="background:radial-gradient(circle at 40% 35%,${h.col}55,${h.col}11);position:relative;overflow:hidden;cursor:pointer" onclick="document.getElementById('dp-photo-${id}').click()">${dAvatarContent}</div>
+      <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;background:var(--god);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:2px solid #1a1208" onclick="document.getElementById('dp-photo-${id}').click()">&#128247;</div>
+      <input type="file" id="dp-photo-${id}" accept="image/*" style="display:none" onchange="dpUpdatePhoto(${id},this)">
+    </div><div><div class="dname">${h.name}</div><div class="dsubt">${h.cls} &bull; Nivel <span id="d-lv">${h.level}</span></div>${h.bonusName?`<div style="font-size:10px;color:var(--god);font-style:italic;font-family:'Cinzel',serif;letter-spacing:1px;margin-top:2px">${h.bonusName}</div>`:''}<div class="dgold">&#128176; <span id="d-go">${h.gold}</span> oros</div></div></div>
   <div class="scard"><div class="sct">ESTADISTICAS</div>
     <div class="sadj"><div class="alb">Vida<small>Max: ${h.maxHp}</small></div><div class="acls"><button class="abtn" onclick="adjD(${id},'hp',-1)">-</button><span class="aval" id="d-hp">${h.hp}</span><button class="abtn" onclick="adjD(${id},'hp',1)">+</button></div></div>
     <div class="sadj"><div class="alb">Mana<small>Max: ${h.maxMp}</small></div><div class="acls"><button class="abtn" onclick="adjD(${id},'mp',-1)">-</button><span class="aval" id="d-mp">${h.mp}</span><button class="abtn" onclick="adjD(${id},'mp',1)">+</button></div></div>
@@ -493,7 +648,125 @@ if(ciM==='equip'){const sl=document.getElementById('ci-sl').value;const a=parseI
 else if(ciM.includes('spell')){const co=document.getElementById('ci-c').value.trim()||'0 MP';const sp={nm,ico,ds,co,r:ciR};SCATS.push(sp);if(eHid)addSP(sp);else toast('&#10024; Hechizo creado al catalogo');}
 else{const qty=parseInt(document.getElementById('ci-q').value)||1;const it={nm,ico,ds,r:ciR,qty};if(ciM==='inv-hero'&&eHid){const h=heroes.find(x=>x.id===eHid);if(h){if(!h.inv)h.inv=[];h.inv.push(it);saveS();toast('Objeto anadido al heroe');const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}}else{gi.push(it);saveS();toast('Objeto anadido al grupo');renderGI();}}closeM('m-ci');}
 function selT(btn){document.querySelectorAll('.htbt').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');sT=btn.dataset.type;}
-function createH(){const nm=document.getElementById('hinp').value.trim();if(!nm){toast('Escribe un nombre');return;}if(heroes.length>=4){toast('Maximo 4 heroes');return;}const t=HT[sT];const h={id:Date.now(),name:nm,type:sT,notes:'',gold:100,level:1,xp:0,...JSON.parse(JSON.stringify(t))};heroes.push(h);rH();closeM('m-nh');saveS();toast('&#9876;&#65039; '+nm+' se une a la aventura');}
+
+// ── CHARACTER CREATOR ──────────────────────────────────────────
+let ccRolledStats = null;
+let ccPhotoData = null;
+
+// Stat definitions per class: [base, variance] — final = base + roll(1,variance) + luck bonus
+const CC_STAT_DEFS = {
+  barbaro:{hp:[6,4],mp:[1,2],atk:[2,2],def:[1,2],mov:[2,2]},
+  enano:  {hp:[5,4],mp:[2,2],atk:[1,2],def:[2,2],mov:[1,2]},
+  elfo:   {hp:[4,4],mp:[3,2],atk:[1,2],def:[1,2],mov:[3,2]},
+  mago:   {hp:[2,4],mp:[5,2],atk:[1,1],def:[0,2],mov:[1,2]}
+};
+const CC_STAT_LABELS = {hp:{n:'Puntos de Vida',ico:'&#10084;',col:'var(--bl)',max:12},mp:{n:'Mana',ico:'&#10024;',col:'var(--mg)',max:10},atk:{n:'Ataque',ico:'&#9876;&#65039;',col:'var(--go)',max:6},def:{n:'Defensa',ico:'&#128737;&#65039;',col:'var(--gr)',max:6},mov:{n:'Movimiento',ico:'&#128694;',col:'var(--pad)',max:6}};
+const CC_BONUS_NAMES = ['Nacido bajo mal signo','Hijo de la guerra','Bendecido por los dioses','Sangre de campeones','Sobreviviente','El elegido'];
+const CC_BACKSTORY_SAMPLES = ['Dejo atras su aldea en llamas.','Busca venganza contra Zargon.','Un mercenario sin patria.','Descendiente de reyes caidos.','Exilado de su propia tierra.','El ultimo de su linaje.'];
+
+function ccLoadPhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    ccPhotoData=e.target.result;
+    const img=document.getElementById('cc-avatar-img');
+    const ico=document.getElementById('cc-avatar-ico');
+    img.src=ccPhotoData;img.style.display='block';ico.style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function ccRollStats(){
+  const cls=sT||'barbaro';
+  const defs=CC_STAT_DEFS[cls];
+  const luckRoll=Math.random();
+  const bonusName=CC_BONUS_NAMES[Math.floor(Math.random()*CC_BONUS_NAMES.length)];
+  const rolled={};
+  for(const [stat,[base,variance]] of Object.entries(defs)){
+    let val=base+Math.floor(Math.random()*(variance+1));
+    // 20% chance of luck bonus on a stat
+    if(luckRoll>0.8&&stat===Object.keys(defs)[Math.floor(Math.random()*5)])val=Math.min(val+1,CC_STAT_LABELS[stat].max);
+    rolled[stat]=val;
+  }
+  rolled.maxHp=rolled.hp;rolled.maxMp=rolled.mp;
+  rolled._bonusName=bonusName;
+  rolled._luckStat=luckRoll>0.8;
+  ccRolledStats=rolled;
+  renderCCStats(rolled,bonusName);
+}
+
+function renderCCStats(stats,bonusName){
+  const grid=document.getElementById('cc-stats-grid');
+  if(!grid)return;
+  const order=['hp','mp','atk','def','mov'];
+  grid.innerHTML=order.map(stat=>{
+    const v=stats[stat],lb=CC_STAT_LABELS[stat],pct=Math.min(100,(v/lb.max)*100);
+    return`<div class="cc-stat cc-rolling">
+      <span class="cc-stat-ico">${lb.ico}</span>
+      <div class="cc-stat-info">
+        <span class="cc-stat-name">${lb.n}</span>
+        <div class="cc-stat-track"><div class="cc-stat-fill" style="width:${pct}%;background:${lb.col}"></div></div>
+      </div>
+      <span class="cc-stat-val" style="color:${lb.col}">${v}</span>
+    </div>`;
+  }).join('');
+  const anim=document.getElementById('cc-roll-anim');
+  if(anim){
+    anim.textContent=bonusName;
+    anim.style.color=stats._luckStat?'var(--go)':'var(--stl)';
+  }
+}
+
+function createH(){
+  const nm=document.getElementById('hinp').value.trim();
+  if(!nm){toast('Escribe un nombre');return;}
+  if(heroes.length>=4){toast('Maximo 4 heroes');return;}
+  if(!ccRolledStats)ccRollStats();
+  const t=HT[sT];
+  const backstory=document.getElementById('cc-backstory')?.value.trim()||rnd(CC_BACKSTORY_SAMPLES);
+  // Build hero merging template with rolled stats
+  const h={
+    id:Date.now(),
+    name:nm,
+    type:sT,
+    notes:backstory,
+    gold:ri(80,130),
+    level:1,
+    xp:0,
+    photo:ccPhotoData||null,
+    bonusName:ccRolledStats._bonusName||'',
+    ...JSON.parse(JSON.stringify(t)),
+    // Override with rolled stats
+    hp:ccRolledStats.hp,
+    maxHp:ccRolledStats.maxHp,
+    mp:ccRolledStats.mp,
+    maxMp:ccRolledStats.maxMp,
+    atk:ccRolledStats.atk,
+    def:ccRolledStats.def,
+    mov:ccRolledStats.mov||2,
+  };
+  heroes.push(h);
+  // Reset creator state
+  ccRolledStats=null;ccPhotoData=null;
+  const img=document.getElementById('cc-avatar-img');if(img)img.style.display='none';
+  const ico=document.getElementById('cc-avatar-ico');if(ico)ico.style.display='';
+  rH();closeM('m-nh');saveS();
+  toast('&#9876;&#65039; '+nm+' se une a la aventura');
+}
+
+// Auto-roll when modal opens
+function openCharCreator(){
+  sT='barbaro';
+  document.querySelectorAll('.htbt').forEach(b=>b.classList.remove('sel'));
+  document.querySelector('.htbt[data-type=barbaro]')?.classList.add('sel');
+  ccPhotoData=null;
+  const img=document.getElementById('cc-avatar-img');if(img){img.src='';img.style.display='none';}
+  const ico=document.getElementById('cc-avatar-ico');if(ico)ico.style.display='';
+  document.getElementById('hinp').value='';
+  document.getElementById('cc-backstory').value='';
+  ccRollStats();
+  openM('m-nh');
+}
 // SKIRMISH
 // ── REAL HEROQUEST BOARD: 26 named rooms with % positions on the board image ──
 // Each room: id, name, desc, x%, y%, w%, h%, type
@@ -571,25 +844,104 @@ function renderSk(){
   const pc={explore:'ph-ex',combat:'ph-cm',event:'ph-ev',reward:'ph-rw',done:'ph-rw'};
   const alive=s.enemies.filter(e=>e.hp>0);
 
-  // Build room zones overlay HTML
-  const roomZones = ROOMS.map(room=>{
-    const isHero = room.id === s.heroRoomId;
+  // ── BUILD BOARD MARKERS ──────────────────────────────────────────
+  // DOORS: positions between rooms (approximate % on image)
+  const DOORS = [
+    {id:'d0',  x:14.5, y:7,   connects:[0,1],  label:'Puerta Norte'},
+    {id:'d1',  x:28,   y:7,   connects:[1,2],  label:'Puerta Arco'},
+    {id:'d2',  x:56,   y:7,   connects:[3,4],  label:'Puerta Este-N'},
+    {id:'d3',  x:70,   y:7,   connects:[4,5],  label:'Puerta Torre'},
+    {id:'d4',  x:7,    y:22,  connects:[0,6],  label:'Puerta Oeste'},
+    {id:'d5',  x:21,   y:22,  connects:[6,7],  label:'Puerta Central-O'},
+    {id:'d6',  x:56,   y:22,  connects:[3,9],  label:'Puerta Este-C'},
+    {id:'d7',  x:70,   y:22,  connects:[9,10], label:'Puerta Torre-S'},
+    {id:'d8',  x:7,    y:36,  connects:[6,11], label:'Puerta Sur-O'},
+    {id:'d9',  x:35,   y:22,  connects:[8,7],  label:'Puerta Camara-N'},
+    {id:'d10', x:56,   y:36,  connects:[8,12], label:'Puerta Camara-E'},
+    {id:'d11', x:70,   y:36,  connects:[12,13],label:'Puerta Dcha-S'},
+    {id:'d12', x:7,    y:50,  connects:[11,14],label:'Puerta Profunda'},
+    {id:'d13', x:21,   y:50,  connects:[14,15],label:'Puerta Sur-1'},
+    {id:'d14', x:35,   y:50,  connects:[15,16],label:'Puerta Sur-2'},
+    {id:'d15', x:49,   y:50,  connects:[16,17],label:'Puerta Sur-3'},
+    {id:'d16', x:63,   y:50,  connects:[17,18],label:'Puerta Sur-4'},
+    {id:'d17', x:77,   y:50,  connects:[18,19],label:'Puerta Final'},
+    {id:'d18', x:7,    y:64,  connects:[14,20],label:'Puerta Sotano'},
+    {id:'d19', x:21,   y:64,  connects:[20,21],label:'Puerta Baja-1'},
+    {id:'d20', x:35,   y:64,  connects:[21,22],label:'Puerta Baja-2'},
+    {id:'d21', x:49,   y:64,  connects:[22,23],label:'Puerta Baja-3'},
+    {id:'d22', x:63,   y:64,  connects:[23,24],label:'Puerta Baja-4'},
+    {id:'d23', x:77,   y:64,  connects:[24,25],label:'Puerta Oculta'},
+  ];
+
+  // Compute which rooms are accessible (adjacent to explored)
+  const exploredSet = new Set(s.exploredRooms);
+  const accessibleRoomIds = new Set();
+  DOORS.forEach(door=>{
+    const [a,b]=door.connects;
+    if(exploredSet.has(a)) accessibleRoomIds.add(b);
+    if(exploredSet.has(b)) accessibleRoomIds.add(a);
+  });
+  // Always add start room
+  accessibleRoomIds.add(0);
+
+  // Room center positions (% on image) for the dot marker
+  // Using center of each room box
+  const ROOM_CENTERS = {};
+  ROOMS.forEach(r=>{ ROOM_CENTERS[r.id]={cx:r.x+r.w/2, cy:r.y+r.h/2}; });
+
+  // Build room dot markers
+  const roomMarkers = ROOMS.map(room=>{
+    const isHero    = room.id === s.heroRoomId;
     const enemiesHere = s.enemies.filter(e=>e.roomId===room.id&&e.hp>0);
-    const isEvent = room.id===s.evRoomId&&!s.evSeen;
-    const isExplored = s.exploredRooms.includes(room.id);
-    let cls='room-zone';
-    if(isHero) cls+=' hero-here';
-    else if(enemiesHere.length) cls+=' has-enemy';
-    else if(isEvent) cls+=' has-event';
-    else if(isExplored) cls+=' explored';
-    // icon
-    let icon = isHero?'&#129497;':enemiesHere.length?enemiesHere[0].ico:isEvent?'&#10067;':'';
-    // badge for multiple enemies
-    let badge = enemiesHere.length>1?`<span style="position:absolute;top:1px;right:1px;background:var(--bl);color:var(--pa);font-family:'Cinzel',serif;font-size:7px;border-radius:50%;width:12px;height:12px;display:flex;align-items:center;justify-content:center;line-height:1">${enemiesHere.length}</span>`:'';
-    return `<div class="${cls}" style="left:${room.x}%;top:${room.y}%;width:${room.w}%;height:${room.h}%;position:absolute" onclick="roomClick(${room.id})" data-rid="${room.id}">
-      <span class="room-icon">${icon}</span>${badge}
-    </div>`;
+    const isEvent   = room.id===s.evRoomId&&!s.evSeen;
+    const isExplored= exploredSet.has(room.id);
+    const isStart   = room.id===0;
+    const c = ROOM_CENTERS[room.id];
+
+    if(isStart){
+      // Big animated start flag
+      const heroAvatar=heroes.length>0&&heroes[0].photo?`<img src="${heroes[0].photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:heroes.length>0?heroes[0].ico:'&#129497;';
+      return `<div class="room-zone rz-start" style="left:${c.cx}%;top:${c.cy}%;width:28px;height:28px" onclick="roomClick(0)" data-rid="0" title="Punto de inicio">
+        <span class="rz-token" style="font-size:${heroes[0]?.photo?'0':'14'}px;overflow:hidden;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">${heroAvatar}</span>
+      </div>`;
+    }
+
+    // Non-start rooms: only show if explored or accessible
+    if(!isExplored && !accessibleRoomIds.has(room.id)) return '';
+
+    let cls='room-zone rz-room';
+    let token='';
+    if(isHero){
+      cls+=' hero-here';
+      const hPhoto=heroes.length>0&&heroes[0].photo;
+      token=hPhoto?`<img src="${heroes[0].photo}" style="width:18px;height:18px;object-fit:cover;border-radius:50%">`:heroes.length>0?`<span class="rz-token">${heroes[0].ico}</span>`:'&#129497;';
+    } else if(enemiesHere.length){
+      cls+=' has-enemy';
+      token=`<span class="rz-token" style="font-size:12px">${enemiesHere[0].ico}</span>`;
+    } else if(isEvent){
+      cls+=' has-event';
+      token=`<span class="rz-token">&#10067;</span>`;
+    } else if(isExplored){
+      cls+=' explored';
+      token=`<span class="rz-token" style="font-size:10px;color:var(--gr)">&#10003;</span>`;
+    } else {
+      token=`<span class="rz-token" style="font-size:10px;color:var(--god)">&#128681;</span>`;
+    }
+    const badge=enemiesHere.length>1?`<span style="position:absolute;top:-3px;right:-3px;background:var(--bl);color:var(--pa);font-size:7px;font-family:'Cinzel',serif;border-radius:50%;width:11px;height:11px;display:flex;align-items:center;justify-content:center;line-height:1">${enemiesHere.length}</span>`:'';
+    return `<div class="${cls}" style="left:${c.cx}%;top:${c.cy}%;width:20px;height:20px;position:absolute" onclick="roomClick(${room.id})" data-rid="${room.id}">${token}${badge}</div>`;
   }).join('');
+
+  // Build door markers (only between explored<->accessible)
+  const doorMarkers = DOORS.map(door=>{
+    const [a,b]=door.connects;
+    const aExp=exploredSet.has(a),bExp=exploredSet.has(b);
+    // Show door if at least one side explored or both accessible
+    if(!aExp && !bExp) return '';
+    const isOpen = aExp||bExp;
+    return `<div class="room-zone rz-door" style="left:${door.x}%;top:${door.y}%;position:absolute" onclick="doorClick('${door.id}',${a},${b})" data-door="${door.id}" title="${door.label}"></div>`;
+  }).join('');
+
+  const roomZones = roomMarkers + doorMarkers;
 
   // Legend
   const legendHtml=`<div style="padding:5px 9px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid rgba(201,150,42,.1);background:rgba(0,0,0,.4)">
@@ -638,63 +990,519 @@ function renderSk(){
   <div class="skact">${actH}</div>`;
 }
 
-function showRoomPopup(roomId, x, y){
-  // Remove existing popup
-  const old = document.getElementById('rpopup');
-  if(old) old.remove();
-  if(activePopup===roomId){activePopup=null;return;}
-  activePopup=roomId;
-  const room=ROOMS.find(r=>r.id===roomId);
-  if(!room)return;
-  const s=sk;
-  const enemiesHere=s.enemies.filter(e=>e.roomId===roomId&&e.hp>0);
-  const isHero=roomId===s.heroRoomId;
-  const isEvent=roomId===s.evRoomId&&!s.evSeen;
-  const isExplored=s.exploredRooms.includes(roomId);
-  const content=ROOM_CONTENTS[room.ty]||ROOM_CONTENTS.room;
-  const typeLabels={start:'Inicio',room:'Sala',corridor:'Corredor',boss:'Sala del Jefe',treasure:'Camara del Tesoro'};
+
+// ── ROOM DETAIL BACKGROUNDS (tile patterns per room type) ──
+const ROOM_TILE_COLORS = {
+  start:   'linear-gradient(135deg,#3a2a1a,#2a1e0e)',
+  room:    'linear-gradient(135deg,#2a1a1a,#1a1010)',
+  corridor:'linear-gradient(135deg,#1a1a2a,#10100a)',
+  boss:    'linear-gradient(135deg,#3a0a0a,#200505)',
+  treasure:'linear-gradient(135deg,#2a2010,#1a1808)'
+};
+const ROOM_TILE_PATTERN = {
+  start:   'repeating-linear-gradient(0deg,rgba(201,150,42,.05) 0,rgba(201,150,42,.05) 1px,transparent 1px,transparent 32px),repeating-linear-gradient(90deg,rgba(201,150,42,.05) 0,rgba(201,150,42,.05) 1px,transparent 1px,transparent 32px)',
+  room:    'repeating-linear-gradient(0deg,rgba(139,26,26,.08) 0,rgba(139,26,26,.08) 1px,transparent 1px,transparent 28px),repeating-linear-gradient(90deg,rgba(139,26,26,.08) 0,rgba(139,26,26,.08) 1px,transparent 1px,transparent 28px)',
+  corridor:'repeating-linear-gradient(90deg,rgba(80,80,120,.06) 0,rgba(80,80,120,.06) 1px,transparent 1px,transparent 20px)',
+  boss:    'repeating-linear-gradient(45deg,rgba(139,26,26,.1) 0,rgba(139,26,26,.1) 1px,transparent 1px,transparent 20px)',
+  treasure:'repeating-linear-gradient(0deg,rgba(201,150,42,.08) 0,rgba(201,150,42,.08) 1px,transparent 1px,transparent 24px),repeating-linear-gradient(90deg,rgba(201,150,42,.08) 0,rgba(201,150,42,.08) 1px,transparent 1px,transparent 24px)'
+};
+
+const ROOM_TREASURE_ITEMS = [
+  {nm:'Pocion de Curacion', ico:'&#129514;', ds:'Restaura 1D4+1 HP al beberla.', val:'+1D4 HP'},
+  {nm:'Monedas de Oro',     ico:'&#128176;', ds:'Un puñado de monedas relucientes.', val:'+20 oros'},
+  {nm:'Pergamino Magico',   ico:'&#128220;', ds:'Contiene un hechizo desconocido.', val:'Nuevo hechizo'},
+  {nm:'Llave Oxidada',      ico:'&#128285;', ds:'Abre alguna puerta en la mazmorra.', val:'+1 llave'},
+  {nm:'Amuleto Protector',  ico:'&#128141;', ds:'Concede +1 defensa durante esta mision.', val:'+1 DEF'},
+  {nm:'Espada Corta',       ico:'&#128505;&#65039;', ds:'Arma encontrada entre los escombros.', val:'Equipo'},
+  {nm:'Baratija Valiosa',   ico:'&#128142;', ds:'Una joya sin identificar. Vendible.', val:'+30 oros'},
+];
+
+const ROOM_TRAP_TYPES = [
+  {nm:'Trampa de Flechas', ico:'&#127993;', ds:'Flechas ocultas en la pared. ¡Cuidado!', dmg:'1D4 dano'},
+  {nm:'Suelo Resbaladizo',  ico:'&#10052;&#65039;', ds:'El suelo esta cubierto de hielo magico.', dmg:'-1 movimiento'},
+  {nm:'Niebla Venenosa',    ico:'&#129500;', ds:'Un gas verde emerge del suelo.', dmg:'1D2 dano/turno'},
+  {nm:'Trampa de Piedra',   ico:'&#127991;', ds:'Un bloque de piedra cae del techo.', dmg:'1D6 dano'},
+];
+
+let activeRoomModal = null;
+let activeElementPanel = null;
+
+function openRoomDetail(roomId){
+  // Close existing
+  const old = document.getElementById('rd-overlay');
+  if(old){ old.remove(); activeRoomModal=null; activeElementPanel=null; }
+  if(!sk) return;
+  const s = sk;
+  const room = ROOMS.find(r=>r.id===roomId);
+  if(!room) return;
+  activeRoomModal = roomId;
+
+  const isHero    = roomId === s.heroRoomId;
+  const enemiesHere = s.enemies.filter(e=>e.roomId===roomId && e.hp>0);
+  const isEvent   = roomId === s.evRoomId && !s.evSeen;
+  const isExplored= s.exploredRooms.includes(roomId);
+  const isLooted  = s.lootedRooms && s.lootedRooms.includes(roomId);
+  const content   = ROOM_CONTENTS[room.ty]||ROOM_CONTENTS.room;
+  const hasTrap   = content.trap && !isExplored && Math.random()<content.trap;
+  const hasTreasure= content.treasure && !isLooted;
+
+  // Generate stable room contents (deterministic per roomId)
+  if(!s.roomData) s.roomData={};
+  if(!s.roomData[roomId]){
+    s.roomData[roomId]={
+      trapType: ROOM_TRAP_TYPES[roomId % ROOM_TRAP_TYPES.length],
+      treasureItem: ROOM_TREASURE_ITEMS[roomId % ROOM_TREASURE_ITEMS.length],
+      hasTrap: content.trap && Math.random() < (typeof content.trap==='number'?content.trap:0.3),
+      secret: content.secret && Math.random() < 0.15
+    };
+  }
+  const rd = s.roomData[roomId];
+
+  const typeLabels={start:'&#127984; Punto de Inicio',room:'&#127983; Sala de Aventura',corridor:'&#128737; Corredor',boss:'&#9760; Sala del Jefe',treasure:'&#128142; Camara del Tesoro'};
   const typeColors={start:'var(--go)',room:'var(--pad)',corridor:'var(--stl)',boss:'var(--bl)',treasure:'var(--gol)'};
 
-  let popupH=`<div id="rpopup" style="position:fixed;z-index:600;background:linear-gradient(135deg,#1e1810,#2a2218);border:2px solid var(--god);border-radius:6px;padding:12px;min-width:180px;max-width:230px;box-shadow:0 6px 24px rgba(0,0,0,.9)" onclick="event.stopPropagation()">
-    <button onclick="document.getElementById('rpopup').remove();activePopup=null" style="position:absolute;top:6px;right:8px;background:none;border:none;color:var(--stl);font-size:16px;cursor:pointer;line-height:1">X</button>
-    <div style="font-family:'Cinzel',serif;font-size:10px;color:${typeColors[room.ty]};letter-spacing:1px;margin-bottom:2px">${typeLabels[room.ty]||'Sala'}</div>
-    <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--go);margin-bottom:5px">${room.n}</div>
-    <div style="font-size:11px;color:var(--pad);font-style:italic;line-height:1.4;margin-bottom:8px">${room.ds}</div>`;
+  // ── STATUS PILLS ──
+  let pills = '';
+  if(isHero) pills+=`<span class="rd-status-pill rd-status-hero">&#129497; TU POSICION</span>`;
+  if(enemiesHere.length) pills+=`<span class="rd-status-pill rd-status-danger">&#9876; ${enemiesHere.length} ENEMIGO${enemiesHere.length>1?'S':''}</span>`;
+  if(isEvent) pills+=`<span class="rd-status-pill rd-status-event">&#10067; EVENTO</span>`;
+  if(isExplored && !enemiesHere.length && !isEvent) pills+=`<span class="rd-status-pill rd-status-safe">&#10003; EXPLORADA</span>`;
 
-  if(enemiesHere.length){popupH+=`<div style="font-size:10px;color:var(--bl);margin-bottom:5px">&#128121; ${enemiesHere.map(e=>e.nm).join(', ')}</div>`;}
-  if(isEvent){popupH+=`<div style="font-size:10px;color:var(--mg);margin-bottom:5px">&#10067; Evento presente</div>`;}
-  if(isExplored){popupH+=`<div style="font-size:10px;color:var(--gr);margin-bottom:5px">&#10003; Explorada</div>`;}
-  if(content.treasure){popupH+=`<div style="font-size:10px;color:var(--gol);margin-bottom:5px">&#128176; Posible tesoro</div>`;}
-  if(content.trap){popupH+=`<div style="font-size:10px;color:var(--pad);margin-bottom:5px">&#9888;&#65039; Posible trampa</div>`;}
+  // ── INTERACTIVE ELEMENTS inside the room ──
+  // Each element gets a % position inside the room visual
+  let elements = [];
+  const positions = [
+    {x:15,y:20},{x:70,y:20},{x:45,y:55},{x:20,y:65},{x:72,y:60},{x:50,y:20},{x:25,y:40}
+  ];
+  let posIdx = 0;
 
-  if(!isHero){
-    popupH+=`<button class="room-popup-btn" onclick="moveHero(${roomId})">&#129497; Moverse aqui</button>`;
-  } else {
-    popupH+=`<div style="font-family:'Cinzel',serif;font-size:9px;color:var(--go);text-align:center;padding:4px">&#9650; TU POSICION ACTUAL</div>`;
+  // Hero token
+  if(isHero && heroes.length>0){
+    const h=heroes[0];
+    elements.push({
+      type:'hero',cls:'rd-elem-hero',
+      icon: heroes.length>1?'&#129497;':'&#129497;',
+      label:'HEROES',
+      badge:heroes.length,
+      badgeColor:'var(--go)',
+      pos:positions[posIdx++],
+      onclick:`rdSelectElement('party')`
+    });
   }
-  if(enemiesHere.length&&isHero){
-    popupH+=`<button class="room-popup-btn" style="background:linear-gradient(135deg,var(--bl),var(--bld));margin-top:3px" onclick="document.getElementById('rpopup').remove();activePopup=null;sk.phase='combat';renderSk()">&#9876; Combatir</button>`;
-  }
-  if(isEvent&&isHero){
-    popupH+=`<button class="room-popup-btn" style="background:linear-gradient(135deg,var(--mb),#1a2a50);margin-top:3px" onclick="document.getElementById('rpopup').remove();activePopup=null;sk.phase='event';renderSk()">&#10067; Activar evento</button>`;
-  }
-  popupH+='</div>';
 
-  const tmp=document.createElement('div');tmp.innerHTML=popupH;
-  document.body.appendChild(tmp.firstChild);
-  // Position popup intelligently
-  const popup=document.getElementById('rpopup');
-  const vw=window.innerWidth,vh=window.innerHeight;
-  let px=Math.min(x+10,vw-240),py=Math.min(y-10,vh-300);
-  if(px<10)px=10;if(py<70)py=70;
-  popup.style.left=px+'px';popup.style.top=py+'px';
+  // Enemies
+  enemiesHere.forEach(e=>{
+    const p=positions[posIdx++]||{x:50,y:50};
+    elements.push({
+      type:'enemy',cls:'rd-elem-enemy',
+      icon:e.ico,label:e.nm.toUpperCase(),
+      badge:e.hp+'/'+e.mHp,
+      badgeColor:'var(--bl)',
+      pos:p,
+      onclick:`rdSelectElement('enemy_${e.id}')`
+    });
+  });
+
+  // Event
+  if(isEvent){
+    const p=positions[posIdx++]||{x:60,y:40};
+    elements.push({
+      type:'event',cls:'rd-elem-event',
+      icon:'&#10067;',label:'EVENTO',
+      badge:null,pos:p,
+      onclick:`rdSelectElement('event')`
+    });
+  }
+
+  // Treasure
+  if(hasTreasure && !isLooted){
+    const p=positions[posIdx++]||{x:75,y:70};
+    elements.push({
+      type:'treasure',cls:'rd-elem-treasure',
+      icon:'&#128176;',label:'TESORO',
+      badge:'?',badgeColor:'var(--gol)',
+      pos:p,
+      onclick:`rdSelectElement('treasure')`
+    });
+  }
+
+  // Trap
+  if(rd.hasTrap && !isExplored){
+    const p=positions[posIdx++]||{x:35,y:70};
+    elements.push({
+      type:'trap',cls:'rd-elem-trap',
+      icon:'&#9888;&#65039;',label:'TRAMPA',
+      badge:null,pos:p,
+      onclick:`rdSelectElement('trap')`
+    });
+  }
+
+  // Secret
+  if(rd.secret && !isExplored){
+    const p=positions[posIdx++]||{x:85,y:85};
+    elements.push({
+      type:'secret',cls:'rd-elem-event',
+      icon:'&#128064;',label:'SECRETO',
+      badge:'?',badgeColor:'var(--pul)',
+      pos:p,
+      onclick:`rdSelectElement('secret')`
+    });
+  }
+
+  // Door/exit if not explored
+  if(!isExplored && !isHero){
+    elements.push({
+      type:'door',cls:'',
+      icon:'&#128682;',label:'ENTRAR',
+      badge:null,
+      pos:{x:45,y:82},
+      onclick:`moveHero(${roomId})`
+    });
+  }
+
+  const elemHTML = elements.map(el=>`
+    <div class="rd-element ${el.cls}" style="left:${el.pos.x}%;top:${el.pos.y}%;transform:translate(-50%,-50%)" onclick="${el.onclick}">
+      <div class="rd-elem-icon">
+        ${el.icon}
+        ${el.badge!==null&&el.badge!==undefined?`<span class="rd-elem-badge" style="background:${el.badgeColor||'var(--god)'};color:#fff">${el.badge}</span>`:''}
+      </div>
+      <span class="rd-elem-label">${el.label}</span>
+    </div>
+  `).join('');
+
+  // ── QUICK ACTION BUTTONS ──
+  let quickBtns = '';
+  if(!isHero) quickBtns+=`<button class="rdact-btn move full" onclick="moveHero(${roomId})">&#129497; MOVER HEROES AQUI</button>`;
+  if(enemiesHere.length && isHero) quickBtns+=`<button class="rdact-btn atk full" onclick="closeRoomDetail();sk.phase='combat';renderSk()">&#9876;&#65039; INICIAR COMBATE (${enemiesHere.length} enemigo${enemiesHere.length>1?'s':''})</button>`;
+  if(isEvent && isHero) quickBtns+=`<button class="rdact-btn ev full" onclick="closeRoomDetail();sk.phase='event';renderSk()">&#10067; ACTIVAR EVENTO</button>`;
+  if(hasTreasure && isHero && !isLooted) quickBtns+=`<button class="rdact-btn loot" onclick="rdSelectElement('treasure')">&#128176; VER TESORO</button>`;
+  if(!isHero && !isExplored) quickBtns+=`<button class="rdact-btn ev" onclick="rdSelectElement('door_info')">&#128064; INSPECCIONAR</button>`;
+
+  const overlay = document.createElement('div');
+  overlay.id='rd-overlay';
+  overlay.className='rdoverlay';
+  overlay.onclick=(e)=>{if(e.target===overlay)closeRoomDetail();};
+  overlay.innerHTML=`
+  <div class="rdmodal">
+    <div class="rdheader" style="position:relative">
+      <button class="rdclose" onclick="closeRoomDetail()">&#10005;</button>
+      <div class="rdtype" style="color:${typeColors[room.ty]}">${typeLabels[room.ty]||'Sala'}</div>
+      <div class="rdname">${room.n}</div>
+      <div class="rddesc">${room.ds}</div>
+    </div>
+
+    <div class="rdroom-visual" id="rd-room-visual" style="background:${ROOM_TILE_COLORS[room.ty]||ROOM_TILE_COLORS.room}">
+      <div style="position:absolute;inset:0;background:${ROOM_TILE_PATTERN[room.ty]||ROOM_TILE_PATTERN.room};opacity:.6"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(0,0,0,.5) 100%)"></div>
+      <div class="rd-room-status">${pills}</div>
+      <div style="position:absolute;inset:0">
+        ${elemHTML}
+      </div>
+      <div style="position:relative;height:200px"></div>
+    </div>
+
+    <div id="rd-action-panel"></div>
+
+    ${quickBtns?`<div class="rdsec"><div class="rdact-btns">${quickBtns}</div></div>`:''}
+
+    <div class="rdsec">
+      <div class="rdsec-title">&#128221; Informacion de la Sala</div>
+      <div style="font-size:11px;color:var(--pad);line-height:1.6">
+        ${content.enemies?`&#128121; Posibles enemigos: ${content.enemies}<br>`:''}
+        ${content.treasure?`&#128176; Esta sala puede contener tesoro<br>`:''}
+        ${content.trap?`&#9888;&#65039; Riesgo de trampa<br>`:''}
+        ${rd.secret?`&#128064; Hay algo oculto en esta sala...`:''}
+        ${isExplored?`<span style="color:var(--gr)">&#10003; Sala explorada</span>`:`<span style="color:var(--stl)">&#10067; Sala sin explorar</span>`}
+      </div>
+    </div>
+  </div>`;
+
+  document.body.appendChild(overlay);
+  // Store context for element selection
+  overlay._roomId=roomId;
+  overlay._room=room;
+  overlay._enemies=enemiesHere;
+  overlay._rd=rd;
+  overlay._hasTreasure=hasTreasure;
+  overlay._isLooted=isLooted;
+  overlay._isHero=isHero;
+  overlay._isEvent=isEvent;
 }
 
-function roomClick(roomId){
-  const zone=document.querySelector(`[data-rid="${roomId}"]`);
-  if(!zone)return;
-  const rect=zone.getBoundingClientRect();
-  showRoomPopup(roomId, rect.left+rect.width/2, rect.top);
+function closeRoomDetail(){
+  const el=document.getElementById('rd-overlay');
+  if(el){el.style.opacity='0';el.style.transform='translateY(20px)';setTimeout(()=>el.remove(),200);}
+  activeRoomModal=null;activeElementPanel=null;
+}
+
+function rdSelectElement(elemType){
+  const overlay=document.getElementById('rd-overlay');
+  if(!overlay||!sk)return;
+  const panel=document.getElementById('rd-action-panel');
+  const roomId=overlay._roomId;
+  const room=overlay._room;
+  const rd=overlay._rd;
+  let html='';
+
+  if(elemType==='party'){
+    // Show hero party stats
+    html=`<div class="rdaction">
+      <div class="rdact-title">&#129497; Grupo de Heroes</div>
+      <div class="rdact-desc">Tu grupo se encuentra en ${room.n}.</div>
+      ${heroes.filter(h=>h.hp>0).map(h=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px;background:rgba(0,0,0,.3);border-radius:4px;margin-bottom:6px;border:1px solid rgba(201,150,42,.15)">
+          <span style="font-size:22px">${h.ico}</span>
+          <div style="flex:1">
+            <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--go)">${h.name}</div>
+            <div style="font-size:10px;color:var(--pad)">${h.cls} &bull; Nv ${h.level}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--bl)">&#10084; ${h.hp}/${h.maxHp}</div>
+            <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--mg)">&#10024; ${h.mp}/${h.maxMp}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  } else if(elemType.startsWith('enemy_')){
+    const eid=parseInt(elemType.split('_')[1]);
+    const e=sk.enemies.find(x=>x.id===eid);
+    if(!e)return;
+    const isHere=overlay._isHero;
+    const hpPct=(e.hp/e.mHp)*100;
+    html=`<div class="rdaction">
+      <div class="rdact-title">${e.ico} ${e.nm}</div>
+      <div class="rdact-desc">${e.ty} &bull; ${e.hp>0?'<span style="color:var(--bl)">En combate</span>':'<span style="color:var(--gr)">Derrotado</span>'}</div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+          <span style="font-family:'Cinzel',serif;font-size:9px;color:#7a4040;width:20px">HP</span>
+          <div style="flex:1;height:8px;background:rgba(0,0,0,.5);border-radius:2px;overflow:hidden">
+            <div style="height:100%;width:${hpPct}%;background:linear-gradient(90deg,var(--bld),var(--bl));border-radius:2px;transition:width .3s"></div>
+          </div>
+          <span style="font-size:10px;color:#a05050;min-width:36px;text-align:right">${e.hp}/${e.mHp}</span>
+        </div>
+      </div>
+      <div class="rdact-stats">
+        <div class="rdact-stat"><span class="rdact-slb">Vida</span><span class="rdact-val rdact-hp">${e.hp}</span></div>
+        <div class="rdact-stat"><span class="rdact-slb">Ataque</span><span class="rdact-val rdact-atk">${e.atk}</span></div>
+        <div class="rdact-stat"><span class="rdact-slb">Defensa</span><span class="rdact-val rdact-def">${e.def}</span></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <div style="flex:1;background:rgba(0,0,0,.3);border-radius:3px;padding:6px;text-align:center;border:1px solid rgba(201,150,42,.1)">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:var(--stl);display:block">XP</span>
+          <span style="font-family:'Cinzel',serif;font-size:13px;color:var(--go)">&#11088; ${e.xp}</span>
+        </div>
+        <div style="flex:1;background:rgba(0,0,0,.3);border-radius:3px;padding:6px;text-align:center;border:1px solid rgba(201,150,42,.1)">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:var(--stl);display:block">Oro</span>
+          <span style="font-family:'Cinzel',serif;font-size:13px;color:var(--gol)">&#128176; ${e.gld}</span>
+        </div>
+      </div>
+      <div class="rdact-btns">
+        ${isHere?`
+          <button class="rdact-btn atk" onclick="rdAttackEnemy(${e.id})">&#9876; ATACAR</button>
+          <button class="rdact-btn" style="background:rgba(80,15,15,.4);border:1px solid var(--bld);color:var(--bl)" onclick="rdDmgEnemy(${e.id},1)">&#128148; -1 HP</button>
+          <button class="rdact-btn ev full" onclick="closeRoomDetail();sk.phase='combat';renderSk()">&#9876;&#65039; IR A COMBATE COMPLETO</button>
+        `:`
+          <button class="rdact-btn move full" onclick="moveHero(${roomId})" >&#129497; MOVERSE A ESTA SALA</button>
+        `}
+      </div>
+    </div>`;
+
+  } else if(elemType==='event'){
+    if(!sk._ev)sk._ev=rnd(EVPOOL);
+    const ev=sk._ev;
+    html=`<div class="rdaction">
+      <div class="rdact-title">${ev.ico} ${ev.tl}</div>
+      <div class="rdact-desc">${ev.ds}</div>
+      <div class="rdact-btns">
+        ${overlay._isHero?
+          ev.ch.map((ch,i)=>`<button class="rdact-btn ev${ev.ch.length===1?' full':''}" onclick="closeRoomDetail();resolveEv(${i})">${ch}</button>`).join('')
+          :`<button class="rdact-btn move full" onclick="moveHero(${roomId})">&#129497; Moverse para activar</button>`
+        }
+      </div>
+    </div>`;
+
+  } else if(elemType==='treasure'){
+    const item=rd.treasureItem||ROOM_TREASURE_ITEMS[0];
+    const isLooted=overlay._isLooted;
+    if(isLooted){
+      html=`<div class="rdaction"><div class="rdact-title">&#128230; Sala Saqueada</div><div class="rdact-desc">Ya habeis recogido el tesoro de esta sala.</div></div>`;
+    } else {
+      html=`<div class="rdaction">
+        <div class="rdact-title">&#128176; ${item.nm}</div>
+        <div class="rdact-desc">${item.ds}</div>
+        <div style="text-align:center;font-size:40px;padding:10px 0">${item.ico}</div>
+        <div style="background:rgba(201,150,42,.1);border:1px solid var(--god);border-radius:4px;padding:8px;text-align:center;margin-bottom:10px">
+          <span style="font-family:'Cinzel',serif;font-size:12px;color:var(--gol)">${item.val}</span>
+        </div>
+        <div class="rdact-btns">
+          ${overlay._isHero?`
+            <button class="rdact-btn loot full" onclick="rdClaimTreasure(${roomId})">&#128176; RECOGER TESORO</button>
+          `:`
+            <button class="rdact-btn move full" onclick="moveHero(${roomId})">&#129497; Moverse para recoger</button>
+          `}
+        </div>
+      </div>`;
+    }
+
+  } else if(elemType==='trap'){
+    const trap=rd.trapType||ROOM_TRAP_TYPES[0];
+    html=`<div class="rdaction">
+      <div class="rdact-title">&#9888;&#65039; ${trap.nm}</div>
+      <div class="rdact-desc">${trap.ds}</div>
+      <div style="background:rgba(139,26,26,.15);border:1px solid var(--bld);border-radius:4px;padding:8px;text-align:center;margin-bottom:10px">
+        <span style="font-family:'Cinzel',serif;font-size:12px;color:var(--bl)">&#128128; Efecto: ${trap.dmg}</span>
+      </div>
+      <div class="rdact-btns">
+        ${overlay._isHero?`
+          <button class="rdact-btn atk" onclick="rdDisarmTrap(${roomId})">&#9874;&#65039; DESACTIVAR (Enano)</button>
+          <button class="rdact-btn" style="background:rgba(80,15,15,.3);border:1px solid var(--bld);color:var(--bl)" onclick="rdTriggerTrap(${roomId})">&#128128; ACTIVAR TRAMPA</button>
+        `:`<button class="rdact-btn move full" onclick="moveHero(${roomId})">&#9888; Entrar con cuidado</button>`}
+      </div>
+    </div>`;
+
+  } else if(elemType==='secret'){
+    html=`<div class="rdaction">
+      <div class="rdact-title">&#128064; Pasaje Secreto</div>
+      <div class="rdact-desc">El Enano detecta una abertura oculta en la pared. Podría llevar a una cámara con tesoros... o a una trampa.</div>
+      <div class="rdact-btns">
+        ${overlay._isHero?`
+          <button class="rdact-btn move" onclick="rdRevealSecret(${roomId})">&#128285; INVESTIGAR (D6)</button>
+          <button class="rdact-btn ev" onclick="rdSelectElement('trap')">&#9888; IGNORAR</button>
+        `:`<button class="rdact-btn move full" onclick="moveHero(${roomId})">&#129497; Acercarse</button>`}
+      </div>
+    </div>`;
+
+  } else if(elemType==='door_info'){
+    html=`<div class="rdaction">
+      <div class="rdact-title">&#128064; Inspeccionar Sala</div>
+      <div class="rdact-desc">${room.ds}</div>
+      <div style="font-size:11px;color:var(--pad);line-height:1.6;margin-bottom:10px">
+        ${overlay._enemies.length?`&#128121; Se oyen ruidos de ${overlay._enemies.length} criatura${overlay._enemies.length>1?'s':''}.`:'&#128264; Silencio. Podria estar vacia.'}
+        ${rd.hasTrap?`<br>&#9888;&#65039; Algo en el suelo llama la atencion...`:''}
+        ${rd.secret?`<br>&#128064; La pared norte parece ligeramente diferente...`:''}
+      </div>
+      <button class="rdact-btn move full" onclick="moveHero(${roomId})">&#129497; ENTRAR A LA SALA</button>
+    </div>`;
+  }
+
+  panel.innerHTML=html;
+  // Scroll to panel
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function rdAttackEnemy(eid){
+  if(!sk)return;
+  const e=sk.enemies.find(x=>x.id===eid);if(!e||e.hp<=0)return;
+  const atkDice=heroes.length>0?heroes[0].atk:2;
+  const hits=Array.from({length:atkDice},()=>Math.random()<0.5?1:0).reduce((a,b)=>a+b,0);
+  const blocks=Array.from({length:e.def},()=>Math.random()<0.35?1:0).reduce((a,b)=>a+b,0);
+  const dmg=Math.max(0,hits-blocks);
+  e.hp=Math.max(0,e.hp-dmg);
+  toast('&#9876; '+dmg+' dano a '+e.nm+'! HP: '+e.hp+'/'+e.mHp);
+  if(e.hp<=0){e.roomId=-1;sk.log.unshift('&#128128; '+e.nm+' derrotado!');toast('&#128128; '+e.nm+' derrotado!');}
+  const allDead=sk.enemies.every(x=>x.hp<=0);
+  if(allDead){sk.phase='reward';sk.log.unshift('&#127942; Victoria!');}
+  saveS();
+  // Refresh panel
+  rdSelectElement('enemy_'+eid);
+  // Update the room visual markers
+  const overlay=document.getElementById('rd-overlay');
+  if(overlay&&e.hp>0){
+    // Update HP bar if still alive
+  } else if(overlay&&e.hp<=0){
+    // Remove enemy element from visual
+    closeRoomDetail();renderSk();
+  }
+  rH();
+}
+
+function rdDmgEnemy(eid,dmg){
+  if(!sk)return;
+  const e=sk.enemies.find(x=>x.id===eid);if(!e)return;
+  e.hp=Math.max(0,e.hp-dmg);
+  if(e.hp<=0){e.roomId=-1;sk.log.unshift('&#128128; '+e.nm+' eliminado!');}
+  const allDead=sk.enemies.every(x=>x.hp<=0);
+  if(allDead){sk.phase='reward';}
+  saveS();rdSelectElement('enemy_'+eid);rH();
+}
+
+function rdClaimTreasure(roomId){
+  if(!sk)return;
+  if(!sk.lootedRooms)sk.lootedRooms=[];
+  sk.lootedRooms.push(roomId);
+  const rd=sk.roomData&&sk.roomData[roomId];
+  const item=rd?rd.treasureItem:ROOM_TREASURE_ITEMS[0];
+  // Apply reward
+  if(item.val.includes('oros')){const am=parseInt(item.val.match(/\d+/)?.[0])||20;heroes.forEach(h=>h.gold+=am);gt.gold+=am;}
+  if(item.val.includes('HP')){heroes.forEach(h=>h.hp=Math.min(h.maxHp,h.hp+3));}
+  if(item.val.includes('llave')){gt.keys++;}
+  if(item.val.includes('DEF')){toast('&#128141; +1 DEF por esta mision');}
+  sk.log.unshift('&#128176; Tesoro recogido: '+item.nm);
+  toast('&#128176; '+item.nm+' recogido!');
+  saveS();rH();closeRoomDetail();renderSk();
+}
+
+function rdDisarmTrap(roomId){
+  if(!sk)return;
+  const roll=ri(1,6);
+  if(roll>=4){
+    if(sk.roomData&&sk.roomData[roomId])sk.roomData[roomId].hasTrap=false;
+    sk.log.unshift('&#9874;&#65039; Trampa desactivada! ('+roll+')');
+    toast('&#9874;&#65039; Trampa desactivada con exito!');
+  } else {
+    const rd=sk.roomData&&sk.roomData[roomId];
+    const trap=rd?rd.trapType:ROOM_TRAP_TYPES[0];
+    sk.log.unshift('&#128128; Fallo al desactivar! ('+roll+') '+trap.dmg);
+    toast('&#9888;&#65039; Fallo! '+trap.dmg);
+    if(heroes.length>0){heroes[0].hp=Math.max(0,heroes[0].hp-2);}
+  }
+  saveS();rH();closeRoomDetail();renderSk();
+}
+
+function rdTriggerTrap(roomId){
+  if(!sk)return;
+  const rd=sk.roomData&&sk.roomData[roomId];
+  const trap=rd?rd.trapType:ROOM_TRAP_TYPES[0];
+  const dmg=ri(1,4);
+  if(heroes.length>0)heroes[0].hp=Math.max(0,heroes[0].hp-dmg);
+  if(sk.roomData&&sk.roomData[roomId])sk.roomData[roomId].hasTrap=false;
+  sk.log.unshift('&#128128; Trampa activada! '+dmg+' dano a '+heroes[0].name);
+  toast('&#9888;&#65039; '+trap.nm+': '+dmg+' dano!');
+  saveS();rH();closeRoomDetail();renderSk();
+}
+
+function rdRevealSecret(roomId){
+  if(!sk)return;
+  const roll=ri(1,6);
+  if(roll>=4){
+    const bonus=ri(20,50);
+    heroes.forEach(h=>h.gold+=bonus);
+    sk.log.unshift('&#128064; Pasaje secreto! +'+bonus+' oros cada heroe ('+roll+')');
+    toast('&#128285; Pasaje secreto! +'+bonus+' oros!');
+  } else {
+    sk.log.unshift('&#128064; Nada encontrado. ('+roll+')');
+    toast('&#128064; Nada relevante encontrado...');
+  }
+  if(sk.roomData&&sk.roomData[roomId])sk.roomData[roomId].secret=false;
+  saveS();rH();closeRoomDetail();renderSk();
+}
+
+function showRoomPopup(roomId, x, y){ openRoomDetail(roomId); }
+
+
+function doorClick(doorId, roomA, roomB){
+  if(!sk)return;
+  // Figure out which room to go to
+  const exploredSet=new Set(sk.exploredRooms);
+  // The target is whichever side isn't the hero's current room
+  let target=roomB;
+  if(sk.heroRoomId===roomB) target=roomA;
+  if(sk.heroRoomId===roomA) target=roomB;
+  // Show a quick toast then open room detail
+  const room=ROOMS.find(r=>r.id===target);
+  if(!room)return;
+  toast('&#128682; Puerta hacia '+room.n);
+  setTimeout(()=>openRoomDetail(target),200);
 }
 
 function moveHero(roomId){
