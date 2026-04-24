@@ -14,7 +14,7 @@
 :root{--pa:#f2e8d0;--pad:#ddd0a8;--bl:#8b1a1a;--bld:#5c0f0f;--go:#c9962a;--god:#7a5a18;--gol:#f0c040;--st:#2a2420;--stl:#5a504a;--mb:#2a4a7f;--mg:#4a80d4;--gr:#5ab05a;--grd:#2a5a2a;--pu:#7a2a9a;--pul:#b060d4;--fs:15px;--fs-sm:12px;--fs-xs:11px}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overscroll-behavior:none}
-body{font-family:'Crimson Pro',serif;background:var(--st);color:var(--pa);max-width:430px;margin:0 auto;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom);font-size:16px}
+body{font-family:'Crimson Pro',serif;background:var(--st);color:var(--pa);max-width:430px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom);font-size:16px}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(201,150,42,.07) 0%,transparent 55%),radial-gradient(ellipse at 80% 100%,rgba(139,26,26,.09) 0%,transparent 55%);pointer-events:none;z-index:0}
 header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0d0a07,var(--st));border-bottom:2px solid var(--god);padding:11px 16px 6px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.8)}
 header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);letter-spacing:8px;margin-top:1px}
@@ -892,7 +892,15 @@ let heroes=[],gt={gold:0,potions:0,scrolls:0,keys:0},gi=[],cn='',dh=[],sk=null;
 let sT='barbaro',eHid=null,eSidx=-1,ciM='equip',ciR='common',giR='common';
 function rnd(a){return a[Math.floor(Math.random()*a.length)]}
 function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a}
-function openM(id){document.getElementById(id).classList.add('open')}
+function openM(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  // Move to document root to escape any stacking context
+  if(el.parentElement!==document.documentElement){
+    document.documentElement.appendChild(el);
+  }
+  el.classList.add('open');
+}
 function closeM(id){document.getElementById(id).classList.remove('open')}
 function closeMB(e,id){if(e.target===document.getElementById(id))closeM(id)}
 let tT;
@@ -1026,7 +1034,7 @@ function showD(id){
       + '<button onclick="delH('+id+')" style="background:linear-gradient(135deg,rgba(80,15,15,.7),rgba(50,10,10,.7));border:1px solid var(--bl);border-radius:4px;color:var(--bl);font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#128128; ELIMINAR</button>'
     + '</div>';
 
-  document.body.appendChild(p);
+  document.documentElement.appendChild(p);
 }
 
 function closeD(){const p=document.getElementById('dpanel');if(p){p.style.opacity='0';p.style.transform='translateX(28px)';setTimeout(()=>p.remove(),200)}}
@@ -1188,7 +1196,13 @@ function openHeroModal(){
   const inp = document.getElementById('hinp');
   if(inp){ inp.value=''; }
   const m = document.getElementById('m-nh');
-  if(m){ m.style.display='flex'; }
+  if(m){
+    // Move to html root to escape body stacking context
+    if(m.parentElement!==document.documentElement){
+      document.documentElement.appendChild(m);
+    }
+    m.style.display='flex';
+  }
   setTimeout(()=>{ if(inp) inp.focus(); }, 200);
 }
 
@@ -1651,7 +1665,7 @@ function askOracle(qIdx,qKey){
     </div>`;
 
   popup.addEventListener('click', e=>{ if(e.target===popup) popup.remove(); });
-  document.body.appendChild(popup);
+  document.documentElement.appendChild(popup);
 
   // Log
   oracleLog.unshift(`${q.ico} <strong style="color:${col}">${result.res}</strong> — ${q.lbl} (&#127922;${roll})`);
