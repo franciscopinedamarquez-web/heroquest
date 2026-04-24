@@ -185,7 +185,21 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .lore-obj{font-size:11px;color:var(--god);font-family:'Cinzel',serif;letter-spacing:.5px}
 .lore-body{padding:14px 16px;font-size:15px;color:var(--pad);line-height:1.7;font-style:italic;border-bottom:1px solid rgba(201,150,42,.1)}
 .lore-footer{padding:8px 14px;display:flex;gap:8px;flex-wrap:wrap}
-.lore-tag{font-size:10px;font-family:'Cinzel',serif;padding:3px 8px;border-radius:2px;background:rgba(0,0,0,.4);border:1px solid}
+.lore-tag{font-size:12px;font-family:'Cinzel',serif;padding:6px 12px;border-radius:4px;background:rgba(0,0,0,.5);border:1px solid;cursor:pointer;touch-action:manipulation;transition:all .18s;display:inline-flex;align-items:center;gap:5px}
+.lore-tag:active{transform:scale(.95);filter:brightness(1.3)}
+/* Condition popup */
+.cond-overlay{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px;animation:fIn .2s ease}
+.cond-popup{background:linear-gradient(160deg,#1e1810,#100c06);border-radius:10px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,.95);animation:popIn .25s cubic-bezier(.34,1.4,.64,1)}
+.cond-header{padding:16px 18px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.cond-name{font-family:'Cinzel',serif;font-size:20px;font-weight:700;margin-bottom:4px}
+.cond-type{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--god)}
+.cond-body{padding:16px 18px}
+.cond-effect{font-size:15px;color:var(--pad);line-height:1.7;font-style:italic;margin-bottom:14px}
+.cond-rules{display:flex;flex-direction:column;gap:8px}
+.cond-rule{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(0,0,0,.35);border-radius:5px;border:1px solid rgba(255,255,255,.07)}
+.cond-rule-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.cond-rule-txt{font-size:13px;color:var(--pa);line-height:1.5}
+.cond-close{width:100%;margin:14px 18px 0;padding:12px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:5px;color:var(--god);font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;cursor:pointer;touch-action:manipulation}
 /* Oracle question categories */
 .oracle-section{margin-bottom:14px}
 .oracle-cat-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--god);text-transform:uppercase;padding:10px 14px 6px;display:flex;align-items:center;gap:8px}
@@ -245,12 +259,28 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 }
 .fab:active{transform:scale(.88);box-shadow:0 2px 10px rgba(139,26,26,.5)}
 .fab.hidden{display:none}
+.mazo-view{padding:14px;padding-bottom:80px}
+.mazo-card{background:linear-gradient(135deg,#1e1810,#2a2218);border:1px solid rgba(201,150,42,.2);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.mazo-card-header{padding:12px 14px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(201,150,42,.15);display:flex;align-items:center;justify-content:space-between}
+.mazo-card-title{font-family:'Cinzel',serif;font-size:14px;color:var(--go);letter-spacing:.5px}
+.mazo-card-sub{font-size:11px;color:var(--stl);font-style:italic;margin-top:2px}
+.d20-table{width:100%;border-collapse:collapse}
+.d20-table th{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--god);text-transform:uppercase;padding:8px 10px;background:rgba(0,0,0,.3);text-align:left;border-bottom:1px solid rgba(201,150,42,.1)}
+.d20-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;color:var(--pad);vertical-align:top;line-height:1.4}
+.d20-table td:first-child{font-family:'Cinzel',serif;font-size:12px;color:var(--go);font-weight:700;width:52px;text-align:center}
+.d20-table tr:last-child td{border-bottom:none}
+.d20-table tr:hover td{background:rgba(201,150,42,.04)}
+.d20-roll-btn{background:linear-gradient(135deg,#2a1e0a,#1a1208);border:2px solid var(--god);border-radius:6px;color:var(--go);font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;padding:10px 16px;cursor:pointer;touch-action:manipulation;transition:all .15s;display:flex;align-items:center;gap:8px}
+.d20-roll-btn:active{transform:scale(.94);border-color:var(--go)}
+.d20-result{font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:var(--go);text-shadow:0 0 16px rgba(201,150,42,.4);transition:all .3s}
+.d20-result.rolling{animation:diceRollAnim .4s ease}
+@keyframes diceRollAnim{0%{transform:scale(1.5) rotate(-10deg);opacity:0}60%{transform:scale(.9) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 .empty{padding:52px 26px;text-align:center}
 .eico{font-size:48px;margin-bottom:12px;opacity:.4}
 .etxt{font-family:'Cinzel',serif;font-size:13px;color:var(--stl);letter-spacing:1px;line-height:1.8}
 
 /* ── MODAL OVERLAY ── */
-.movl{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;display:none;align-items:flex-end;justify-content:center}
+.movl{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;display:none;align-items:flex-end;justify-content:center;will-change:display;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .movl.open{display:flex}
 .modal{
   background:linear-gradient(180deg,#1e1810 0%,#140f08 100%);
@@ -258,11 +288,12 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
   border-bottom:none;border-radius:10px 10px 0 0;
   width:100%;max-width:430px;
   padding:20px 18px calc(18px + env(safe-area-inset-bottom));
-  animation:slUp .28s cubic-bezier(.34,1.2,.64,1);
+  animation:slUp .22s ease-out;
   max-height:90vh;overflow-y:auto;
   box-shadow:0 -8px 40px rgba(0,0,0,.8);
+  will-change:transform;transform:translateZ(0);
 }
-@keyframes slUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes slUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .mtit{
   font-family:'Cinzel',serif;font-size:16px;font-weight:700;
   color:var(--go);letter-spacing:1px;
@@ -424,6 +455,7 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 <nav class="tabs">
   <button class="tb active" onclick="showTab('heroes',this)"><span class="ti">&#9876;&#65039;</span>HEROES</button>
   <button class="tb" onclick="showTab('skirmish',this)"><span class="ti">&#128506;&#65039;</span>ESCARAMUZA</button>
+  <button class="tb" onclick="showTab('mazo',this)"><span class="ti">&#127922;</span>MAZO</button>
   <button class="tb" onclick="showTab('notes',this)"><span class="ti">&#128214;</span>NOTAS</button>
 </nav>
 <div class="view active" id="view-heroes">
@@ -437,6 +469,15 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 <div class="view" id="view-skirmish">
   <div class="skv" id="skcon"></div>
 </div>
+</div>
+<div class="view" id="view-mazo">
+  <div class="mazo-view" id="mazocon">
+    <div style="padding:40px 20px;text-align:center">
+      <div style="font-size:64px;margin-bottom:16px;opacity:.4">&#127922;</div>
+      <div style="font-family:'Cinzel',serif;font-size:15px;color:var(--god);letter-spacing:2px;margin-bottom:10px">SIN MISION ACTIVA</div>
+      <div style="font-size:14px;color:var(--stl);font-style:italic;line-height:1.8">Inicia una nueva escaramuza para<br>generar las tablas D20 de la mision.</div>
+    </div>
+  </div>
 </div>
 <div class="view" id="view-notes">
   <div class="nv">
@@ -462,23 +503,45 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 ">+</button>
 <!-- new hero modal -->
 <div id="m-nh" style="display:none;position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.88);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeHeroModal()">
-  <div style="background:linear-gradient(180deg,#1e1810,#140f08);border:1px solid #7a5a18;border-top:2px solid #c9962a;border-radius:10px 10px 0 0;width:100%;max-width:430px;padding:20px 18px 32px;max-height:88vh;overflow-y:auto">
+  <div style="background:linear-gradient(180deg,#1e1810,#140f08);border:1px solid #7a5a18;border-top:2px solid #c9962a;border-radius:10px 10px 0 0;width:100%;max-width:430px;padding:20px 18px 32px;max-height:90vh;overflow-y:auto;will-change:transform;transform:translateZ(0)">
 
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(201,150,42,.2)">
-      <span style="font-family:'Cinzel',serif;font-size:16px;color:#c9962a;letter-spacing:1px">Nuevo Heroe</span>
-      <button onclick="closeHeroModal()" style="background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:50%;width:28px;height:28px;color:#5a504a;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#10005;</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(201,150,42,.2)">
+      <span style="font-family:'Cinzel',serif;font-size:16px;color:#c9962a;letter-spacing:1px">&#9876;&#65039; Nuevo Heroe</span>
+      <button onclick="closeHeroModal()" style="background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:50%;width:30px;height:30px;color:#5a504a;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#10005;</button>
     </div>
 
-    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#7a5a18;margin-bottom:5px">NOMBRE</div>
-    <input id="hinp" type="text" placeholder="Nombre del heroe..." maxlength="22" autocomplete="off"
-      style="width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(201,150,42,.3);border-radius:4px;color:#f2e8d0;font-size:16px;padding:10px 12px;margin-bottom:16px;outline:none;font-family:'Crimson Pro',serif">
+    <!-- Step 1: Class selection -->
+    <div id="nh-step1">
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#7a5a18;margin-bottom:8px">ELIGE TU CLASE</div>
+      <div id="class-grid" style="max-height:52vh;overflow-y:auto;margin-bottom:14px"></div>
+      <button onclick="nhNextStep()" style="width:100%;background:linear-gradient(135deg,#2a1e0a,#1a1208);border:2px solid #c9962a;border-radius:5px;color:#c9962a;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:2px;padding:13px;cursor:pointer">
+        SIGUIENTE &#8250;
+      </button>
+    </div>
 
-    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#7a5a18;margin-bottom:8px">CLASE</div>
-    <div id="class-grid" style="max-height:44vh;overflow-y:auto;margin-bottom:16px"></div>
+    <!-- Step 2: Name entry (shown after class chosen) -->
+    <div id="nh-step2" style="display:none">
+      <!-- Selected class preview -->
+      <div id="nh-class-preview" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.25);border-radius:6px;margin-bottom:16px">
+        <span id="nh-prev-ico" style="font-size:36px"></span>
+        <div>
+          <div id="nh-prev-name" style="font-family:'Cinzel',serif;font-size:15px;color:#c9962a;font-weight:700"></div>
+          <div id="nh-prev-stats" style="font-size:12px;color:#5a504a;margin-top:2px"></div>
+          <div id="nh-prev-skills" style="font-size:11px;color:#4a80d4;margin-top:3px"></div>
+        </div>
+        <button onclick="nhBackStep()" style="margin-left:auto;background:none;border:1px solid rgba(201,150,42,.3);border-radius:3px;color:#7a5a18;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;padding:4px 8px;cursor:pointer">&#8249; CAMBIAR</button>
+      </div>
 
-    <button onclick="createH()" style="width:100%;background:linear-gradient(135deg,#8b1a1a,#5c0f0f);border:1px solid #8b1a1a;border-radius:5px;color:#f2e8d0;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:2px;padding:13px;cursor:pointer">
-      &#9876;&#65039; UNIRSE A LA AVENTURA
-    </button>
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#7a5a18;margin-bottom:6px">NOMBRE DEL HEROE</div>
+      <input id="hinp" type="text" placeholder="Como se llama tu heroe..." maxlength="22" autocomplete="off"
+        style="width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(201,150,42,.3);border-bottom:2px solid #7a5a18;border-radius:4px;color:#f2e8d0;font-size:17px;padding:11px 13px;margin-bottom:16px;outline:none;font-family:'Crimson Pro',serif"
+        onkeydown="if(event.key==='Enter')createH()">
+
+      <button onclick="createH()" style="width:100%;background:linear-gradient(135deg,#8b1a1a,#5c0f0f);border:1px solid #a03030;border-radius:5px;color:#f2e8d0;font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:2px;padding:14px;cursor:pointer;box-shadow:0 2px 12px rgba(139,26,26,.4)">
+        &#9876;&#65039; UNIRSE A LA AVENTURA &#9876;&#65039;
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -914,6 +977,7 @@ function showTab(tab,btn){
   document.getElementById('fab').classList.toggle('hidden',tab!=='heroes');
   if(tab==='notes')renderN();
   if(tab==='skirmish')renderSk();
+  if(tab==='mazo')renderMazo();
 }
 // HEROES
 function rH(){
@@ -1192,18 +1256,43 @@ else if(ciM.includes('spell')){const co=document.getElementById('ci-c').value.tr
 else{const qty=parseInt(document.getElementById('ci-q').value)||1;const it={nm,ico,ds,r:ciR,qty};if(ciM==='inv-hero'&&eHid){const h=heroes.find(x=>x.id===eHid);if(h){if(!h.inv)h.inv=[];h.inv.push(it);saveS();toast('Objeto anadido al heroe');const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}}else{gi.push(it);saveS();toast('Objeto anadido al grupo');renderGI();}}closeM('m-ci');}
 function openHeroModal(){
   sT = Object.keys(HT)[0];
+  // Reset to step 1
+  const s1 = document.getElementById('nh-step1');
+  const s2 = document.getElementById('nh-step2');
+  if(s1) s1.style.display='block';
+  if(s2) s2.style.display='none';
   renderClassGrid();
-  const inp = document.getElementById('hinp');
-  if(inp){ inp.value=''; }
   const m = document.getElementById('m-nh');
   if(m){
-    // Move to html root to escape body stacking context
     if(m.parentElement!==document.documentElement){
       document.documentElement.appendChild(m);
     }
     m.style.display='flex';
   }
-  setTimeout(()=>{ if(inp) inp.focus(); }, 200);
+}
+
+function nhNextStep(){
+  const cls = HT[sT];
+  if(!cls){ toast('Elige una clase primero'); return; }
+  // Fill preview
+  const ico = document.getElementById('nh-prev-ico');
+  const nm  = document.getElementById('nh-prev-name');
+  const st  = document.getElementById('nh-prev-stats');
+  const sk  = document.getElementById('nh-prev-skills');
+  if(ico) ico.textContent = cls.ico;
+  if(nm)  nm.textContent  = cls.cls;
+  if(st)  st.textContent  = 'HP '+cls.hp+' • MP '+cls.mp+' • ATK '+cls.atk+' • DEF '+cls.def;
+  if(sk && cls.sk) sk.innerHTML = cls.sk.map(s=>'&#9670; '+s.n).join(' &nbsp;');
+  document.getElementById('nh-step1').style.display='none';
+  document.getElementById('nh-step2').style.display='block';
+  const inp = document.getElementById('hinp');
+  if(inp){ inp.value=''; setTimeout(()=>inp.focus(),150); }
+}
+
+function nhBackStep(){
+  document.getElementById('nh-step1').style.display='block';
+  document.getElementById('nh-step2').style.display='none';
+  renderClassGrid();
 }
 
 function closeHeroModal(){
@@ -1269,47 +1358,159 @@ function createH(){
     name:nm,  // always after spread so template can't overwrite it
   };
   heroes.push(h);
-  document.getElementById('hinp').value='';
-  rH(); closeM('m-nh'); saveS();
-  toast(t.ico+' '+nm+' se une a la aventura');
+  closeHeroModal();
+  rH(); saveS();
+  toast(t.ico+' '+nm+' se une a la aventura!');
 }
 
 // ══════════════════════════════════════════════════════════════════════════
 //  ORACLE SYSTEM — Adventure lore + question-based gameplay
 // ══════════════════════════════════════════════════════════════════════════
 
+const CONDITIONS = {
+  'No-muertos': {
+    ico:'&#128128;', col:'#8b1a1a', type:'PERJUICIO',
+    effect:'Los No-Muertos son mas poderosos en esta mision.',
+    rules:[
+      {ico:'&#128128;',txt:'Los esqueletos y zombies reciben +1 dado de ataque.'},
+      {ico:'&#9760;&#65039;',txt:'Los no-muertos no huyen aunque les quede 1 HP.'},
+      {ico:'&#10024;',txt:'La magia de Luz (Exorcismo, Luz Divina) cuesta +1 MP adicional.'},
+    ]
+  },
+  'Trampas': {
+    ico:'&#9888;&#65039;', col:'#8a6a1a', type:'PERJUICIO',
+    effect:'La sala esta llena de trampas ocultas y mecanismos mortales.',
+    rules:[
+      {ico:'&#9888;&#65039;',txt:'Al entrar en cada sala nueva, tira 1D6. Con 1-2, hay una trampa activa.'},
+      {ico:'&#9874;&#65039;',txt:'Las trampas infligen 1D4 de dano. El Enano puede intentar desactivarlas (4+ en 1D6).'},
+      {ico:'&#128270;',txt:'Buscar activamente trampas consume toda la accion del turno.'},
+    ]
+  },
+  'Gran tesoro': {
+    ico:'&#128176;', col:'#c9962a', type:'BONIFICACION',
+    effect:'Esta mision ofrece recompensas excepcionales para los valientes.',
+    rules:[
+      {ico:'&#128176;',txt:'Al completar la mision, cada heroe recibe +50 oros adicionales.'},
+      {ico:'&#128142;',txt:'Hay un objeto magico extra oculto en la sala del jefe.'},
+      {ico:'&#11088;',txt:'Los heroes reciben +100 XP bonus por cada enemigo de elite derrotado.'},
+    ]
+  },
+  'Goblins': {
+    ico:'&#128121;', col:'#5a8a2a', type:'PERJUICIO',
+    effect:'Los goblins patrullan cada rincon. Nunca estais solos.',
+    rules:[
+      {ico:'&#128121;',txt:'Al inicio de cada turno, tira 1D6. Con 6, aparece 1 goblin de refuerzo.'},
+      {ico:'&#128483;',txt:'Los goblins llaman refuerzos si no son eliminados en el mismo turno que se detectan.'},
+      {ico:'&#128176;',txt:'Cada goblin lleva 5 oros en equipo saqueado.'},
+    ]
+  },
+  'Pistas': {
+    ico:'&#128285;', col:'#4a80d4', type:'BONIFICACION',
+    effect:'Hay informacion valiosa escondida en la mazmorra.',
+    rules:[
+      {ico:'&#128285;',txt:'Al explorar cada sala, tira 1D6. Con 5-6, encuentras una pista que revela el camino correcto.'},
+      {ico:'&#128172;',txt:'Las pistas pueden desbloquear dialogos con PNJs que dan ventajas en combate.'},
+      {ico:'&#128220;',txt:'Reunir 3 pistas revela la ubicacion del objetivo final.'},
+    ]
+  },
+  'Ilusiones': {
+    ico:'&#128064;', col:'#7a2a9a', type:'PERJUICIO',
+    effect:'La realidad se distorsiona. No todo lo que ves es real.',
+    rules:[
+      {ico:'&#128064;',txt:'Al entrar en una sala, tira 1D6. Con 1-2, los enemigos que ves son ilusiones (no hacen dano).'},
+      {ico:'&#128302;',txt:'El Mago puede gastar 1 MP para identificar si algo es real antes de actuar.'},
+      {ico:'&#9760;&#65039;',txt:'Atacar a una ilusion gasta la accion del heroe sin efecto.'},
+    ]
+  },
+  'Magia': {
+    ico:'&#128302;', col:'#4a80d4', type:'BONIFICACION',
+    effect:'La energia arcana impregna cada piedra. El potencial magico es enorme.',
+    rules:[
+      {ico:'&#10024;',txt:'El Mago y el Elfo recuperan 1 MP adicional al inicio de cada turno.'},
+      {ico:'&#128302;',txt:'Los hechizos de area afectan a 1 casilla extra de radio.'},
+      {ico:'&#9889;',txt:'Los pergaminos encontrados se pueden usar sin ser Mago.'},
+    ]
+  },
+  'Veneno': {
+    ico:'&#129500;', col:'#5a8a2a', type:'PERJUICIO',
+    effect:'El ambiente esta contaminado. El veneno acecha en cada rincon.',
+    rules:[
+      {ico:'&#129500;',txt:'No se puede usar Agua para recuperar vida. Si se intenta, tira 1D6: ese es el dano recibido.'},
+      {ico:'&#128167;',txt:'Las pociones de Agua Purificadora curan el veneno pero no dan HP.'},
+      {ico:'&#9760;&#65039;',txt:'Al inicio de cada sala nueva, tira 1D6. Con 1, un heroe aleatorio pierde 1 HP por veneno ambiental.'},
+    ]
+  },
+  'Criaturas': {
+    ico:'&#128027;', col:'#7a5a18', type:'PERJUICIO',
+    effect:'Bestias salvajes acechan en las sombras.',
+    rules:[
+      {ico:'&#128027;',txt:'Los animales y bestias reciben +1 dado de movimiento (se mueven mas rapido).'},
+      {ico:'&#129505;',txt:'Las bestias siempre atacan primero al heroe con menos HP.'},
+      {ico:'&#128293;',txt:'El fuego causa +1 dado de dano adicional a todas las bestias.'},
+    ]
+  },
+  'Agua corrompida': {
+    ico:'&#128167;', col:'#2a4a7f', type:'PERJUICIO',
+    effect:'El agua esta envenenada. Beberla puede ser mortal.',
+    rules:[
+      {ico:'&#128167;',txt:'No se puede usar Curacion Corporal (hechizo de Agua). Si se usa, tira 1D6: ese es el dano.'},
+      {ico:'&#129514;',txt:'Las pociones de curacion pierden eficacia: curan 1D4 menos (minimo 0).'},
+      {ico:'&#10052;&#65039;',txt:'El hechizo Niebla esta prohibido. El agua de cualquier fuente esta contaminada.'},
+    ]
+  },
+  'Golems': {
+    ico:'&#129302;', col:'#5a504a', type:'PERJUICIO',
+    effect:'Guardianes de piedra vigilantes e implacables.',
+    rules:[
+      {ico:'&#129302;',txt:'Los Golems son inmunes a hechizos de Fuego y no pueden ser quemados.'},
+      {ico:'&#9874;&#65039;',txt:'Las armas contundentes (mazas, martillos) causan +1 dado de dano a Golems.'},
+      {ico:'&#9760;&#65039;',txt:'Si un Golem recibe 0 dano en un ataque, contraataca inmediatamente.'},
+    ]
+  },
+  'Vigilancia': {
+    ico:'&#128064;', col:'#4a80d4', type:'PERJUICIO',
+    effect:'Los guardianes estan en estado de alerta maxima.',
+    rules:[
+      {ico:'&#128064;',txt:'Los enemigos no pueden ser sorprendidos. No se aplica el bono de ataque por sorpresa.'},
+      {ico:'&#128483;',txt:'Al abrir cualquier puerta, los enemigos de la sala adyacente se alertan automaticamente.'},
+      {ico:'&#9889;',txt:'El hechizo Paso de Sombra no funciona si ya has atacado en esta mision.'},
+    ]
+  },
+};
+
 const LORE_POOL = [
   {tl:'La Tumba del Rey Olvidado',ty:'Cripta',badge:'Oscuridad',bcol:'#5a3a8a',
    in:'Los aldeanos de Millhaven hablan en susurros de una tumba maldita al norte del bosque. Hace mil anos, el rey Aldric fue enterrado con sus tesoros y sus guardias... que juraron protegerle incluso en la muerte. Esta noche, vosotros cruzais ese umbral.',
    ob:'Alcanzad la camara central. Recuperad el Sello Real de Aldric.',
-   tags:['&#128128; No-muertos','&#128293; Trampas','&#128176; Gran tesoro'],tagcols:['var(--bl)','var(--go)','var(--gol)'],
+   tags:['No-muertos','Trampas','Gran tesoro'],tagcols:['var(--bl)','#8a6a1a','var(--gol)'],
    atmosphere:'El aire huele a polvo de siglos. Antorchas que nadie encendio arden solas.'},
   {tl:'El Mercader Desaparecido',ty:'Mazmorra',badge:'Misterio',bcol:'#2a4a7f',
    in:'Torvin, comerciante de especias, partio hace cinco dias. No llego. Los tuneles del Paso Norte son los mas cortos, el siempre los usaba. Ya no.',
    ob:'Encontrad a Torvin vivo o muerto. Traed prueba de su destino.',
-   tags:['&#128121; Goblins','&#9888;&#65039; Trampas ocultas','&#128285; Pistas'],tagcols:['#5a8a2a','var(--pad)','var(--mg)'],
+   tags:['Goblins','Trampas','Pistas'],tagcols:['#5a8a2a','#8a6a1a','var(--mg)'],
    atmosphere:'Pisadas en el barro. Algunas humanas, otras no.'},
   {tl:'La Forja del Caos',ty:'Forja',badge:'Peligro Extremo',bcol:'#8b1a1a',
    in:'Bajo el Monte Karrath existe una forja donde se forjaron las Espadas del Caos. Un culto la ha reactivado. Si completan el ritual, el proximo ejercito de Zargon portara armas que ningun escudo puede detener.',
    ob:'Destruid la Forja del Caos. Matad al Forjador antes del amanecer.',
-   tags:['&#128165; Demonios','&#128293; Fuego','&#9889; Magia oscura'],tagcols:['var(--bl)','#d4621a','var(--pul)'],
+   tags:['Golems','Trampas','Gran tesoro'],tagcols:['#5a504a','#8a6a1a','var(--gol)'],
    atmosphere:'El calor es insoportable. El metal rojo incandescente chorrea por las paredes.'},
   {tl:'El Oraculo Encadenado',ty:'Santuario',badge:'Urgencia',bcol:'#2a6a2a',
    in:'La vidente Sera lleva tres semanas sin hablar. Sus ojos ven algo que no puede decir: esta hechizada. El hechizo viene de las profundidades de su propio santuario, corrompido por una entidad llamada El Murmurante.',
    ob:'Descended al nivel inferior. Destruid el Vinculo del Murmullo.',
-   tags:['&#128064; Ilusiones','&#128302; Magia','&#9760;&#65039; Trampa mental'],tagcols:['var(--mg)','var(--pul)','var(--pad)'],
+   tags:['Ilusiones','Magia','Vigilancia'],tagcols:['var(--pul)','var(--mg)','var(--mb)'],
    atmosphere:'Vuestras voces se repiten solas. Cada sombra parece moverse cuando no la mirais.'},
   {tl:'El Pozo Envenenado',ty:'Caverna',badge:'Urgencia Popular',bcol:'#4a7a2a',
    in:'Tres ninos del pueblo enfermaron en un dia. Luego cinco adultos. El medico lo confirmo: veneno en las aguas. Alguien, o algo, esta contaminando el agua desde dentro de la tierra.',
    ob:'Localizad la fuente del veneno. Destruid o sellad el origen.',
-   tags:['&#129500; Veneno','&#128027; Criaturas','&#128167; Agua corrompida'],tagcols:['#5a8a2a','var(--stl)','var(--mg)'],
+   tags:['Veneno','Criaturas','Agua corrompida'],tagcols:['#5a8a2a','#7a5a18','var(--mb)'],
    atmosphere:'El goteo del agua es constante. Tiene un color levemente verdoso.'},
   {tl:'La Biblioteca de los Prohibidos',ty:'Biblioteca',badge:'Conocimiento Oscuro',bcol:'#5a2a7f',
    in:'El mago Aldous encontro el Grimorio de Kael-Noth. Tambien encontro que la biblioteca fue sellada por una razon: sus guardianes golem siguen activos, y el Grimorio tiene opinion propia.',
    ob:'Entrad en la biblioteca sellada. Recovered el Grimorio sin leerlo.',
-   tags:['&#129302; Golems','&#128218; Magia arcana','&#128064; Vigilancia'],tagcols:['var(--stl)','var(--pul)','var(--mg)'],
+   tags:['Golems','Magia','Vigilancia'],tagcols:['#5a504a','var(--mg)','var(--mb)'],
    atmosphere:'Silencio absoluto. Los libros se mueven solos entre los estantes. Uno os esta mirando.'},
 ];
+
 
 const LORE_INTROS_EXTRA = [
   'La luna esta roja esta noche. Los viejos dicen que eso no augura nada bueno.',
@@ -1472,7 +1673,15 @@ function renderSk(){
     return;
   }
   const adv=currentAdventure, lore=adv.lore;
-  const tagsHtml=(lore.tags||[]).map((t,i)=>`<span class="lore-tag" style="color:${lore.tagcols?lore.tagcols[i]:'var(--pad)'};border-color:${lore.tagcols?lore.tagcols[i]+'66':'rgba(201,150,42,.3)'};font-size:12px">${t}</span>`).join('');
+  const tagsHtml=(lore.tags||[]).map((t,i)=>{
+    const col=lore.tagcols?lore.tagcols[i]:'var(--pad)';
+    const cond=CONDITIONS[t];
+    const ico=cond?cond.ico:'&#127919;';
+    return`<button class="lore-tag" onclick="showCondition('${t}')"
+      style="color:${col};border-color:${col}66;background:rgba(0,0,0,.5)">
+      ${ico} ${t}
+    </button>`;
+  }).join('');
 
   const catDef=[
     {id:'Exploracion',lbl:'EXPLORAR',ico:'&#128270;',col:'var(--go)'},
@@ -1554,6 +1763,48 @@ function renderSk(){
         &#9876;&#65039; NUEVA AVENTURA
       </button>
     </div>`;
+}
+
+
+function showCondition(tagName){
+  const cond = CONDITIONS[tagName];
+  if(!cond) return;
+  const old = document.getElementById('cond-overlay');
+  if(old) old.remove();
+
+  const rulesHtml = (cond.rules||[]).map(r=>
+    '<div class="cond-rule">'
+    + '<span class="cond-rule-ico">'+r.ico+'</span>'
+    + '<span class="cond-rule-txt">'+r.txt+'</span>'
+    + '</div>'
+  ).join('');
+
+  const typeColor = cond.type==='BONIFICACION' ? 'var(--gr)' : 'var(--bl)';
+  const typeBg    = cond.type==='BONIFICACION' ? 'rgba(42,90,42,.3)' : 'rgba(139,26,26,.3)';
+
+  const el = document.createElement('div');
+  el.id = 'cond-overlay';
+  el.className = 'cond-overlay';
+  el.innerHTML =
+    '<div class="cond-popup">'
+      + '<div class="cond-header" style="border-bottom:2px solid '+cond.col+'">'
+        + '<div style="display:flex;align-items:center;gap:10px">'
+          + '<span style="font-size:34px">'+cond.ico+'</span>'
+          + '<div>'
+            + '<div class="cond-name" style="color:'+cond.col+'">'+tagName+'</div>'
+            + '<div class="cond-type" style="color:'+typeColor+';background:'+typeBg+';padding:2px 8px;border-radius:3px;display:inline-block;margin-top:2px">'+cond.type+'</div>'
+          + '</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="cond-body">'
+        + '<div class="cond-effect">'+cond.effect+'</div>'
+        + '<div class="cond-rules">'+rulesHtml+'</div>'
+        + '<button class="cond-close" onclick="document.getElementById(\'cond-overlay\').remove()">&#10003; Entendido</button>'
+      + '</div>'
+    + '</div>';
+
+  el.addEventListener('click', function(e){ if(e.target===el) el.remove(); });
+  document.documentElement.appendChild(el);
 }
 
 
@@ -1683,6 +1934,291 @@ function askOracle(qIdx,qKey){
 // ══════════════════════════════════════════════════════════════════════════
 // SESSION SCREEN
 // ══════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// MAZO — D20 tables generated per mission
+// ══════════════════════════════════════════════════════
+
+// Table definitions per mission type
+const MAZO_TABLES = {
+  Cripta: [
+    { title:'Encuentros en la Cripta', sub:'Tira 1D20 al entrar en cada sala',
+      rows:[
+        [1,  'Trampa de gas. Todos los heroes pierden 1 HP.'],
+        [2,  'Suelo inestable. Movimiento reducido a la mitad este turno.'],
+        [3,  '1 Esqueleto solitario. Patrulla sin alertar a los demas.'],
+        [4,  'Sala vacia. Polvo y silencio. Avanza con cautela.'],
+        [5,  '2 Esqueletos. Estan de cara a la pared. Ventaja de sorpresa.'],
+        [6,  'Trampa de agujas. El primero en entrar recibe 1D4 de dano.'],
+        [7,  '1 Zombie lento. Muy resistente. Reduce su defensa atacando en diagonal.'],
+        [8,  'Altar profanado. El Mago pierde 1 MP al pasar junto a el.'],
+        [9,  '3 Esqueletos en formacion. Atacan todos a la vez.'],
+        [10, 'Sala del tesoro menor. 1D6x10 oros en un cofre sin trampa.'],
+        [11, '1 Espectro. Solo dano magico. Atraviesa muros.'],
+        [12, 'Trampa de foso oculta. Tira 1D6: 1-2 caes (2 HP dano).'],
+        [13, '2 Zombies. Uno lleva un objeto de equipo basico.'],
+        [14, 'Camara sellada. Puerta requiere llave o fuerza (tira 4+ en 1D6).'],
+        [15, 'El Guardian de la Tumba. Jefe: 6 HP, 3 dados ataque, 2 defensa.'],
+        [16, 'Sala de sarcofagos. 1D3 esqueletos despiertan al entrar.'],
+        [17, 'Pocion de curacion abandonada. La primera que se tome esta envenenada (50%).'],
+        [18, 'Vision del Rey. El heroe con mas HP pierde 1 turno aterrado.'],
+        [19, 'Camara del tesoro principal. Cofre con objeto magico + 50 oros.'],
+        [20, 'El Espiritu del Rey Aldric. Jefe final: 8 HP, 4 ATK, 3 DEF. Inmortal hasta destruir su sello.'],
+      ]
+    },
+    { title:'Eventos del Mas Alla', sub:'Tira 1D20 al inicio de cada turno del Master',
+      rows:[
+        [1,  'Nada ocurre. La cripta respira.'],
+        [2,  'Un crujido lejano. Los heroes deben tirar Mente (1D6, 4+) o pierden 1 accion.'],
+        [3,  'Las antorchas se apagan. Movimiento -1 casilla hasta reencenderlas.'],
+        [4,  'Nada ocurre.'],
+        [5,  'Un muerto se levanta de un sarcofago adyacente (1 esqueleto, 2 HP).'],
+        [6,  'Nada ocurre.'],
+        [7,  'Frio sepulcral. Los hechizos de Fuego cuestan +1 MP este turno.'],
+        [8,  'Nada ocurre.'],
+        [9,  'El suelo tiembla. Todos los heroes pierden 1 casilla de movimiento.'],
+        [10, 'Nada ocurre.'],
+        [11, 'Los muertos oyen. Los no-muertos en la misma sala reciben +1 iniciativa.'],
+        [12, 'Nada ocurre.'],
+        [13, 'Sangre en las paredes. El Enano detecta una puerta secreta cercana.'],
+        [14, 'Nada ocurre.'],
+        [15, 'Una sombra se mueve. El heroe mas alejado del grupo pierde 1 HP.'],
+        [16, 'Nada ocurre.'],
+        [17, 'El viento de la muerte. Todos los hechizos activos se cancelan.'],
+        [18, 'Nada ocurre.'],
+        [19, 'Vision del pasado. El grupo recibe la ubicacion del objetivo final.'],
+        [20, 'Refuerzo de no-muertos. 1D3 esqueletos aparecen en la entrada.'],
+      ]
+    },
+  ],
+  Mazmorra: [
+    { title:'Encuentros en la Mazmorra', sub:'Tira 1D20 al entrar en cada sala',
+      rows:[
+        [1,  'Trampa de ballesta automatica. 1D4 dano al primer heroe en entrar.'],
+        [2,  '2 Goblins dormidos. Sorpresa garantizada si el grupo no hace ruido.'],
+        [3,  'Sala vacia con restos de un campamento reciente.'],
+        [4,  '1 Orco de guardia. Alerta. Llama refuerzos al segundo turno.'],
+        [5,  'Trampa de red. Heroe paralizado 1 turno (Enano puede escapar tirando 3+).'],
+        [6,  '3 Goblins con arcos. Atacan desde la distancia, se cubren entre si.'],
+        [7,  'Mercader atrapado. Vende 1 pocion de curacion a precio de emergencia (30 oros).'],
+        [8,  '1 Troll. Regenera 1 HP por turno. Solo el dano de fuego lo detiene.'],
+        [9,  'Pasaje secreto. Tira 1D6: 4+ el Enano lo descubre (salta a la siguiente sala).'],
+        [10, '2 Orcos con escudos. +2 defensa cada uno. Flanquear elimina el bonus.'],
+        [11, 'Sala del tesoro. Cofre con 1D6x15 oros y una pocion.'],
+        [12, 'Trampa de fuego. 1D6 dano en area 2x2 (tira 4+ para esquivar).'],
+        [13, '1 Fimir. 5 HP, 3 ATK, 2 DEF. Poderoso pero lento.'],
+        [14, 'Sala inundada. Movimiento a la mitad. El fuego no funciona aqui.'],
+        [15, '4 Goblins en emboscada. Atacan desde todas las direcciones.'],
+        [16, 'El cocinero de los goblins. 3 HP, lleva una Pocion de Fuerza.'],
+        [17, 'Trampa de gases. Zona 3x3: tira 3+ o pierdes accion por nauseas.'],
+        [18, 'Sala del lider. 1 Orco Jefe: 7 HP, 4 ATK, 3 DEF. Tiene la llave maestra.'],
+        [19, 'Altar del caos. El Mago puede absorber 2 MP gratuitos (riesgo: 1-2 en 1D6 = 1 HP dano).'],
+        [20, 'Torvin encontrado. Vivo pero herido (1 HP). Necesita escolta hasta la salida.'],
+      ]
+    },
+  ],
+  Forja: [
+    { title:'Peligros de la Forja', sub:'Tira 1D20 al entrar en cada zona',
+      rows:[
+        [1,  'Explosion de vapor. Todos en la sala reciben 1 HP de dano de calor.'],
+        [2,  '2 Cultistas armados. Intentan alertar a los demas si no se eliminan rapido.'],
+        [3,  'Sala de fundicion. Suelo caliente: permanecer aqui cuesta 1 HP por turno.'],
+        [4,  '1 Golem de escoria. Inmune al fuego. Debil a hielo y agua.'],
+        [5,  'Trampa de acero fundido. Tira 3+ para evitar 1D4 dano.'],
+        [6,  '3 Cultistas con antorchas. El fuego no funciona contra ellos.'],
+        [7,  'Armeria saqueada. 1D3 armas basicas dispersas en el suelo.'],
+        [8,  'El Maestro Herrero. 6 HP, 4 ATK, 2 DEF. Inmortal mientras la Forja este activa.'],
+        [9,  'Canal de lava. Solo puede cruzarse con Vuelo o saltando (tira 4+).'],
+        [10, '2 Golems de lava. 4 HP, 3 ATK, inmunes al fuego. Se mueven por la lava.'],
+        [11, 'Sala de enfriamiento. Temperatura normal. Recupera 1 HP al entrar.'],
+        [12, 'Trampa de engranajes. Tira 4+ para no quedar atrapado 1 turno.'],
+        [13, '1 Demonio Menor. Solo dano magico. Vuela sobre obstaculos.'],
+        [14, 'El ritual en curso. Interrumpirlo requiere 3 acciones en el altar.'],
+        [15, 'Explosion de la Forja. Todos reciben 1D4 dano si no hay cobertura.'],
+        [16, '4 Cultistas mas el Forjador. El momento del enfrentamiento.'],
+        [17, 'Grieta en el suelo. Puede cruzarse pero cuesta 2 casillas extra.'],
+        [18, 'La Forja del Caos. Para destruirla: 3 ataques exitosos con agua o hielo.'],
+        [19, 'Camara del tesoro forjado. Arma magica de nivel raro + 60 oros.'],
+        [20, 'El Gran Forjador. Jefe: 10 HP, 5 ATK, 4 DEF. Usa la Espada del Caos.'],
+      ]
+    },
+  ],
+  Santuario: [
+    { title:'Ilusiones del Santuario', sub:'Tira 1D20 al explorar cada zona',
+      rows:[
+        [1,  'Todo lo que ves es falso. Los enemigos son ilusiones (no hacen dano real).'],
+        [2,  '1 Guardián ilusorio. Parece poderoso pero 1 ataque lo deshace.'],
+        [3,  'Pasillo que cambia. El grupo da vueltas: tira 4+ para orientarte.'],
+        [4,  'Sala real. 1 Guardian verdadero: 4 HP, 2 ATK, 2 DEF.'],
+        [5,  'Reflejo de heroe. Una copia de un heroe aleatorio ataca con sus mismas stats.'],
+        [6,  'El suelo no es solido. Tira 3+ o cae (2 HP dano, pierdes tu turno).'],
+        [7,  'Sala de ofrendas. 1D6x10 oros y una pocion real.'],
+        [8,  'Murmullos del Murmurante. Todos los heroes pierden 1 MP.'],
+        [9,  '3 Espectros ilusorios. Son reales al 50% (tira 1D6: 4-6 = reales).'],
+        [10, 'El Vinculo del Murmullo. Objetivo: destruirlo con 2 ataques magicos o sagrados.'],
+        [11, 'Sala del espejo. Ataca al espejo para abrir el camino (1 ataque cualquiera).'],
+        [12, 'Silencio total. Los hechizos fallan con 1-2 en 1D6.'],
+        [13, 'Vision de la verdad. El Mago revela que 1 enemigo visible es real.'],
+        [14, '2 Guardianes Arcanos. Reales. 5 HP, 3 ATK, 3 DEF. Inmunes a ilusiones.'],
+        [15, 'Trampa de confusion. Heroe aleatorio ataca a un aliado (tira 4+ para resistir).'],
+        [16, 'La vidente Sera. Herida: da informacion sobre el camino si la proteges.'],
+        [17, 'Portal inestable. Teleporta a un heroe aleatorio a sala anterior (o siguiente con 5+).'],
+        [18, 'El Murmurante Manifestado. Jefe: 7 HP, 4 ATK. Divide su dano entre 2 heroes.'],
+        [19, 'Vinculo roto. El santuario empieza a estabilizarse. +1 dado defensa para todos.'],
+        [20, 'Sera liberada. La mision se completa. +100 XP para todos los heroes.'],
+      ]
+    },
+  ],
+  Caverna: [
+    { title:'Peligros de la Caverna', sub:'Tira 1D20 al explorar cada zona',
+      rows:[
+        [1,  'Roca inestable. Tira 3+ o el techo cae (1D3 dano a todos).'],
+        [2,  '2 Serpientes Gigantes. 3 HP cada una. Veneno: 1 HP extra al fin del turno.'],
+        [3,  'Corriente de agua toxica. No se puede beber. Cruzarla da 1 HP dano.'],
+        [4,  'Sala seca y segura. Recupera 1 HP al descansar aqui (consume 1 turno).'],
+        [5,  '1 Babosa Toxica. 4 HP. Su baba ralentiza: -1 movimiento por 2 turnos.'],
+        [6,  'Trampa de gases verdes. 1D4 dano en area 3x3.'],
+        [7,  'Fuente de agua pura oculta. Ignora el efecto de Agua Corrompida 1 vez.'],
+        [8,  '3 Ratas Gigantes. Rapidas: 2 movimientos por turno. 2 HP cada una.'],
+        [9,  'El Brujo de Pantano. 6 HP, 2 ATK, 2 DEF. Crea zona toxica al morir.'],
+        [10, 'Caverna inundada parcialmente. Movimiento a la mitad en el agua.'],
+        [11, 'Nido de serpientes. 1D3 serpientes despiertan si el grupo hace ruido.'],
+        [12, 'La fuente del veneno. Objetivo: destruirla con 2 ataques fisicos potentes.'],
+        [13, '1 Elemental de Cieno. 5 HP. Inmune al fisico. Debil al fuego y el hielo.'],
+        [14, 'Pasaje estrecho. Solo puede pasar de uno en uno (facil emboscada).'],
+        [15, 'Sala de cristales toxicos. Brillan pero tocarlos da 1 HP dano.'],
+        [16, 'El Guardian del Pozo. 8 HP, 4 ATK, 3 DEF. Controla las aguas.'],
+        [17, 'Cura natural. Plantas medicinales: 1 heroe recupera 1D4 HP.'],
+        [18, 'Camara del origen. El veneno brota de aqui. Destruir la fuente completa la mision.'],
+        [19, 'Tesoro del brujo. 40 oros + 1 pocion de antidoto + 1 amuleto.'],
+        [20, 'El veneno purificado. El agua vuelve a fluir limpia. Mision completada. +80 XP.'],
+      ]
+    },
+  ],
+  Biblioteca: [
+    { title:'Peligros de la Biblioteca', sub:'Tira 1D20 al explorar cada zona',
+      rows:[
+        [1,  'Libro trampa. Al abrirlo explota: 1D4 dano al lector.'],
+        [2,  '2 Golems de Papel. 3 HP. Debiles al fuego pero pueden quemarse (dano en area).'],
+        [3,  'Sala de lectura. Pergamino util: el Mago aprende 1 hechizo gratis.'],
+        [4,  '1 Guardian Arcano. 5 HP, 3 ATK, 3 DEF. Inmune a hechizos no sagrados.'],
+        [5,  'Estanteria animada. Bloquea el paso. 1 ataque la rompe (2 HP).'],
+        [6,  'El Grimorio pulsa. Todos pierden 1 MP. El Mago gana 1 MP.'],
+        [7,  '3 Golems de Papel. Uno lleva un mapa de las salas siguientes.'],
+        [8,  'Trampa de tinta magica. Cegado 1 turno (tira 3+ para esquivar).'],
+        [9,  'Sala de archivos. Encuentra 1 pista sobre la debilidad del jefe.'],
+        [10, '2 Guardianes Arcanos. Uno tiene la llave de la camara del Grimorio.'],
+        [11, 'El Grimorio habla. Un heroe aleatorio recibe una vision: +2 dados en 1 ataque a elegir.'],
+        [12, 'Escalera magica. Puede subir a nivel superior (nueva zona de 1D6 salas).'],
+        [13, '4 Golems de Papel en cadena. Si uno cae, los demas se irritan (+1 ATK restantes).'],
+        [14, 'Camara sellada con el Grimorio. Requiere 2 llaves o 1 hechizo de Tierra.'],
+        [15, 'El Grimorio reacciona. Todos los heroes tiran 1D6: 1-2 pierden 1 hechizo memorizado.'],
+        [16, 'Manifestacion del Grimorio. 8 HP, 5 ATK magico, 4 DEF. Vuela.'],
+        [17, 'Sala del fundador. Altar que restaura 2 MP a todos los heroes.'],
+        [18, 'El Grimorio capturado. Guardarlo sin leerlo completa la mision.'],
+        [19, 'Bonus de sabiduria. Heroe que lleve el Grimorio gana +50 XP extra.'],
+        [20, 'Aldous aparece. El mago da al grupo 1 objeto magico de su eleccion.'],
+      ]
+    },
+  ],
+};
+
+let currentD20 = null;
+
+function renderMazo(){
+  const c = document.getElementById('mazocon');
+  if(!c) return;
+
+  if(!currentAdventure){
+    c.innerHTML = '<div style="padding:40px 20px;text-align:center">'
+      + '<div style="font-size:64px;margin-bottom:16px;opacity:.4">&#127922;</div>'
+      + '<div style="font-family:\'Cinzel\',serif;font-size:15px;color:var(--god);letter-spacing:2px;margin-bottom:10px">SIN MISION ACTIVA</div>'
+      + '<div style="font-size:14px;color:var(--stl);font-style:italic;line-height:1.8">Inicia una escaramuza para generar<br>las tablas D20 de la mision.</div>'
+      + '</div>';
+    return;
+  }
+
+  const lore   = currentAdventure.lore;
+  const ty     = lore.ty || 'Mazmorra';
+  const tables = MAZO_TABLES[ty] || MAZO_TABLES['Mazmorra'];
+
+  let html = '<div style="padding:14px 14px 80px">';
+
+  // Mission header
+  html += '<div style="font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:2px;color:var(--god);'
+        + 'text-align:center;padding:10px 0 14px">&#127922; TABLAS D20 — ' + lore.tl.toUpperCase() + '</div>';
+
+  tables.forEach(function(tbl, ti){
+    const resultId = 'mazo-result-' + ti;
+    const hlId     = 'mazo-hl-' + ti;
+
+    html += '<div class="mazo-card">';
+
+    // Card header with roll button
+    html += '<div class="mazo-card-header">'
+          + '<div><div class="mazo-card-title">' + tbl.title + '</div>'
+          + '<div class="mazo-card-sub">' + tbl.sub + '</div></div>'
+          + '<div style="display:flex;align-items:center;gap:10px">'
+          + '<span class="d20-result" id="' + resultId + '">—</span>'
+          + '<button class="d20-roll-btn" onclick="rollD20(' + ti + ')">'
+          + '&#127922; D20</button>'
+          + '</div>'
+          + '</div>';
+
+    // Table
+    html += '<div style="overflow-x:auto"><table class="d20-table">';
+    html += '<thead><tr><th>&#127922;</th><th>RESULTADO</th></tr></thead><tbody id="' + hlId + '">';
+
+    tbl.rows.forEach(function(row){
+      html += '<tr id="mazo-row-' + ti + '-' + row[0] + '">'
+            + '<td>' + row[0] + '</td>'
+            + '<td>' + row[1] + '</td>'
+            + '</tr>';
+    });
+
+    html += '</tbody></table></div></div>';
+  });
+
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function rollD20(tableIdx){
+  const roll = Math.floor(Math.random() * 20) + 1;
+  const resultEl = document.getElementById('mazo-result-' + tableIdx);
+
+  if(resultEl){
+    resultEl.classList.remove('rolling');
+    void resultEl.offsetWidth; // force reflow
+    resultEl.textContent = roll;
+    resultEl.classList.add('rolling');
+  }
+
+  // Highlight matching row
+  // First clear all highlights for this table
+  const lore   = currentAdventure && currentAdventure.lore;
+  const ty     = lore ? (lore.ty || 'Mazmorra') : 'Mazmorra';
+  const tables = MAZO_TABLES[ty] || MAZO_TABLES['Mazmorra'];
+  const tbl    = tables[tableIdx];
+  if(tbl){
+    tbl.rows.forEach(function(row){
+      const rowEl = document.getElementById('mazo-row-' + tableIdx + '-' + row[0]);
+      if(rowEl){
+        rowEl.style.background = '';
+        rowEl.style.color = '';
+      }
+    });
+    const target = document.getElementById('mazo-row-' + tableIdx + '-' + roll);
+    if(target){
+      target.style.background = 'rgba(201,150,42,.18)';
+      target.style.color = 'var(--go)';
+      setTimeout(function(){
+        target.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }, 200);
+    }
+  }
+}
+
+
 function initSessionScreen(){
   const raw=localStorage.getItem(LSK);
   let saveData=null;
