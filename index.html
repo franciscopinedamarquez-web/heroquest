@@ -982,30 +982,108 @@ function rEq(h,id){return(h.eq||[]).map((e,i)=>`<div class="esl" onclick="openEQ
 function rSp(h,id){if(!h.sp?.length)return`<div style="padding:11px 14px;font-size:13px;color:var(--stl);font-style:italic">Sin hechizos aprendidos.</div>`;return h.sp.map((s,i)=>`<div class="spsl"><span style="font-size:24px;width:32px;text-align:center">${s.ico||'&#10024;'}</span><div style="flex:1"><div style="font-family:'Cinzel',serif;font-size:13px;color:var(--pa)">${s.nm}</div><div style="font-size:12px;color:var(--mg)">${s.co||''}</div><div style="font-size:12px;color:var(--stl);font-style:italic">${s.ds}</div></div><button class="sprm" onclick="remSp(${id},${i})">X</button></div>`).join('')}
 function rInv(h,id){if(!h.inv?.length)return`<div style="padding:11px 14px;font-size:13px;color:var(--stl);font-style:italic">Inventario vacio.</div>`;return h.inv.map((it,i)=>`<div class="ivit"><span style="font-size:22px;width:30px;text-align:center">${it.ico||'&#128230;'}</span><div style="flex:1"><div style="font-size:14px;color:var(--pa);font-weight:600">${it.nm}</div><div style="font-size:12px;color:var(--stl);font-style:italic">${it.ds||''}</div></div><div style="font-family:'Cinzel',serif;font-size:14px;color:var(--go);min-width:24px;text-align:center">${it.qty||1}</div><div style="display:flex;gap:3px"><button class="ibt" onclick="adjHI(${id},${i},-1)">-</button><button class="ibt" onclick="adjHI(${id},${i},1)">+</button><button class="ibt del" onclick="remHI(${id},${i})">X</button></div></div>`).join('')}
 function showD(id){
-  const h=heroes.find(x=>x.id===id);if(!h)return;
-  if(!h.sp)h.sp=[];if(!h.inv)h.inv=[];
-  const p=document.createElement('div');p.className='dpanel';p.id='dpanel';
-  const dAvatarContent=h.photo?`<img src="${h.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0">`:`${h.ico}`;
-  p.innerHTML=`<div class="dtb"><button class="bbtn" onclick="closeD()">&#8249;</button><span class="dttl">FICHA DE HEROE</span><button onclick="revive(${id})" style="background:none;border:1px solid var(--grd);border-radius:3px;color:var(--gr);font-family:'Cinzel',serif;font-size:8px;padding:4px 8px;cursor:pointer;touch-action:manipulation">REVIVIR</button></div>
-  <div class="dhdr"><div style="position:relative;flex-shrink:0">
-      <div class="dav" style="background:radial-gradient(circle at 40% 35%,${h.col}55,${h.col}11);position:relative;overflow:hidden;cursor:pointer" onclick="document.getElementById('dp-photo-${id}').click()">${dAvatarContent}</div>
-      <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;background:var(--god);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:2px solid #1a1208" onclick="document.getElementById('dp-photo-${id}').click()">&#128247;</div>
-      <input type="file" id="dp-photo-${id}" accept="image/*" style="display:none" onchange="dpUpdatePhoto(${id},this)">
-    </div><div><div class="dname">${h.name}</div><div class="dsubt">${h.cls} &bull; Nivel <span id="d-lv">${h.level}</span></div>${h.bonusName?`<div style="font-size:10px;color:var(--god);font-style:italic;font-family:'Cinzel',serif;letter-spacing:1px;margin-top:2px">${h.bonusName}</div>`:''}<div class="dgold">&#128176; <span id="d-go">${h.gold}</span> oros</div></div></div>
-  <div class="scard"><div class="sct">ESTADISTICAS</div>
-    <div class="sadj"><div class="alb">Vida<small>Max: ${h.maxHp}</small></div><div class="acls"><button class="abtn" onclick="adjD(${id},'hp',-1)">-</button><span class="aval" id="d-hp">${h.hp}</span><button class="abtn" onclick="adjD(${id},'hp',1)">+</button></div></div>
-    <div class="sadj"><div class="alb">Mana<small>Max: ${h.maxMp}</small></div><div class="acls"><button class="abtn" onclick="adjD(${id},'mp',-1)">-</button><span class="aval" id="d-mp">${h.mp}</span><button class="abtn" onclick="adjD(${id},'mp',1)">+</button></div></div>
-    <div class="sadj"><div class="alb">Oro<small>Propias</small></div><div class="acls"><button class="abtn" onclick="adjD(${id},'gold',-10)">-</button><span class="aval" id="d-go2">${h.gold}</span><button class="abtn" onclick="adjD(${id},'gold',10)">+</button></div></div>
-    <div class="sadj"><div class="alb">Nivel<small>1-10</small></div><div class="acls"><button class="abtn" onclick="adjD(${id},'level',-1)">-</button><span class="aval" id="d-lv2">${h.level}</span><button class="abtn" onclick="adjD(${id},'level',1)">+</button></div></div>
-  </div>
-  <div class="scard" id="d-eq"><div class="sct">EQUIPAMIENTO <button class="sctb" onclick="openEQ(${id},-1)">+ ANADIR</button></div>${rEq(h,id)}</div>
-  <div class="scard" id="d-sp"><div class="sct">HECHIZOS <button class="sctb" onclick="openSP(${id})">+ HECHIZO</button></div>${rSp(h,id)}</div>
-  <div class="scard" id="d-iv"><div class="sct">INVENTARIO <button class="sctb" onclick="openCI('inv-hero')">+ ANADIR</button></div>${rInv(h,id)}</div>
-  <div class="scard"><div class="sct">HABILIDADES</div>${h.sk.map(s=>`<div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:'Cinzel',serif;font-size:11px;color:var(--pa)">${s.n}</span><span style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:2px;border:1px solid;${s.pasiva?'color:var(--gr);border-color:var(--grd);background:rgba(42,90,42,.2)':'color:var(--go);border-color:var(--god);background:rgba(201,150,42,.15)'}">${s.pasiva?'PASIVA':'ACTIVA'}</span></div>${s.c?`<div style="font-size:9px;color:var(--mg);margin-bottom:2px">${s.c}</div>`:''}<div style="font-size:11px;color:var(--stl);font-style:italic">${s.d}</div></div>`).join('')}</div>
-  <div class="scard"><div class="sct">NOTAS DEL HEROE</div><textarea class="nfld" placeholder="Anotaciones personales..." rows="3" onblur="saveHN(${id},this.value)" onchange="saveHN(${id},this.value)">${h.notes||''}</textarea></div>
-  <div style="padding:13px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><button onclick="revive(${id})" style="background:linear-gradient(135deg,var(--grd),#1a3010);border:1px solid var(--grd);border-radius:4px;color:var(--gr);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;padding:11px;cursor:pointer;touch-action:manipulation">&#10024; REVIVIR</button><button onclick="delH(${id})" style="background:linear-gradient(135deg,rgba(80,15,15,.7),rgba(50,10,10,.7));border:1px solid var(--bl);border-radius:4px;color:var(--bl);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;padding:11px;cursor:pointer;touch-action:manipulation">&#128128; ELIMINAR</button></div>`;
+  const h=heroes.find(x=>x.id===id);
+  if(!h)return;
+  if(!h.sp)h.sp=[];
+  if(!h.inv)h.inv=[];
+
+  const p=document.createElement('div');
+  p.className='dpanel';
+  p.id='dpanel';
+
+  // Build avatar
+  const avContent = h.photo
+    ? '<img src="'+h.photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0">'
+    : h.ico;
+
+  // Build bonus name line
+  const bonusLine = h.bonusName
+    ? '<div style="font-size:10px;color:var(--god);font-style:italic;font-family:\'Cinzel\',serif;letter-spacing:1px;margin-top:2px">'+h.bonusName+'</div>'
+    : '';
+
+  // Build skills
+  const skillsHtml = h.sk.map(function(s){
+    const badge = s.pasiva
+      ? '<span style="font-family:\'Cinzel\',serif;font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:2px;border:1px solid;color:var(--gr);border-color:var(--grd);background:rgba(42,90,42,.2)">PASIVA</span>'
+      : '<span style="font-family:\'Cinzel\',serif;font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:2px;border:1px solid;color:var(--go);border-color:var(--god);background:rgba(201,150,42,.15)">ACTIVA</span>';
+    const costLine = s.c ? '<div style="font-size:10px;color:var(--mg);margin-bottom:2px">'+s.c+'</div>' : '';
+    return '<div style="padding:10px 13px;border-bottom:1px solid rgba(255,255,255,.04)">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+      + '<span style="font-family:\'Cinzel\',serif;font-size:13px;color:var(--pa)">'+s.n+'</span>'
+      + badge
+      + '</div>'
+      + costLine
+      + '<div style="font-size:12px;color:var(--stl);font-style:italic">'+s.d+'</div>'
+      + '</div>';
+  }).join('');
+
+  p.innerHTML =
+    '<div class="dtb">'
+      + '<button class="bbtn" onclick="closeD()">&#8249;</button>'
+      + '<span class="dttl">FICHA DE HEROE</span>'
+    + '</div>'
+
+    + '<div class="dhdr">'
+      + '<div style="position:relative;flex-shrink:0">'
+        + '<div class="dav" style="background:radial-gradient(circle at 40% 35%,'+h.col+'55,'+h.col+'11);position:relative;overflow:hidden;cursor:pointer" onclick="document.getElementById(\'dp-photo-'+id+'\').click()">'+avContent+'</div>'
+        + '<div style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--god);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:2px solid #1a1208" onclick="document.getElementById(\'dp-photo-'+id+'\').click()">&#128247;</div>'
+        + '<input type="file" id="dp-photo-'+id+'" accept="image/*" style="display:none" onchange="dpUpdatePhoto('+id+',this)">'
+      + '</div>'
+      + '<div>'
+        + '<div class="dname">'+h.name+'</div>'
+        + '<div class="dsubt">'+h.cls+' &bull; Nivel <span id="d-lv">'+h.level+'</span></div>'
+        + bonusLine
+        + '<div class="dgold">&#128176; <span id="d-go">'+h.gold+'</span> oros</div>'
+      + '</div>'
+    + '</div>'
+
+    + '<div class="scard">'
+      + '<div class="sct">ESTADISTICAS</div>'
+      + '<div class="sadj"><div class="alb">Vida<small>Max: '+h.maxHp+'</small></div><div class="acls"><button class="abtn" onclick="adjD('+id+',\'hp\',-1)">-</button><span class="aval" id="d-hp">'+h.hp+'</span><button class="abtn" onclick="adjD('+id+',\'hp\',1)">+</button></div></div>'
+      + '<div class="sadj"><div class="alb">Mana<small>Max: '+h.maxMp+'</small></div><div class="acls"><button class="abtn" onclick="adjD('+id+',\'mp\',-1)">-</button><span class="aval" id="d-mp">'+h.mp+'</span><button class="abtn" onclick="adjD('+id+',\'mp\',1)">+</button></div></div>'
+      + '<div class="sadj"><div class="alb">Oro<small>Propias</small></div><div class="acls"><button class="abtn" onclick="adjD('+id+',\'gold\',-10)">-</button><span class="aval" id="d-go2">'+h.gold+'</span><button class="abtn" onclick="adjD('+id+',\'gold\',10)">+</button></div></div>'
+      + '<div class="sadj"><div class="alb">Nivel<small>1-10</small></div><div class="acls"><button class="abtn" onclick="adjD('+id+',\'level\',-1)">-</button><span class="aval" id="d-lv2">'+h.level+'</span><button class="abtn" onclick="adjD('+id+',\'level\',1)">+</button></div></div>'
+    + '</div>'
+
+    + '<div class="scard" id="d-eq">'
+      + '<div class="sct">EQUIPAMIENTO'
+        + '<button class="sctb" onclick="openEQ('+id+',-1)">+ ANADIR</button>'
+      + '</div>'
+      + rEq(h,id)
+    + '</div>'
+
+    + '<div class="scard" id="d-sp">'
+      + '<div class="sct">HECHIZOS'
+        + '<button class="sctb" onclick="openSP('+id+')">+ HECHIZO</button>'
+      + '</div>'
+      + rSp(h,id)
+    + '</div>'
+
+    + '<div class="scard" id="d-iv">'
+      + '<div class="sct">INVENTARIO'
+        + '<button class="sctb" onclick="openCI(\'inv-hero\')">+ ANADIR</button>'
+      + '</div>'
+      + rInv(h,id)
+    + '</div>'
+
+    + '<div class="scard">'
+      + '<div class="sct">HABILIDADES</div>'
+      + skillsHtml
+    + '</div>'
+
+    + '<div class="scard">'
+      + '<div class="sct">NOTAS DEL HEROE</div>'
+      + '<textarea class="nfld" placeholder="Anotaciones personales..." rows="3" onblur="saveHN('+id+',this.value)" onchange="saveHN('+id+',this.value)">'+( h.notes||'' )+'</textarea>'
+    + '</div>'
+
+    + '<div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      + '<button onclick="revive('+id+')" style="background:linear-gradient(135deg,var(--grd),#1a3010);border:1px solid var(--grd);border-radius:4px;color:var(--gr);font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#10024; REVIVIR</button>'
+      + '<button onclick="delH('+id+')" style="background:linear-gradient(135deg,rgba(80,15,15,.7),rgba(50,10,10,.7));border:1px solid var(--bl);border-radius:4px;color:var(--bl);font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#128128; ELIMINAR</button>'
+    + '</div>';
+
   document.body.appendChild(p);
 }
+
 function closeD(){const p=document.getElementById('dpanel');if(p){p.style.opacity='0';p.style.transform='translateX(28px)';setTimeout(()=>p.remove(),200)}}
 function adjD(id,st,d){const h=heroes.find(x=>x.id===id);if(!h)return;if(st==='hp')h.hp=Math.max(0,Math.min(h.maxHp,h.hp+d));if(st==='mp')h.mp=Math.max(0,Math.min(h.maxMp,h.mp+d));if(st==='gold')h.gold=Math.max(0,h.gold+d);if(st==='level')h.level=Math.max(1,Math.min(10,h.level+d));const m={hp:'d-hp',mp:'d-mp',gold:'d-go',level:'d-lv'};[m[st],m[st]+'2'].forEach(k=>{const e=document.getElementById(k);if(e)e.textContent=h[st];});if(st==='gold'){const e=document.getElementById('d-go');if(e)e.textContent=h.gold;}rH();saveS();if(st==='hp'&&h.hp===0)toast('&#128128; '+h.name+' ha caido');}
 function saveHN(id,t){const h=heroes.find(x=>x.id===id);if(h){h.notes=t;saveS()}}
