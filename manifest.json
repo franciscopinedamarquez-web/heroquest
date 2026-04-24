@@ -1,27 +1,2375 @@
-{
-  "name": "HeroQuest — Gestor de Héroes",
-  "short_name": "HeroQuest",
-  "description": "Gestiona tus héroes en partidas de HeroQuest",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#2a2420",
-  "theme_color": "#1a0f00",
-  "orientation": "portrait",
-  "lang": "es",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "categories": ["games", "utilities"],
-  "screenshots": []
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+  <!-- v5 — forced cache bust -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HeroQuest">
+<meta name="theme-color" content="#1a0f00">
+<link rel="manifest" href="./manifest.json">
+<title>HeroQuest</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--pa:#f2e8d0;--pad:#ddd0a8;--bl:#8b1a1a;--bld:#5c0f0f;--go:#c9962a;--god:#7a5a18;--gol:#f0c040;--st:#2a2420;--stl:#5a504a;--mb:#2a4a7f;--mg:#4a80d4;--gr:#5ab05a;--grd:#2a5a2a;--pu:#7a2a9a;--pul:#b060d4;--fs:15px;--fs-sm:12px;--fs-xs:11px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{font-family:'Crimson Pro',serif;background:var(--st);color:var(--pa);max-width:430px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom);font-size:16px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(201,150,42,.07) 0%,transparent 55%),radial-gradient(ellipse at 80% 100%,rgba(139,26,26,.09) 0%,transparent 55%);pointer-events:none;z-index:0}
+header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0d0a07,var(--st));border-bottom:2px solid var(--god);padding:11px 16px 6px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.8)}
+header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);letter-spacing:8px;margin-top:1px}
+.logo{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--go);letter-spacing:3px}
+.logo span{color:var(--bl)}
+.sind{position:absolute;top:10px;right:12px;font-size:9px;color:var(--god);font-family:'Cinzel',serif;opacity:0;transition:opacity .5s}
+.sind.v{opacity:1}
+.tabs{display:flex;background:#12100d;border-bottom:1px solid var(--god);position:sticky;top:58px;z-index:99}
+.tb{flex:1;padding:10px 2px 8px;background:none;border:none;color:var(--stl);font-family:'Cinzel',serif;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;touch-action:manipulation;transition:color .2s}
+.tb .ti{font-size:18px}
+.tb.active{color:var(--go);border-bottom-color:var(--go);background:rgba(201,150,42,.06)}
+.view{display:none;animation:fIn .25s ease;padding-bottom:24px}
+.view.active{display:block}
+@keyframes fIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.stit{font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;color:var(--god);text-align:center;padding:11px 0 3px;text-transform:uppercase}
+.scard{margin:10px 14px 0;background:linear-gradient(135deg,#1e1810,#2a2218);border:1px solid rgba(201,150,42,.2);border-radius:4px;overflow:hidden}
+.sct{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--god);padding:7px 13px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(201,150,42,.1);text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
+.sctb{background:none;border:1px solid rgba(201,150,42,.3);color:var(--god);font-family:'Cinzel',serif;font-size:8px;padding:3px 7px;border-radius:2px;cursor:pointer;touch-action:manipulation}
+.sctb:active{background:rgba(201,150,42,.1)}
+/* hero cards */
+.hgrid{padding:13px;display:flex;flex-direction:column;gap:11px}
+.hcard{background:linear-gradient(135deg,#1e1810,#2a2218,#1a150e);border:1px solid var(--god);border-radius:4px;overflow:hidden;transition:transform .15s;touch-action:manipulation}
+.hcard:active{transform:scale(.985)}
+.hcard.dead{opacity:.5;filter:grayscale(.6)}
+.hch{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(201,150,42,.15)}
+.hav{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid var(--god);flex-shrink:0}
+.hnm{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--go)}
+.hcl{font-size:14px;color:var(--pad);font-style:italic}
+.hlv{background:var(--bld);border:1px solid var(--bl);color:var(--pa);font-family:'Cinzel',serif;font-size:12px;padding:3px 7px;border-radius:2px;white-space:nowrap}
+.hsts{display:grid;grid-template-columns:repeat(4,1fr)}
+.sb{padding:6px 3px;text-align:center;border-right:1px solid rgba(201,150,42,.1)}
+.sb:last-child{border-right:none}
+.slb{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;color:var(--stl);text-transform:uppercase;display:block;margin-bottom:1px}
+.sv{font-family:'Cinzel',serif;font-size:23px;font-weight:700;line-height:1}
+.hp{color:var(--bl)}.mp{color:var(--mg)}.atk{color:var(--go)}.def{color:var(--gr)}
+.smx{font-size:11px;color:var(--stl);display:block}
+.hbrs{padding:6px 12px 8px;display:flex;flex-direction:column;gap:4px}
+.brow{display:flex;align-items:center;gap:6px}
+.blb{font-size:11px;font-family:'Cinzel',serif;color:var(--stl);width:14px}
+.btk{flex:1;height:6px;background:rgba(0,0,0,.5);border-radius:1px;overflow:hidden}
+.bf{height:100%;border-radius:1px;transition:width .4s ease}
+.hpb{background:linear-gradient(90deg,var(--bld),var(--bl))}
+.mpb{background:linear-gradient(90deg,var(--mb),var(--mg))}
+.btx{font-size:13px;color:var(--pad);min-width:30px;text-align:right}
+.cact{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(201,150,42,.1)}
+.cab{padding:12px 2px;background:none;border:none;border-right:1px solid rgba(201,150,42,.1);font-size:21px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;color:var(--pa)}
+.cab:last-child{border-right:none;font-family:'Cinzel',serif;font-size:9px;color:var(--god)}
+.cab:active{background:rgba(255,255,255,.05)}
+/* detail panel */
+.dpanel{position:fixed;inset:0;background:var(--st);z-index:1500;overflow-y:auto;max-width:430px;margin:0 auto;animation:slR .25s ease;padding-bottom:50px}
+@keyframes slR{from{transform:translateX(28px);opacity:0}to{transform:translateX(0);opacity:1}}
+.dtb{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#0d0a07,var(--st));padding:10px 13px;border-bottom:1px solid var(--god);display:flex;align-items:center;gap:10px}
+.bbtn{background:none;border:none;color:var(--go);font-size:22px;cursor:pointer;padding:2px;touch-action:manipulation}
+.dttl{font-family:'Cinzel',serif;font-size:11px;color:var(--god);letter-spacing:2px;flex:1}
+.dhdr{background:linear-gradient(180deg,#0d0a07,#1a150e);padding:16px 13px;border-bottom:1px solid var(--god);display:flex;align-items:center;gap:13px}
+.dav{width:82px;height:82px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;border:3px solid var(--go);box-shadow:0 0 16px rgba(201,150,42,.3)}
+.dname{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--go)}
+.dsubt{font-size:14px;color:var(--pad);font-style:italic}
+.dgold{font-family:'Cinzel',serif;font-size:12px;color:var(--gol);margin-top:3px}
+.sadj{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.sadj:last-child{border-bottom:none}
+.alb{font-size:16px;color:var(--pad);flex:1}
+.alb small{display:block;font-size:10px;color:var(--stl)}
+.acls{display:flex;align-items:center}
+.abtn{width:42px;height:42px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);color:var(--go);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:2px;touch-action:manipulation}
+.abtn:active{background:rgba(201,150,42,.2);transform:scale(.9)}
+.aval{min-width:56px;text-align:center;font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--pa)}
+.esl{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s}
+.esl:last-child{border-bottom:none}
+.esl:active{background:rgba(201,150,42,.07)}
+.spsl{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
+.spsl:last-child{border-bottom:none}
+.sprm{background:none;border:none;color:var(--stl);font-size:15px;cursor:pointer;touch-action:manipulation}
+.sprm:active{color:var(--bl)}
+.ivit{display:flex;align-items:center;gap:9px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.ivit:last-child{border-bottom:none}
+.nfld{width:100%;min-height:90px;background:rgba(0,0,0,.3);border:1px solid rgba(201,150,42,.2);color:var(--pa);font-family:'Crimson Pro',serif;font-size:14px;line-height:1.5;padding:10px;resize:vertical;outline:none}
+.nfld:focus{border-color:var(--god)}
+.nfld::placeholder{color:var(--stl);font-style:italic}
+/* rarity */
+.rc{color:#aaa}.ru{color:var(--gr)}.rr{color:var(--mg)}.rl{color:var(--go)}.rm{color:var(--pul)}
+/* SKIRMISH */
+.skv{padding:13px;padding-bottom:80px}
+.skbd{background:linear-gradient(135deg,#1a1208,#221a0e);border:2px solid var(--god);border-radius:6px;overflow:hidden;margin-bottom:11px}
+.bdhd{padding:12px;border-bottom:1px solid rgba(201,150,42,.2);display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.bdtl{font-family:'Cinzel',serif;font-size:14px;color:var(--go)}
+.bdst{font-size:10px;color:var(--stl);font-style:italic;margin-top:2px}
+.bphs{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;padding:4px 8px;border-radius:2px;border:1px solid;white-space:nowrap;flex-shrink:0}
+.ph-ex{color:var(--go);border-color:var(--god);background:rgba(201,150,42,.1)}
+.ph-cm{color:var(--bl);border-color:var(--bld);background:rgba(139,26,26,.1)}
+.ph-ev{color:var(--mg);border-color:var(--mb);background:rgba(42,74,127,.15)}
+.ph-rw{color:var(--gr);border-color:var(--grd);background:rgba(42,90,42,.15)}
+/* ── SESSION SCREEN ── */
+#session-screen{
+  position:fixed;inset:0;z-index:1000;
+  background:linear-gradient(180deg,#0d0a07 0%,#1a1208 50%,#0d0a07 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:30px 24px;max-width:430px;margin:0 auto;
+  animation:fIn .4s ease;
 }
+.ss-logo{font-family:'Cinzel',serif;font-size:32px;font-weight:700;color:var(--go);
+  text-shadow:0 0 30px rgba(201,150,42,.5),0 2px 6px rgba(0,0,0,.9);
+  letter-spacing:4px;margin-bottom:4px;text-align:center}
+.ss-logo span{color:var(--bl)}
+.ss-sub{font-family:'Cinzel',serif;font-size:9px;letter-spacing:8px;color:var(--god);
+  text-align:center;margin-bottom:40px}
+.ss-emblem{font-size:64px;margin-bottom:8px;
+  filter:drop-shadow(0 0 16px rgba(201,150,42,.4));
+  animation:emblemPulse 3s ease-in-out infinite}
+@keyframes emblemPulse{0%,100%{filter:drop-shadow(0 0 10px rgba(201,150,42,.3))}
+  50%{filter:drop-shadow(0 0 24px rgba(201,150,42,.7))}}
+.ss-divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--god),transparent);margin:0 auto 28px}
+/* Save slot preview */
+.ss-save-preview{
+  width:100%;background:rgba(0,0,0,.5);
+  border:1px solid rgba(201,150,42,.3);border-radius:6px;
+  padding:12px 14px;margin-bottom:20px;position:relative;overflow:hidden
+}
+.ss-save-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--go),transparent)}
+.ss-save-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;
+  color:var(--god);text-transform:uppercase;margin-bottom:8px}
+.ss-save-heroes{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.ss-hero-chip{display:flex;align-items:center;gap:5px;
+  background:rgba(42,30,18,.8);border:1px solid rgba(201,150,42,.25);
+  border-radius:20px;padding:4px 9px 4px 4px}
+.ss-hero-avatar{width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;border:1px solid var(--god);overflow:hidden;flex-shrink:0}
+.ss-hero-name{font-family:'Cinzel',serif;font-size:10px;color:var(--pa);letter-spacing:.5px}
+.ss-save-meta{font-size:10px;color:var(--stl);font-style:italic}
+.ss-no-save{font-size:12px;color:var(--stl);font-style:italic;
+  text-align:center;padding:8px 0}
+/* Buttons */
+.ss-btn{
+  width:100%;padding:15px;border-radius:5px;border:none;
+  font-family:'Cinzel',serif;font-size:13px;font-weight:600;
+  letter-spacing:2px;cursor:pointer;touch-action:manipulation;
+  transition:all .18s;margin-bottom:10px;display:flex;
+  align-items:center;justify-content:center;gap:10px
+}
+.ss-btn:active{transform:scale(.97)}
+.ss-btn-continue{
+  background:linear-gradient(135deg,#3a2810,#2a1e08);
+  border:2px solid var(--go);color:var(--go);
+  box-shadow:0 0 20px rgba(201,150,42,.2)
+}
+.ss-btn-continue:active{box-shadow:0 0 30px rgba(201,150,42,.4)}
+.ss-btn-new{
+  background:linear-gradient(135deg,var(--bl),var(--bld));
+  border:1px solid var(--bl);color:var(--pa)
+}
+.ss-btn-delete{
+  background:none;border:1px solid rgba(255,255,255,.1);
+  color:var(--stl);font-size:10px;padding:10px;margin-bottom:0
+}
+.ss-version{font-size:9px;color:rgba(90,80,74,.6);
+  font-family:'Cinzel',serif;letter-spacing:1px;
+  position:absolute;bottom:16px;text-align:center}
+/* ── ORACLE / SKIRMISH ── */
+.skv{padding:14px;padding-bottom:80px}
+/* Lore card */
+.lore-card{background:linear-gradient(160deg,#1a1005,#120c04);border:1px solid var(--god);border-radius:6px;overflow:hidden;margin-bottom:12px;position:relative}
+.lore-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--go),transparent)}
+.lore-header{padding:12px 14px 8px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(201,150,42,.15)}
+.lore-badge{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;padding:4px 9px;border-radius:2px;border:1px solid;text-transform:uppercase}
+.lore-title{font-family:'Cinzel',serif;font-size:21px;font-weight:700;color:var(--go);margin-bottom:2px}
+.lore-obj{font-size:11px;color:var(--god);font-family:'Cinzel',serif;letter-spacing:.5px}
+.lore-body{padding:14px 16px;font-size:15px;color:var(--pad);line-height:1.7;font-style:italic;border-bottom:1px solid rgba(201,150,42,.1)}
+.lore-footer{padding:8px 14px;display:flex;gap:8px;flex-wrap:wrap}
+.lore-tag{font-size:12px;font-family:'Cinzel',serif;padding:6px 12px;border-radius:4px;background:rgba(0,0,0,.5);border:1px solid;cursor:pointer;touch-action:manipulation;transition:all .18s;display:inline-flex;align-items:center;gap:5px}
+.lore-tag:active{transform:scale(.95);filter:brightness(1.3)}
+/* Condition popup */
+.cond-overlay{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px;animation:fIn .2s ease}
+.cond-popup{background:linear-gradient(160deg,#1e1810,#100c06);border-radius:10px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,.95);animation:popIn .25s cubic-bezier(.34,1.4,.64,1)}
+.cond-header{padding:16px 18px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.cond-name{font-family:'Cinzel',serif;font-size:20px;font-weight:700;margin-bottom:4px}
+.cond-type{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--god)}
+.cond-body{padding:16px 18px}
+.cond-effect{font-size:15px;color:var(--pad);line-height:1.7;font-style:italic;margin-bottom:14px}
+.cond-rules{display:flex;flex-direction:column;gap:8px}
+.cond-rule{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(0,0,0,.35);border-radius:5px;border:1px solid rgba(255,255,255,.07)}
+.cond-rule-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.cond-rule-txt{font-size:13px;color:var(--pa);line-height:1.5}
+.cond-close{width:100%;margin:14px 18px 0;padding:12px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:5px;color:var(--god);font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;cursor:pointer;touch-action:manipulation}
+/* Oracle question categories */
+.oracle-section{margin-bottom:14px}
+.oracle-cat-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--god);text-transform:uppercase;padding:10px 14px 6px;display:flex;align-items:center;gap:8px}
+.oracle-cat-title::before,.oracle-cat-title::after{content:'';flex:1;height:1px;background:rgba(201,150,42,.2)}
+.oracle-questions{display:flex;flex-direction:column;gap:6px;padding:0 14px}
+/* Question button */
+.oq-btn{background:linear-gradient(135deg,#1e1810,#2a2218);border:1px solid rgba(201,150,42,.25);border-radius:5px;padding:0;overflow:hidden;cursor:pointer;touch-action:manipulation;transition:all .18s;text-align:left;width:100%}
+.oq-btn:active{transform:scale(.98);border-color:var(--god)}
+.oq-inner{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.oq-ico{font-size:20px;flex-shrink:0;width:28px;text-align:center}
+.oq-text{flex:1}
+.oq-label{font-family:'Cinzel',serif;font-size:15px;color:var(--pa);letter-spacing:.5px;display:block;margin-bottom:1px}
+.oq-hint{font-size:13px;color:var(--stl);font-style:italic}
+.oq-arrow{color:var(--god);font-size:14px;flex-shrink:0}
+.oq-btn.used{border-color:rgba(201,150,42,.1);opacity:.6}
+.oq-btn.used .oq-label{color:var(--stl)}
+/* Answer panel */
+.oracle-answer{margin:0 14px 14px;background:linear-gradient(135deg,#0d0a07,#1a1208);border:2px solid var(--god);border-radius:5px;overflow:hidden;animation:answerIn .3s ease}
+@keyframes answerIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.oa-header{padding:9px 12px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(201,150,42,.2);display:flex;align-items:center;gap:8px}
+.oa-question{font-family:'Cinzel',serif;font-size:10px;color:var(--god);letter-spacing:1px;flex:1}
+.oa-dice{font-family:'Cinzel',serif;font-size:10px;color:var(--stl)}
+.oa-body{padding:12px 14px}
+.oa-result{font-family:'Cinzel',serif;font-size:19px;font-weight:700;margin-bottom:6px}
+.oa-detail{font-size:16px;color:var(--pad);line-height:1.6;font-style:italic}
+.oa-effect{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:rgba(0,0,0,.3);border-radius:3px;border:1px solid rgba(201,150,42,.15)}
+.oa-effect-ico{font-size:18px}
+.oa-effect-txt{font-size:11px;color:var(--pa);font-family:'Cinzel',serif;letter-spacing:.5px}
+.oa-actions{padding:8px 12px;border-top:1px solid rgba(201,150,42,.1);display:flex;gap:6px;flex-wrap:wrap}
+.oa-act-btn{background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:3px;color:var(--god);font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;padding:7px 10px;cursor:pointer;touch-action:manipulation;transition:all .15s}
+.oa-act-btn:active{background:rgba(201,150,42,.15);color:var(--go)}
+.oa-act-btn.pri{background:linear-gradient(135deg,var(--bl),var(--bld));border-color:var(--bl);color:var(--pa)}
+.oa-act-btn.gre{background:linear-gradient(135deg,var(--grd),#1a3010);border-color:var(--grd);color:var(--gr)}
+/* Log */
+.sk-log{margin:0 14px;padding:9px 12px;background:rgba(0,0,0,.3);border:1px solid rgba(201,150,42,.1);border-radius:4px;max-height:130px;overflow-y:auto}
+.sk-log-title{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--stl);margin-bottom:5px;text-transform:uppercase}
+.sk-log-item{font-size:13px;color:var(--pad);padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);line-height:1.4}
+.sk-log-item:last-child{border-bottom:none}
+/* New adventure button */
+.new-adv-btn{display:block;width:calc(100% - 28px);margin:14px auto 0;background:linear-gradient(135deg,var(--bl),var(--bld));border:1px solid var(--bl);border-radius:5px;color:var(--pa);font-family:'Cinzel',serif;font-size:12px;font-weight:600;letter-spacing:2px;padding:13px;cursor:pointer;touch-action:manipulation;text-align:center}
+.new-adv-btn:active{transform:scale(.98);opacity:.9}
+/* ── END ORACLE ── */
+/* toast */
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-16px);background:rgba(20,12,0,.97);border:1px solid var(--god);color:var(--pa);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;padding:8px 16px;border-radius:4px;opacity:0;pointer-events:none;transition:all .3s;z-index:700;white-space:nowrap;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.fab{
+  position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));right:20px;
+  width:62px;height:62px;
+  background:linear-gradient(145deg,#a02020,#6a1010);
+  border:2px solid #c03030;border-radius:50%;
+  color:#f2e8d0;font-size:32px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;touch-action:manipulation;
+  box-shadow:0 4px 24px rgba(139,26,26,.7),0 0 0 4px rgba(139,26,26,.15);
+  z-index:200;transition:transform .15s,box-shadow .15s;
+}
+.fab:active{transform:scale(.88);box-shadow:0 2px 10px rgba(139,26,26,.5)}
+.fab.hidden{display:none}
+.mazo-view{padding:14px;padding-bottom:80px}
+.mazo-card{background:linear-gradient(135deg,#1e1810,#2a2218);border:1px solid rgba(201,150,42,.2);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.mazo-card-header{padding:12px 14px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(201,150,42,.15);display:flex;align-items:center;justify-content:space-between}
+.mazo-card-title{font-family:'Cinzel',serif;font-size:14px;color:var(--go);letter-spacing:.5px}
+.mazo-card-sub{font-size:11px;color:var(--stl);font-style:italic;margin-top:2px}
+.d20-table{width:100%;border-collapse:collapse}
+.d20-table th{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--god);text-transform:uppercase;padding:8px 10px;background:rgba(0,0,0,.3);text-align:left;border-bottom:1px solid rgba(201,150,42,.1)}
+.d20-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;color:var(--pad);vertical-align:top;line-height:1.4}
+.d20-table td:first-child{font-family:'Cinzel',serif;font-size:12px;color:var(--go);font-weight:700;width:52px;text-align:center}
+.d20-table tr:last-child td{border-bottom:none}
+.d20-table tr:hover td{background:rgba(201,150,42,.04)}
+.d20-roll-btn{background:linear-gradient(135deg,#2a1e0a,#1a1208);border:2px solid var(--god);border-radius:6px;color:var(--go);font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;padding:10px 16px;cursor:pointer;touch-action:manipulation;transition:all .15s;display:flex;align-items:center;gap:8px}
+.d20-roll-btn:active{transform:scale(.94);border-color:var(--go)}
+.d20-result{font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:var(--go);text-shadow:0 0 16px rgba(201,150,42,.4);transition:all .3s}
+.d20-result.rolling{animation:diceRollAnim .4s ease}
+@keyframes diceRollAnim{0%{transform:scale(1.5) rotate(-10deg);opacity:0}60%{transform:scale(.9) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.empty{padding:52px 26px;text-align:center}
+.eico{font-size:48px;margin-bottom:12px;opacity:.4}
+.etxt{font-family:'Cinzel',serif;font-size:13px;color:var(--stl);letter-spacing:1px;line-height:1.8}
+
+/* ── MODAL OVERLAY ── */
+.movl{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;display:none;align-items:flex-end;justify-content:center;will-change:display;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.movl.open{display:flex}
+.modal{
+  background:linear-gradient(180deg,#1e1810 0%,#140f08 100%);
+  border:1px solid var(--god);border-top:2px solid var(--go);
+  border-bottom:none;border-radius:10px 10px 0 0;
+  width:100%;max-width:430px;
+  padding:20px 18px calc(18px + env(safe-area-inset-bottom));
+  animation:slUp .22s ease-out;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 -8px 40px rgba(0,0,0,.8);
+  will-change:transform;transform:translateZ(0);
+}
+@keyframes slUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mtit{
+  font-family:'Cinzel',serif;font-size:16px;font-weight:700;
+  color:var(--go);letter-spacing:1px;
+  margin-bottom:16px;
+  display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(201,150,42,.2);
+}
+.mcls{
+  background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);
+  border-radius:50%;width:28px;height:28px;
+  color:var(--stl);font-size:14px;
+  cursor:pointer;touch-action:manipulation;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.mcls:active{background:rgba(201,150,42,.15);color:var(--go)}
+
+/* ── FORM FIELDS ── */
+.ilb{
+  font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;
+  color:var(--god);text-transform:uppercase;
+  display:block;margin-bottom:5px;
+}
+.ifl{
+  width:100%;
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(201,150,42,.3);
+  border-bottom:2px solid var(--god);
+  border-radius:4px;
+  color:var(--pa);
+  font-family:'Crimson Pro',serif;font-size:16px;
+  padding:10px 12px;
+  margin-bottom:14px;
+  outline:none;
+  transition:border-color .2s;
+}
+.ifl:focus{border-color:var(--go);border-bottom-color:var(--go);background:rgba(0,0,0,.6)}
+.ifl::placeholder{color:var(--stl);font-style:italic}
+.slf{
+  width:100%;background:rgba(0,0,0,.5);
+  border:1px solid rgba(201,150,42,.3);border-radius:4px;
+  color:var(--pa);font-size:14px;padding:9px 11px;
+  margin-bottom:11px;outline:none;appearance:none;
+}
+
+/* ── PRIMARY BUTTON ── */
+.bpri{
+  width:100%;
+  background:linear-gradient(135deg,var(--bl) 0%,var(--bld) 100%);
+  border:1px solid rgba(139,26,26,.6);
+  border-top:1px solid rgba(180,50,50,.4);
+  border-radius:5px;
+  color:var(--pa);
+  font-family:'Cinzel',serif;font-size:12px;font-weight:700;
+  letter-spacing:2px;padding:13px;
+  cursor:pointer;margin-top:8px;
+  touch-action:manipulation;
+  transition:all .15s;
+  box-shadow:0 2px 12px rgba(139,26,26,.3),inset 0 1px 0 rgba(255,100,100,.1);
+}
+.bpri:active{transform:scale(.98);box-shadow:none}
+.bsec{
+  width:100%;background:rgba(0,0,0,.4);
+  border:1px solid rgba(201,150,42,.25);border-radius:4px;
+  color:var(--god);font-family:'Cinzel',serif;font-size:11px;
+  letter-spacing:1px;padding:10px;
+  cursor:pointer;touch-action:manipulation;
+  transition:all .15s;margin-top:6px;
+}
+.bsec:active{background:rgba(201,150,42,.1);color:var(--go)}
+.bdng{background:rgba(70,10,10,.5);border-color:rgba(139,26,26,.5);font-size:10px;padding:11px}
+
+/* ── RARITY BUTTONS ── */
+.rgrd{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
+.rbt{
+  background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);
+  border-radius:3px;color:#888;
+  font-family:'Cinzel',serif;font-size:8px;
+  padding:7px 2px;cursor:pointer;text-align:center;touch-action:manipulation;
+  transition:all .15s;
+}
+.rbt.sel{color:var(--go);border-color:var(--god);background:rgba(201,150,42,.12)}
+.rbt[data-r=common].sel{color:#bbb;border-color:#666;background:rgba(100,100,100,.1)}
+.rbt[data-r=uncommon].sel{color:var(--gr);border-color:var(--grd);background:rgba(42,90,42,.12)}
+.rbt[data-r=rare].sel{color:var(--mg);border-color:var(--mb);background:rgba(42,74,127,.12)}
+.rbt[data-r=legendary].sel{color:var(--go);border-color:var(--god);background:rgba(201,150,42,.12)}
+
+/* ── HERO CLASS BUTTONS ── */
+.htbt{
+  background:linear-gradient(160deg,#1e1810,#2a2010);
+  border:1px solid rgba(201,150,42,.25);
+  border-radius:6px;
+  color:var(--pad);
+  cursor:pointer;touch-action:manipulation;
+  transition:all .18s;
+  position:relative;overflow:hidden;
+}
+.htbt::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,150,42,.04),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.htbt.sel{
+  border-color:var(--go);border-width:2px;
+  background:linear-gradient(160deg,#2a1e0a,#3a2a10);
+  box-shadow:0 0 14px rgba(201,150,42,.25),inset 0 1px 0 rgba(201,150,42,.15);
+}
+.htbt.sel::before{opacity:1}
+.htbt:active{transform:scale(.96)}
+.hti{font-size:30px;line-height:1;display:block;margin-bottom:4px}
+.htn{
+  font-family:'Cinzel',serif;font-size:10px;font-weight:600;
+  letter-spacing:.5px;display:block;margin-bottom:3px;
+  color:var(--pa);
+}
+.htbt.sel .htn{color:var(--go)}
+.hts{font-size:8px;color:var(--stl);display:block;line-height:1.4}
+.htbt.sel .hts{color:var(--god)}
+
+/* ── CLASS CATEGORY HEADER ── */
+.cls-cat-hdr{
+  font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;
+  color:var(--god);text-transform:uppercase;
+  padding:10px 0 6px;
+  display:flex;align-items:center;gap:8px;
+}
+.cls-cat-hdr::before,.cls-cat-hdr::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,150,42,.3),transparent);
+}
+
+/* ── SELECTED CLASS PREVIEW STRIP ── */
+.cls-preview{
+  background:linear-gradient(135deg,rgba(201,150,42,.08),rgba(0,0,0,.3));
+  border:1px solid rgba(201,150,42,.2);border-radius:5px;
+  padding:10px 12px;margin-bottom:14px;
+  display:flex;align-items:center;gap:12px;
+  min-height:60px;
+}
+.cls-preview-ico{font-size:34px;line-height:1;flex-shrink:0}
+.cls-preview-info{flex:1}
+.cls-preview-name{font-family:'Cinzel',serif;font-size:14px;color:var(--go);font-weight:700;margin-bottom:2px}
+.cls-preview-cat{font-size:10px;color:var(--god);font-family:'Cinzel',serif;letter-spacing:1px;margin-bottom:4px}
+.cls-preview-stats{display:flex;gap:8px;flex-wrap:wrap}
+.cls-stat-pill{
+  font-family:'Cinzel',serif;font-size:9px;
+  padding:2px 7px;border-radius:10px;border:1px solid;
+}
+.cls-preview-skills{font-size:10px;color:var(--stl);font-style:italic;margin-top:4px;line-height:1.4}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">HERO<span>QUEST</span></div>
+  <span class="sind" id="sind">GUARDADO</span>
+</header>
+<nav class="tabs">
+  <button class="tb active" onclick="showTab('heroes',this)"><span class="ti">&#9876;&#65039;</span>HEROES</button>
+  <button class="tb" onclick="showTab('skirmish',this)"><span class="ti">&#128506;&#65039;</span>ESCARAMUZA</button>
+  <button class="tb" onclick="showTab('mazo',this)"><span class="ti">&#127922;</span>MAZO</button>
+  <button class="tb" onclick="showTab('notes',this)"><span class="ti">&#128214;</span>NOTAS</button>
+</nav>
+<div class="view active" id="view-heroes">
+  <div class="hgrid" id="hcon">
+    <div class="empty" id="ehero">
+      <div class="eico">&#127984;</div>
+      <div class="etxt">No hay heroes en la mazmorra.<br><br>Pulsa + para anadir<br>un aventurero.</div>
+    </div>
+  </div>
+</div>
+<div class="view" id="view-skirmish">
+  <div class="skv" id="skcon"></div>
+</div>
+</div>
+<div class="view" id="view-mazo">
+  <div class="mazo-view" id="mazocon">
+    <div style="padding:40px 20px;text-align:center">
+      <div style="font-size:64px;margin-bottom:16px;opacity:.4">&#127922;</div>
+      <div style="font-family:'Cinzel',serif;font-size:15px;color:var(--god);letter-spacing:2px;margin-bottom:10px">SIN MISION ACTIVA</div>
+      <div style="font-size:14px;color:var(--stl);font-style:italic;line-height:1.8">Inicia una nueva escaramuza para<br>generar las tablas D20 de la mision.</div>
+    </div>
+  </div>
+</div>
+<div class="view" id="view-notes">
+  <div class="nv">
+    <p class="stit">DIARIO DE CAMPANA</p>
+    <textarea class="nfld" id="cnotes" placeholder="Anota eventos, pistas, mapas..." rows="5"></textarea>
+    <p class="stit" style="margin-top:13px">TESORO DEL GRUPO</p>
+    <div id="tlist"></div>
+    <p class="stit" style="margin-top:13px">INVENTARIO DEL GRUPO</p>
+    <div id="ginv"></div>
+    <button class="bsec" style="margin-top:7px" onclick="openM('m-ginv')">+ Anadir objeto al grupo</button>
+  </div>
+</div>
+<button id="fab" onclick="openHeroModal()" style="
+  position:fixed;bottom:calc(26px + env(safe-area-inset-bottom));right:20px;
+  width:66px;height:66px;z-index:200;
+  background:linear-gradient(145deg,#b02020,#6a1010);
+  border:3px solid #d04040;border-radius:50%;
+  color:#f2e8d0;font-size:36px;font-weight:900;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;touch-action:manipulation;
+  box-shadow:0 6px 28px rgba(139,26,26,.8),0 0 0 5px rgba(139,26,26,.18),inset 0 1px 0 rgba(255,150,150,.2);
+  transition:transform .15s,box-shadow .15s;
+">+</button>
+<!-- new hero modal -->
+<div id="m-nh" style="display:none;position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.88);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeHeroModal()">
+  <div style="background:linear-gradient(180deg,#1e1810,#140f08);border:1px solid #7a5a18;border-top:2px solid #c9962a;border-radius:10px 10px 0 0;width:100%;max-width:430px;padding:20px 18px 32px;max-height:90vh;overflow-y:auto;will-change:transform;transform:translateZ(0)">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(201,150,42,.2)">
+      <span style="font-family:'Cinzel',serif;font-size:16px;color:#c9962a;letter-spacing:1px">&#9876;&#65039; Nuevo Heroe</span>
+      <button onclick="closeHeroModal()" style="background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:50%;width:30px;height:30px;color:#5a504a;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#10005;</button>
+    </div>
+
+    <!-- Step 1: Class selection -->
+    <div id="nh-step1">
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#7a5a18;margin-bottom:8px">ELIGE TU CLASE</div>
+      <div id="class-grid" style="max-height:52vh;overflow-y:auto;margin-bottom:14px"></div>
+      <button onclick="nhNextStep()" style="width:100%;background:linear-gradient(135deg,#2a1e0a,#1a1208);border:2px solid #c9962a;border-radius:5px;color:#c9962a;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:2px;padding:13px;cursor:pointer">
+        SIGUIENTE &#8250;
+      </button>
+    </div>
+
+    <!-- Step 2: Name entry (shown after class chosen) -->
+    <div id="nh-step2" style="display:none">
+      <!-- Selected class preview -->
+      <div id="nh-class-preview" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.25);border-radius:6px;margin-bottom:16px">
+        <span id="nh-prev-ico" style="font-size:36px"></span>
+        <div>
+          <div id="nh-prev-name" style="font-family:'Cinzel',serif;font-size:15px;color:#c9962a;font-weight:700"></div>
+          <div id="nh-prev-stats" style="font-size:12px;color:#5a504a;margin-top:2px"></div>
+          <div id="nh-prev-skills" style="font-size:11px;color:#4a80d4;margin-top:3px"></div>
+        </div>
+        <button onclick="nhBackStep()" style="margin-left:auto;background:none;border:1px solid rgba(201,150,42,.3);border-radius:3px;color:#7a5a18;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;padding:4px 8px;cursor:pointer">&#8249; CAMBIAR</button>
+      </div>
+
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#7a5a18;margin-bottom:6px">NOMBRE DEL HEROE</div>
+      <input id="hinp" type="text" placeholder="Como se llama tu heroe..." maxlength="22" autocomplete="off"
+        style="width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(201,150,42,.3);border-bottom:2px solid #7a5a18;border-radius:4px;color:#f2e8d0;font-size:17px;padding:11px 13px;margin-bottom:16px;outline:none;font-family:'Crimson Pro',serif"
+        onkeydown="if(event.key==='Enter')createH()">
+
+      <button onclick="createH()" style="width:100%;background:linear-gradient(135deg,#8b1a1a,#5c0f0f);border:1px solid #a03030;border-radius:5px;color:#f2e8d0;font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:2px;padding:14px;cursor:pointer;box-shadow:0 2px 12px rgba(139,26,26,.4)">
+        &#9876;&#65039; UNIRSE A LA AVENTURA &#9876;&#65039;
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- equip picker -->
+
+<!-- spell picker -->
+
+<!-- create item -->
+
+<!-- group inv create -->
+
+<div class="toast" id="toast"></div>
+
+<!-- SESSION SCREEN (shown on first load) -->
+<div id="session-screen">
+  <div class="ss-emblem">&#9876;&#65039;</div>
+  <div class="ss-logo">HERO<span>QUEST</span></div>
+  <div class="ss-sub">GESTOR DE HEROES</div>
+  <div class="ss-divider"></div>
+
+  <!-- Save preview filled by JS -->
+  <div id="ss-save-slot" style="width:100%"></div>
+
+  <!-- Buttons filled by JS -->
+  <div id="ss-buttons" style="width:100%"></div>
+
+  <div class="ss-version">v5.0 &bull; PWA &bull; 2026</div>
+</div>
+<script>
+const HT={
+// ── HEROQUEST ORIGINAL ──────────────────────────────────────────────────────
+barbaro:{ico:'&#129427;',col:'#8b1a1a',cls:'Barbaro',cat:'Original',
+  hp:8,maxHp:8,mp:2,maxMp:2,atk:3,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#129427;',nm:'Hacha de Batalla',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura de Cuero',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#128141;',nm:'--',r:'common',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Furia Berserker',c:null,pasiva:true, d:'PASIVA: Cada vez que recibe dano, gana +1 dado de ataque el siguiente turno.'},
+    {n:'Golpe Devastador',c:'1/turno',pasiva:false,d:'ACTIVA: Tira 4 dados de ataque en lugar de 3. Si saca 3+ simbolos de ataque, el enemigo no puede defenderse.'}
+  ]},
+enano:{ico:'&#9874;&#65039;',col:'#7a5a18',cls:'Enano',cat:'Original',
+  hp:7,maxHp:7,mp:3,maxMp:3,atk:2,def:3,mov:2,
+  eq:[{sl:'Arma',ico:'&#9874;&#65039;',nm:'Martillo de Guerra',r:'common',a:0,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Cota de Malla',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#128141;',nm:'Amuleto Runico',r:'rare',a:0,d:1}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Buscar Trampas',c:null,pasiva:true, d:'PASIVA: Al entrar en una sala, detecta automaticamente cualquier trampa antes de activarla.'},
+    {n:'Rompeminas',c:'1/turno',pasiva:false,d:'ACTIVA: Destruye una trampa o mecanismo magico sin tirada. Ademas otorga +1 monedas de oro al grupo.'}
+  ]},
+elfo:{ico:'&#127993;',col:'#2a5a2a',cls:'Elfo',cat:'Original',
+  hp:6,maxHp:6,mp:4,maxMp:4,atk:2,def:2,mov:4,
+  eq:[{sl:'Arma',ico:'&#127993;',nm:'Arco Largo Elfico',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Capa de Sigiloso',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#127807;',nm:'Corona de Hojas',r:'uncommon',a:0,d:0}],
+  sp:[{nm:'Flecha de Luz',co:'1 MP',ico:'&#10024;',ds:'Disparo que ignora armadura.',r:'uncommon'}],inv:[],
+  sk:[
+    {n:'Paso Silencioso',c:null,pasiva:true, d:'PASIVA: El Elfo no activa trampas al moverse y siempre actua primero en iniciativa.'},
+    {n:'Lluvia de Flechas',c:'1/turno',pasiva:false,d:'ACTIVA: Ataca a todos los enemigos visibles en la sala con 1 dado de ataque cada uno.'}
+  ]},
+mago:{ico:'&#128302;',col:'#2a4a7f',cls:'Mago',cat:'Original',
+  hp:4,maxHp:4,mp:6,maxMp:6,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#129668;',nm:'Baston Arcano',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#128302;',nm:'Tunica Encantada',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128218;',nm:'Libro de Hechizos',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Bola de Fuego',co:'2 MP',ico:'&#128293;',ds:'2D6 dano en area.',r:'rare'},{nm:'Escudo Arcano',co:'1 MP',ico:'&#128737;&#65039;',ds:'+2 dados defensa hasta proximo turno.',r:'uncommon'},{nm:'Curar',co:'2 MP',ico:'&#128154;',ds:'Restaura 1D4 HP a aliado adyacente.',r:'uncommon'}],inv:[],
+  sk:[
+    {n:'Reserva Arcana',c:null,pasiva:true, d:'PASIVA: Cuando un hechizo falla, recupera 1 MP automaticamente.'},
+    {n:'Tormenta Magica',c:'1/turno',pasiva:false,d:'ACTIVA: Gasta 3 MP para infligir 1D6 dano a TODOS los enemigos en la mazmorra, sin importar la sala.'}
+  ]},
+
+// ── EXPANSION: KELLARS KEEP / RETURN OF THE WITCH LORD ────────────────────
+caballero:{ico:'&#129463;',col:'#3a5a7f',cls:'Caballero',cat:'Kellars Keep',
+  hp:7,maxHp:7,mp:2,maxMp:2,atk:2,def:4,mov:3,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Espada Larga',r:'uncommon',a:2,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura de Placas',r:'rare',a:0,d:3},{sl:'Accesorio',ico:'&#128737;&#65039;',nm:'Escudo del Imperio',r:'uncommon',a:0,d:1}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Muro de Acero',c:null,pasiva:true, d:'PASIVA: Los aliados adyacentes al Caballero reciben +1 dado de defensa.'},
+    {n:'Carga Heroica',c:'1/turno',pasiva:false,d:'ACTIVA: Avanza hasta 5 casillas en linea recta e impacta a todo enemigo en su camino con 2 dados de ataque.'}
+  ]},
+sacerdote:{ico:'&#128267;',col:'#7a6a1a',cls:'Sacerdote',cat:'Kellars Keep',
+  hp:5,maxHp:5,mp:5,maxMp:5,atk:1,def:2,mov:2,
+  eq:[{sl:'Arma',ico:'&#128267;',nm:'Maza Sagrada',r:'common',a:1,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Vestiduras Santas',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128267;',nm:'Simbolo Sagrado',r:'rare',a:0,d:0}],
+  sp:[{nm:'Bendicion',co:'1 MP',ico:'&#128267;',ds:'+1 dado de ataque a aliado hasta fin de turno.',r:'uncommon'},{nm:'Exorcismo',co:'2 MP',ico:'&#10024;',ds:'Destruye automaticamente a cualquier no-muerto con HP<=3.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Aura Sagrada',c:null,pasiva:true, d:'PASIVA: Los no-muertos en la misma sala tienen -1 dado de ataque contra el grupo.'},
+    {n:'Intervencion Divina',c:'1/turno',pasiva:false,d:'ACTIVA: Revive a un heroe caido con la mitad de sus HP maximos. Solo usable una vez por mision.'}
+  ]},
+explorador:{ico:'&#127993;',col:'#4a6a2a',cls:'Explorador',cat:'Kellars Keep',
+  hp:6,maxHp:6,mp:3,maxMp:3,atk:2,def:2,mov:5,
+  eq:[{sl:'Arma',ico:'&#127993;',nm:'Arco Corto',r:'common',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Ropa de Cuero',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#127956;&#65039;',nm:'Mapa del Dungeon',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Rastrear',c:null,pasiva:true, d:'PASIVA: Al inicio de cada sala, el Explorador sabe cuantos enemigos hay antes de entrar.'},
+    {n:'Emboscada',c:'1/turno',pasiva:false,d:'ACTIVA: Si el grupo aun no ha sido detectado, ataca con 3 dados extra en el primer turno de combate.'}
+  ]},
+
+// ── EXPANSION: AGAINST THE OGRE HORDE ─────────────────────────────────────
+guerrero_ogro:{ico:'&#129499;',col:'#6a2a0a',cls:'Cazaogros',cat:'Ogre Horde',
+  hp:9,maxHp:9,mp:1,maxMp:1,atk:3,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Lanza Rompedora',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura de Trofeos',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#128285;',nm:'Colmillo de Ogro',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Piel de Cuero',c:null,pasiva:true, d:'PASIVA: Reduce el primer punto de dano de cada ataque que recibe a 0.'},
+    {n:'Aplastamiento',c:'1/turno',pasiva:false,d:'ACTIVA: Golpe que inflige 1D6 dano extra. Si el objetivo es un Bestia o Gigante, inflige 2D6 extra.'}
+  ]},
+druida:{ico:'&#127807;',col:'#2a7a3a',cls:'Druida',cat:'Ogre Horde',
+  hp:5,maxHp:5,mp:5,maxMp:5,atk:1,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#127807;',nm:'Baculo Natural',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Capa de Raices',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#127807;',nm:'Amuleto del Bosque',r:'rare',a:0,d:1}],
+  sp:[{nm:'Enredar',co:'1 MP',ico:'&#127807;',ds:'Inmoviliza a un enemigo 1 turno. No puede atacar ni moverse.',r:'uncommon'},{nm:'Llamada Animal',co:'2 MP',ico:'&#128059;',ds:'Invoca a un lobo aliado (HP3 ATK2) que lucha junto al grupo.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Regeneracion',c:null,pasiva:true, d:'PASIVA: Al inicio de cada turno del Druida, recupera 1 HP si esta en zona natural o con plantas.'},
+    {n:'Forma Bestial',c:'1/turno',pasiva:false,d:'ACTIVA: Durante 1 turno, el Druida tira 4 dados de ataque y 1 dado de defensa extra. Pierde acceso a hechizos ese turno.'}
+  ]},
+
+// ── EXPANSION: WIZARDS OF MORCAR / MAGE OF THE MIRROR ─────────────────────
+hechicera:{ico:'&#129497;',col:'#7a2a9a',cls:'Hechicera',cat:'Wizards of Morcar',
+  hp:4,maxHp:4,mp:7,maxMp:7,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#129668;',nm:'Vara de Cristal',r:'rare',a:0,d:0},{sl:'Armadura',ico:'&#128302;',nm:'Manto Espectral',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128142;',nm:'Orbe Arcano',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Espejo de Almas',co:'2 MP',ico:'&#129398;',ds:'Refleja el siguiente ataque recibido de vuelta al atacante.',r:'rare'},{nm:'Vision del Futuro',co:'1 MP',ico:'&#128302;',ds:'Antes de cualquier tirada, puedes ver el resultado y repetirla.',r:'uncommon'}],inv:[],
+  sk:[
+    {n:'Intuicion Arcana',c:null,pasiva:true, d:'PASIVA: La Hechicera siempre sabe si una sala contiene magia, trampa o peligro antes de entrar.'},
+    {n:'Prision Eterea',c:'1/turno',pasiva:false,d:'ACTIVA: Atrapa a un enemigo en una esfera magica. Queda fuera de combate 2 turnos sin poder actuar.'}
+  ]},
+alquimista:{ico:'&#129514;',col:'#5a7a1a',cls:'Alquimista',cat:'Wizards of Morcar',
+  hp:5,maxHp:5,mp:4,maxMp:4,atk:2,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#129514;',nm:'Pistola de Acido',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Abrigo Reforzado',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#129514;',nm:'Cinturon de Frascos',r:'uncommon',a:0,d:0}],
+  sp:[{nm:'Bomba Fumigena',co:'1 MP',ico:'&#129500;',ds:'Todos los enemigos en la sala tienen -2 dados de ataque 1 turno.',r:'uncommon'},{nm:'Elixir de Fuerza',co:'2 MP',ico:'&#129514;',ds:'Un aliado gana +2 dados de ataque durante 2 turnos.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Crear Pocion',c:null,pasiva:true, d:'PASIVA: Al fin de cada mision, el Alquimista crea 1 pocion de curacion de forma gratuita.'},
+    {n:'Gran Explosion',c:'1/turno',pasiva:false,d:'ACTIVA: Lanza una bomba alquimica que inflige 2D6 dano a todos los enemigos en la sala. Destruye objetos fragiles.'}
+  ]},
+
+// ── EXPANSION: FANTASY ─────────────────────────────────────────────────────
+paladin:{ico:'&#128737;&#65039;',col:'#9a8a1a',cls:'Paladin',cat:'Expansiones',
+  hp:8,maxHp:8,mp:3,maxMp:3,atk:2,def:3,mov:3,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Espada Santa',r:'legendary',a:2,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura del Amanecer',r:'legendary',a:0,d:3},{sl:'Accesorio',ico:'&#10026;&#65039;',nm:'Escudo de la Fe',r:'rare',a:0,d:2}],
+  sp:[{nm:'Luz Divina',co:'2 MP',ico:'&#10024;',ds:'Destruye automaticamente hasta 2 no-muertos con cualquier HP.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Imponer Manos',c:null,pasiva:true, d:'PASIVA: Una vez por turno, puede curar 1 HP a un aliado adyacente como accion gratuita.'},
+    {n:'Smite Sagrado',c:'1/turno',pasiva:false,d:'ACTIVA: Ataque de 3 dados que ignora toda armadura. Contra no-muertos y demonios inflige el doble de dano.'}
+  ]},
+ladron:{ico:'&#129695;',col:'#3a3a4a',cls:'Ladron',cat:'Expansiones',
+  hp:5,maxHp:5,mp:2,maxMp:2,atk:2,def:2,mov:5,
+  eq:[{sl:'Arma',ico:'&#129695;',nm:'Daga Envenenada',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Capa de Sombras',r:'rare',a:0,d:1},{sl:'Accesorio',ico:'&#128285;',nm:'Kit de Ganzuas',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Sombras',c:null,pasiva:true, d:'PASIVA: Si el Ladron no ataco el turno anterior, sus ataques reciben +2 dados (ataque por sorpresa).'},
+    {n:'Robo Perfecto',c:'1/turno',pasiva:false,d:'ACTIVA: Roba un objeto al azar de un enemigo derrotado O abre cualquier cerradura sin tirada. Ademas gana 1D6x5 oros.'}
+  ]},
+bardo:{ico:'&#127929;',col:'#8a4a8a',cls:'Bardo',cat:'Expansiones',
+  hp:5,maxHp:5,mp:4,maxMp:4,atk:1,def:2,mov:4,
+  eq:[{sl:'Arma',ico:'&#127929;',nm:'Laud Encantado',r:'rare',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Ropas de Viaje',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#127925;',nm:'Partitura Magica',r:'uncommon',a:0,d:0}],
+  sp:[{nm:'Balada de Coraje',co:'1 MP',ico:'&#127925;',ds:'Todos los heroes reciben +1 dado de ataque y defensa hasta fin de turno.',r:'rare'},{nm:'Cancion de Miedo',co:'2 MP',ico:'&#127926;',ds:'Todos los enemigos en la sala deben superar una tirada o huyen despavoridos.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Inspiracion',c:null,pasiva:true, d:'PASIVA: Cada vez que un aliado consigue un critico (dado maximo), el Bardo recupera 1 MP.'},
+    {n:'Solo Legendario',c:'1/turno',pasiva:false,d:'ACTIVA: Su musica es tan poderosa que paraliza a todos los enemigos 1 turno completo. No pueden atacar ni moverse.'}
+  ]},
+monje:{ico:'&#129333;',col:'#7a5a3a',cls:'Monje',cat:'Expansiones',
+  hp:6,maxHp:6,mp:4,maxMp:4,atk:2,def:3,mov:4,
+  eq:[{sl:'Arma',ico:'&#129333;',nm:'Nudillos de Hierro',r:'uncommon',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Habito Monastico',r:'common',a:0,d:2},{sl:'Accesorio',ico:'&#128302;',nm:'Sello del Maestro',r:'rare',a:0,d:0}],
+  sp:[{nm:'Mano del Viento',co:'1 MP',ico:'&#128168;',ds:'Empuja a un enemigo hasta 3 casillas. Si choca contra una pared, recibe 1D4 dano.',r:'uncommon'}],inv:[],
+  sk:[
+    {n:'Defensa Activa',c:null,pasiva:true, d:'PASIVA: Por cada dado de defensa que bloquea un ataque, puede contraatacar con 1 dado de ataque gratis.'},
+    {n:'Cien Puños',c:'1/turno',pasiva:false,d:'ACTIVA: Ataca a un enemigo con 5 dados de ataque. El exceso de dano se distribuye entre enemigos adyacentes a ese objetivo.'}
+  ]},
+nigromante:{ico:'&#9760;&#65039;',col:'#3a1a4a',cls:'Nigromante',cat:'Expansiones',
+  hp:4,maxHp:4,mp:6,maxMp:6,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#129668;',nm:'Cetro de Hueso',r:'rare',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Sudario Oscuro',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128128;',nm:'Craneo Parlante',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Invocar No-muerto',co:'2 MP',ico:'&#128128;',ds:'Invoca un esqueleto aliado (HP4 ATK2 DEF1) que lucha junto al grupo.',r:'rare'},{nm:'Drenar Vida',co:'1 MP',ico:'&#9760;&#65039;',ds:'Roba 1D4 HP a un enemigo y los transfiere a si mismo o un aliado.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Senor de los Muertos',c:null,pasiva:true, d:'PASIVA: Los no-muertos enemigos tienen 50% de probabilidad de no atacar al Nigromante (los considera aliado).'},
+    {n:'Ejercito de Sombras',c:'1/turno',pasiva:false,d:'ACTIVA: Gasta 3 MP para invocar 1D3 esqueletos aliados. Permanecen hasta que sean destruidos o acabe la mision.'}
+  ]},
+cazador:{ico:'&#127993;',col:'#5a4a2a',cls:'Cazador',cat:'Expansiones',
+  hp:6,maxHp:6,mp:2,maxMp:2,atk:3,def:2,mov:4,
+  eq:[{sl:'Arma',ico:'&#127993;',nm:'Ballesta de Precision',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Armadura de Caza',r:'uncommon',a:0,d:2},{sl:'Accesorio',ico:'&#128285;',nm:'Trampa de Acero',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Marcar Presa',c:null,pasiva:true, d:'PASIVA: Al inicio del combate, el Cazador elige un objetivo. Todos sus ataques contra ese objetivo reciben +1 dado.'},
+    {n:'Tiro Mortal',c:'1/turno',pasiva:false,d:'ACTIVA: Un disparo de precision que ignora toda armadura y escudos. Si el objetivo tiene menos de la mitad del HP, le mata instantaneamente.'}
+  ]},
+berserker_del_norte:{ico:'&#10052;&#65039;',col:'#5a1a1a',cls:'Berserker Norte',cat:'Expansiones',
+  hp:9,maxHp:9,mp:1,maxMp:1,atk:4,def:1,mov:3,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Doble Hacha del Norte',r:'legendary',a:3,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Pieles del Permafrost',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128142;',nm:'Collar de Dientes',r:'uncommon',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Sed de Sangre',c:null,pasiva:true, d:'PASIVA: Cada vez que mata un enemigo, gana +1 movimiento y +1 dado de ataque hasta fin de turno.'},
+    {n:'Frenesí Total',c:'1/turno',pasiva:false,d:'ACTIVA: Ataca a TODOS los enemigos en la sala con 3 dados de ataque cada uno. Al terminar, el Berserker recibe 1 de dano.'}
+  ]},
+chamana:{ico:'&#127754;',col:'#2a6a5a',cls:'Chamana',cat:'Expansiones',
+  hp:5,maxHp:5,mp:5,maxMp:5,atk:1,def:2,mov:3,
+  eq:[{sl:'Arma',ico:'&#127803;',nm:'Totem Espiritual',r:'rare',a:1,d:0},{sl:'Armadura',ico:'&#129509;',nm:'Vestiduras Tribales',r:'common',a:0,d:1},{sl:'Accesorio',ico:'&#127805;',nm:'Plumas del Aguila',r:'uncommon',a:0,d:0}],
+  sp:[{nm:'Vision Espiritual',co:'1 MP',ico:'&#127781;&#65039;',ds:'Revela todo el contenido de las proximas 2 salas sin entrar.',r:'uncommon'},{nm:'Totem de Proteccion',co:'2 MP',ico:'&#127754;',ds:'Crea un campo que reduce todo dano recibido por el grupo en 1 durante 2 turnos.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Vinculo Espiritual',c:null,pasiva:true, d:'PASIVA: La Chamana siente cuando un aliado va a morir. Puede gastar 2 MP para absorber el golpe mortal en su lugar.'},
+    {n:'Invocar Espiritu Ancestral',c:'1/turno',pasiva:false,d:'ACTIVA: Invoca un espiritu de guerra. Este ataca con 3 dados a un enemigo y cura 2 HP al heroe con menos vida.'}
+  ]},
+guardia_real:{ico:'&#128081;',col:'#7a6a0a',cls:'Guardia Real',cat:'Expansiones',
+  hp:7,maxHp:7,mp:2,maxMp:2,atk:2,def:4,mov:2,
+  eq:[{sl:'Arma',ico:'&#9876;&#65039;',nm:'Espada del Imperio',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#128737;&#65039;',nm:'Armadura del Trono',r:'legendary',a:0,d:4},{sl:'Accesorio',ico:'&#128081;',nm:'Estandarte Real',r:'legendary',a:0,d:0}],
+  sp:[],inv:[],
+  sk:[
+    {n:'Proteger al Vulnerable',c:null,pasiva:true, d:'PASIVA: Si un aliado adyacente recibe un ataque, el Guardia Real puede interceptarlo y recibir el dano en su lugar.'},
+    {n:'Golpe de Escudo',c:'1/turno',pasiva:false,d:'ACTIVA: Usa el escudo como arma. Aturde al enemigo 1 turno y empuja a todos los enemigos adyacentes 2 casillas.'}
+  ]},
+piromante:{ico:'&#128293;',col:'#8a3a0a',cls:'Piromante',cat:'Expansiones',
+  hp:4,maxHp:4,mp:6,maxMp:6,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#128293;',nm:'Guantes de Fuego',r:'rare',a:2,d:0},{sl:'Armadura',ico:'&#128302;',nm:'Ropa Ignifuga',r:'uncommon',a:0,d:1},{sl:'Accesorio',ico:'&#128293;',nm:'Corazon de Llama',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Nova de Fuego',co:'2 MP',ico:'&#128293;',ds:'Bola de fuego expandida: 3D6 dano a todos los enemigos en la sala.',r:'legendary'},{nm:'Escudo Ígneo',co:'1 MP',ico:'&#128293;',ds:'Al recibir un ataque melee, el atacante recibe 1D4 dano de fuego.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Inmunidad al Fuego',c:null,pasiva:true, d:'PASIVA: Inmune a todo dano de fuego, incluyendo trampas y hechizos enemigos de fuego.'},
+    {n:'Meteoro',c:'1/turno',pasiva:false,d:'ACTIVA: Gasta 4 MP para lanzar un meteoro devastador. 4D6 dano a todos en la sala. Destruye objetos fragiles y trampas.'}
+  ]},
+elementalista:{ico:'&#127756;',col:'#1a5a7a',cls:'Elementalista',cat:'Expansiones',
+  hp:4,maxHp:4,mp:7,maxMp:7,atk:1,def:1,mov:2,
+  eq:[{sl:'Arma',ico:'&#127756;',nm:'Baston de los Cuatro',r:'legendary',a:1,d:0},{sl:'Armadura',ico:'&#128302;',nm:'Tunica Elemental',r:'rare',a:0,d:2},{sl:'Accesorio',ico:'&#128142;',nm:'Gema de los Cuatro Vientos',r:'legendary',a:0,d:0}],
+  sp:[{nm:'Rayo',co:'1 MP',ico:'&#9889;',ds:'1D6+2 dano a un objetivo. Ignora armadura metalica.',r:'uncommon'},{nm:'Muro de Hielo',co:'2 MP',ico:'&#10052;&#65039;',ds:'Bloquea el paso por una puerta durante 2 turnos. Los enemigos que lo toquen reciben 1D3 dano.',r:'rare'}],inv:[],
+  sk:[
+    {n:'Dominar Elemento',c:null,pasiva:true, d:'PASIVA: Al inicio de cada sala, el Elementalista elige un elemento. Sus hechizos de ese elemento cuestan 1 MP menos.'},
+    {n:'Cataclismo',c:'1/turno',pasiva:false,d:'ACTIVA: Gasta 5 MP para desatar los cuatro elementos. 2D6 dano a todos los enemigos. 2 HP de curacion a todos los aliados.'}
+  ]},
+};
+
+const ICAL={
+  Arma:[
+    {nm:'Sin arma',     r:'common',   a:0,d:0,ico:'&#11036;',      ds:'Sin arma equipada.'},
+    // Espadas
+    {nm:'Daga',          r:'common',   a:1,d:0,ico:'&#128505;&#65039;',ds:'1 dado de ataque. Se puede lanzar a distancia.'},
+    {nm:'Espada Corta',  r:'common',   a:2,d:0,ico:'&#9876;&#65039;', ds:'2 dados de ataque.'},
+    {nm:'Espada Ancha',  r:'uncommon', a:3,d:0,ico:'&#9876;&#65039;', ds:'3 dados de ataque.'},
+    {nm:'Espada Larga',  r:'uncommon', a:3,d:0,ico:'&#9876;&#65039;', ds:'3 dados de ataque. Permite atacar en diagonal.'},
+    {nm:'Espadon',       r:'rare',     a:4,d:0,ico:'&#9876;&#65039;', ds:'4 dados de ataque. Requiere 2 manos.'},
+    {nm:'Espada de Fuego',r:'rare',    a:3,d:0,ico:'&#128293;',       ds:'3 dados de ataque. +1 dado extra vs No-Muertos.'},
+    {nm:'Espada Sagrada', r:'legendary',a:4,d:0,ico:'&#10026;&#65039;',ds:'Bendecida. Destruye demonios con un golpe critico.'},
+    // Hachas
+    {nm:'Hacha de Mano',  r:'common',  a:2,d:0,ico:'&#129427;',       ds:'2 dados de ataque. Se puede lanzar.'},
+    {nm:'Hacha de Batalla',r:'uncommon',a:4,d:0,ico:'&#129427;',      ds:'4 dados de ataque. Requiere 2 manos.'},
+    {nm:'Doble Hacha',    r:'rare',    a:3,d:0,ico:'&#129427;',       ds:'3 dados de ataque con cada mano. Total 6 dados.'},
+    {nm:'Hacha del Caos', r:'legendary',a:5,d:0,ico:'&#9889;',        ds:'5 dados de ataque. Ignora 1 dado de defensa enemigo.'},
+    // Contundentes
+    {nm:'Maza',           r:'common',  a:2,d:0,ico:'&#128296;',       ds:'2 dados de ataque. +1 vs armadura pesada.'},
+    {nm:'Mangual',        r:'uncommon',a:3,d:0,ico:'&#128296;',       ds:'3 dados. El enemigo defiende con 1 dado menos.'},
+    {nm:'Martillo de Guerra',r:'uncommon',a:3,d:0,ico:'&#9874;&#65039;',ds:'3 dados. +1 dano a Golems y Constructos.'},
+    {nm:'Gran Mazo',      r:'rare',    a:4,d:0,ico:'&#9874;&#65039;', ds:'4 dados. Aplasta escudos: -1 defensa del objetivo.'},
+    // Hafta larga
+    {nm:'Lanza',          r:'common',  a:2,d:0,ico:'&#9881;&#65039;', ds:'2 dados de ataque. Alcance de 2 casillas.'},
+    {nm:'Alabarda',       r:'uncommon',a:3,d:0,ico:'&#9881;&#65039;', ds:'3 dados. Alcance 2 casillas. Requiere 2 manos.'},
+    {nm:'Lanza Sagrada',  r:'rare',    a:3,d:0,ico:'&#9881;&#65039;', ds:'3 dados. +2 dados extra vs demonios y no-muertos.'},
+    // Distancia
+    {nm:'Arco Corto',     r:'common',  a:2,d:0,ico:'&#127993;',       ds:'2 dados de ataque a distancia.'},
+    {nm:'Arco Largo',     r:'uncommon',a:3,d:0,ico:'&#127993;',       ds:'3 dados de ataque a distancia. Alcance mayor.'},
+    {nm:'Arco Largo Elfico',r:'rare',  a:3,d:0,ico:'&#127993;',       ds:'3 dados. Precision elvica. Puede disparar a traves de aliados.'},
+    {nm:'Ballesta',       r:'uncommon',a:3,d:0,ico:'&#127993;',       ds:'3 dados a distancia. Necesita 1 turno para recargar.'},
+    // Bastones y Varas
+    {nm:'Vara',           r:'common',  a:1,d:0,ico:'&#129668;',       ds:'1 dado de ataque. Puede atacar en diagonal.'},
+    {nm:'Baston Arcano',  r:'uncommon',a:2,d:0,ico:'&#129668;',       ds:'2 dados de ataque. +1 MP maximo mientras se lleva.'},
+    {nm:'Cetro de Cristal',r:'rare',   a:2,d:0,ico:'&#128302;',       ds:'Amplifica hechizos: cuestan 1 MP menos.'},
+    {nm:'Cetro de Hueso', r:'rare',    a:2,d:0,ico:'&#128128;',       ds:'Oscuro. Invocaciones cuestan 1 MP menos.'},
+  ],
+  Armadura:[
+    {nm:'Sin armadura',   r:'common',  a:0,d:0,ico:'&#11036;',        ds:'Sin proteccion extra.'},
+    // Ligera
+    {nm:'Ropa de Viaje',  r:'common',  a:0,d:0,ico:'&#128085;',       ds:'Sin defensa adicional. Movimiento libre.'},
+    {nm:'Gambeson',       r:'common',  a:0,d:1,ico:'&#128085;',       ds:'+1 dado de defensa. Proteccion basica acolchada.'},
+    {nm:'Armadura de Cuero',r:'common',a:0,d:1,ico:'&#128737;&#65039;',ds:'+1 dado de defensa. Ligera y silenciosa.'},
+    {nm:'Brazaletes',     r:'common',  a:0,d:1,ico:'&#128737;&#65039;',ds:'+1 dado de defensa. Ideal para el Mago.'},
+    {nm:'Capa de Sigiloso',r:'uncommon',a:0,d:1,ico:'&#129509;',      ds:'+1 dado. No activa trampas de ruido al moverse.'},
+    {nm:'Capa de Invisibilidad',r:'rare',a:0,d:1,ico:'&#129509;',     ds:'Los monstruos no te ven si no te mueves ese turno.'},
+    {nm:'Cota de Cuero Tachonado',r:'uncommon',a:0,d:2,ico:'&#128737;&#65039;',ds:'+2 dados de defensa. Reforzada con tachuelas.'},
+    {nm:'Yelmo',          r:'uncommon',a:0,d:1,ico:'&#129461;',       ds:'+1 dado de defensa. Protege la cabeza.'},
+    // Media
+    {nm:'Cota de Malla',  r:'uncommon',a:0,d:2,ico:'&#128737;&#65039;',ds:'+2 dados de defensa. Movimiento maximo 1 dado.'},
+    {nm:'Armadura de Escamas',r:'rare',a:0,d:3,ico:'&#128737;&#65039;',ds:'+3 dados de defensa. Resistente al fuego.'},
+    {nm:'Tunica Encantada',r:'uncommon',a:0,d:1,ico:'&#128302;',      ds:'+1 dado de defensa. +1 MP maximo.'},
+    {nm:'Manto Espectral', r:'rare',   a:0,d:2,ico:'&#128302;',       ds:'+2 dados. Reduce dano magico recibido en 1.'},
+    // Pesada
+    {nm:'Armadura de Placas',r:'rare', a:0,d:4,ico:'&#128737;&#65039;',ds:'+4 dados de defensa. Movimiento maximo 1 dado.'},
+    {nm:'Armadura del Imperio',r:'rare',a:0,d:3,ico:'&#128737;&#65039;',ds:'+3 dados. Calidad imperial estandar.'},
+    {nm:'Escudo de Hierro',r:'uncommon',a:0,d:2,ico:'&#128737;&#65039;',ds:'+2 dados de defensa. Solo Barbaro y Enano.'},
+    {nm:'Armadura del Amanecer',r:'legendary',a:0,d:4,ico:'&#10024;', ds:'+4 dados. Sagrada. Inmune al miedo y maldiciones.'},
+    {nm:'Armadura del Caos',r:'legendary',a:1,d:3,ico:'&#128165;',    ds:'+3 dados y +1 ataque. Maldita: pierde 1 MP por turno.'},
+  ],
+  Accesorio:[
+    {nm:'Sin accesorio',  r:'common',  a:0,d:0,ico:'&#11036;',        ds:'Ningun accesorio equipado.'},
+    // Guantes y muñequeras
+    {nm:'Guanteletes de Fuerza',r:'rare',a:1,d:0,ico:'&#129454;',     ds:'+1 dado en ataques cuerpo a cuerpo.'},
+    // Escudos
+    {nm:'Escudo de Madera',r:'common', a:0,d:1,ico:'&#128737;&#65039;',ds:'+1 dado de defensa.'},
+    {nm:'Escudo Elfico',  r:'rare',    a:0,d:2,ico:'&#128737;&#65039;',ds:'+2 dados. Ligero y magico. No penaliza movimiento.'},
+    {nm:'Escudo del Imperio',r:'rare', a:0,d:3,ico:'&#128737;&#65039;',ds:'+3 dados. Bloquea proyectiles automaticamente.'},
+    // Amuletos
+    {nm:'Amuleto Protector',r:'common',a:0,d:1,ico:'&#128141;',       ds:'+1 defensa contra hechizos magicos.'},
+    {nm:'Amuleto Runico',  r:'rare',   a:0,d:1,ico:'&#128141;',       ds:'+1 dado defensa. +1 MP maximo. Resistencia magica.'},
+    {nm:'Collar de Dientes',r:'uncommon',a:0,d:0,ico:'&#128141;',     ds:'Intimidatorio. Enemigos tiran 1 dado menos al inicio.'},
+    // Anillos
+    {nm:'Anillo de Fuerza',r:'uncommon',a:1,d:0,ico:'&#128142;',      ds:'+1 dado de ataque.'},
+    {nm:'Anillo de Defensa',r:'uncommon',a:0,d:1,ico:'&#128142;',     ds:'+1 dado de defensa.'},
+    {nm:'Anillo de Poder', r:'legendary',a:1,d:1,ico:'&#128142;',     ds:'+1 ataque y +1 defensa.'},
+    {nm:'Anillo de Invisibilidad',r:'legendary',a:0,d:0,ico:'&#128142;',ds:'Una vez por mision: invisible 1 turno completo.'},
+    // Botas
+    {nm:'Botas de Cuero',  r:'common', a:0,d:0,ico:'&#128098;',       ds:'Sin efecto especial.'},
+    {nm:'Botas de Velocidad',r:'rare', a:0,d:0,ico:'&#128098;',       ds:'Tira 3 dados para mover y elige los 2 mejores.'},
+    {nm:'Botas Elficas',   r:'rare',   a:0,d:0,ico:'&#128098;',       ds:'Silenciosas. No activa trampas al moverse.'},
+    // Objetos magicos
+    {nm:'Libro de Hechizos',r:'legendary',a:0,d:0,ico:'&#128218;',    ds:'Contiene 3 hechizos adicionales de cualquier escuela.'},
+    {nm:'Orbe de Poder',   r:'legendary',a:0,d:0,ico:'&#128302;',     ds:'+2 MP maximo. Hechizos de area hacen +1 dano.'},
+    {nm:'Gema de Vision',  r:'rare',   a:0,d:0,ico:'&#128142;',       ds:'Revela trampas y puertas secretas automaticamente.'},
+    {nm:'Caliz Sagrado',   r:'rare',   a:0,d:0,ico:'&#127864;',       ds:'Recupera 1 punto de Mente a todos los aliados adyacentes.'},
+  ]
+};
+
+const INV_CATALOG=[
+  {nm:'Pocion de Curacion',     r:'common',  ico:'&#129514;',ds:'Recupera 1D6 puntos de Cuerpo.'},
+  {nm:'Pocion de Fuerza',       r:'uncommon',ico:'&#129514;',ds:'+2 dados de ataque el proximo turno.'},
+  {nm:'Pocion de Resistencia',  r:'uncommon',ico:'&#129514;',ds:'+2 dados de defensa el proximo turno.'},
+  {nm:'Pocion de Velocidad',    r:'uncommon',ico:'&#129514;',ds:'Mueve el doble de casillas este turno.'},
+  {nm:'Antidoto',               r:'common',  ico:'&#129514;',ds:'Cura el veneno inmediatamente.'},
+  {nm:'Agua Bendita',           r:'uncommon',ico:'&#128167;',ds:'Mata a un No-Muerto debil automaticamente.'},
+  {nm:'Herramientas',           r:'common',  ico:'&#128295;',ds:'+2 a la tirada para desactivar trampas.'},
+  {nm:'Antorcha',               r:'common',  ico:'&#129890;',ds:'Revela trampas en un radio de 3 casillas.'},
+  {nm:'Cuerda y Gancho',        r:'common',  ico:'&#129517;',ds:'Permite cruzar fosos sin tirar dados.'},
+  {nm:'Red de Caza',            r:'uncommon',ico:'&#129517;',ds:'Atrapa a un enemigo pequeno durante 1 turno.'},
+  {nm:'Polvos Cegadores',       r:'uncommon',ico:'&#10024;', ds:'Escapa de combate sin recibir ataque de oportunidad.'},
+  {nm:'Elixir de Sabiduria',    r:'rare',    ico:'&#128302;',ds:'Recupera un hechizo gastado de cualquier escuela.'},
+  {nm:'Mapa del Tesoro',        r:'uncommon',ico:'&#128205;',ds:'Indica en que habitacion esta el cofre principal.'},
+  {nm:'Piedra de Afilar',       r:'common',  ico:'&#128296;',ds:'El proximo ataque fisico tiene +1 dado adicional.'},
+  {nm:'Veneno de Hoja',         r:'uncommon',ico:'&#128128;',ds:'El arma hace 1 dano extra el proximo turno.'},
+  {nm:'Espejo de Mano',         r:'common',  ico:'&#129398;',ds:'Permite mirar por las esquinas sin asomarse.'},
+  {nm:'Aceite para Cerraduras', r:'common',  ico:'&#129514;',ds:'Abre puertas cerradas sin necesidad de llave.'},
+  {nm:'Bolsa de Canicas',       r:'common',  ico:'&#9900;',  ds:'Perseguidores deben sacar 4+ para no caer.'},
+  {nm:'Raciones de Comida',     r:'common',  ico:'&#127833;',ds:'Recupera 1 punto de Cuerpo tras un combate.'},
+  {nm:'Pergamino de Hechizo',   r:'rare',    ico:'&#128220;',ds:'Contiene un hechizo. El Mago puede lanzarlo gratis 1 vez.'},
+];
+
+const SCATS=[
+  // Fuego
+  {nm:'Bola de Fuego',      co:'2 MP',ico:'&#128293;',ds:'2 puntos de dano directo al objetivo.',r:'rare'},
+  {nm:'Valentia',           co:'1 MP',ico:'&#128293;',ds:'+2 dados de ataque hasta que no haya enemigos a la vista.',r:'uncommon'},
+  {nm:'Tempestad de Fuego', co:'2 MP',ico:'&#128293;',ds:'1 punto de dano a todas las figuras en la habitacion.',r:'rare'},
+  {nm:'Muro de Fuego',      co:'2 MP',ico:'&#128293;',ds:'Crea barrera que causa 1 dano a quien la cruce.',r:'rare'},
+  {nm:'Dardo de Fuego',     co:'1 MP',ico:'&#128293;',ds:'1D4+1 dano a un objetivo a distancia.',r:'common'},
+  {nm:'Nova de Fuego',      co:'3 MP',ico:'&#128293;',ds:'3D6 dano en area. Destruye trampas y obstaculos.',r:'legendary'},
+  // Tierra
+  {nm:'Piel de Piedra',     co:'1 MP',ico:'&#129693;',ds:'+1 dado de defensa hasta sufrir dano.',r:'uncommon'},
+  {nm:'Pasar por la Roca',  co:'2 MP',ico:'&#129693;',ds:'Permite atravesar muros durante este turno.',r:'rare'},
+  {nm:'Terremoto',          co:'2 MP',ico:'&#129693;',ds:'Inmoviliza a los enemigos adyacentes durante 1 turno.',r:'rare'},
+  // Agua
+  {nm:'Curacion Corporal',  co:'2 MP',ico:'&#128154;',ds:'Recupera hasta 4 puntos de Cuerpo de un aliado.',r:'uncommon'},
+  {nm:'Dormir',             co:'1 MP',ico:'&#128164;',ds:'El objetivo no puede actuar hasta sacar un 6.',r:'uncommon'},
+  {nm:'Niebla',             co:'1 MP',ico:'&#127756;',ds:'El lanzador puede atravesar monstruos sin ser bloqueado.',r:'uncommon'},
+  {nm:'Agua Purificadora',  co:'1 MP',ico:'&#128167;',ds:'Elimina cualquier estado alterado: veneno, miedo, paralisis.',r:'uncommon'},
+  {nm:'Gran Curacion',      co:'3 MP',ico:'&#128154;',ds:'Restaura 2D4+4 HP a todos los aliados en la sala.',r:'rare'},
+  // Aire
+  {nm:'Genio',              co:'2 MP',ico:'&#9728;&#65039;',ds:'Ataca con 5 dados a cualquier figura visible.',r:'legendary'},
+  {nm:'Rafaga',             co:'1 MP',ico:'&#9728;&#65039;',ds:'Permite a un heroe volver a mover este turno.',r:'uncommon'},
+  {nm:'Tempestad',          co:'2 MP',ico:'&#9728;&#65039;',ds:'El objetivo pierde su siguiente turno.',r:'rare'},
+  {nm:'Vuelo',              co:'2 MP',ico:'&#9728;&#65039;',ds:'Salta cualquier trampa o monstruo durante el movimiento.',r:'rare'},
+  // Oscuro / Nigromancia
+  {nm:'Mano Fantasma',      co:'1 MP',ico:'&#128420;',ds:'Roba un objeto a un enemigo adyacente.',r:'uncommon'},
+  {nm:'Reflejo',            co:'1 MP',ico:'&#129398;',ds:'El siguiente ataque contra ti lo recibe el atacante.',r:'rare'},
+  {nm:'Drenaje de Vida',    co:'1 MP',ico:'&#9760;&#65039;',ds:'Inflige 1 dano al objetivo y recuperas 1 punto de Cuerpo.',r:'uncommon'},
+  {nm:'Maldicion',          co:'1 MP',ico:'&#9760;&#65039;',ds:'El enemigo tira 2 dados menos de ataque durante 2 turnos.',r:'uncommon'},
+  {nm:'Invocar Esqueleto',  co:'2 MP',ico:'&#128128;',ds:'Invoca un esqueleto aliado (HP4 ATK2 DEF1) hasta fin de sala.',r:'rare'},
+  // Mente / Ilusiones
+  {nm:'Clarividencia',      co:'1 MP',ico:'&#128302;',ds:'Revela lo que hay tras una puerta cerrada.',r:'uncommon'},
+  {nm:'Torpeza',            co:'1 MP',ico:'&#129300;',ds:'El enemigo tira 2 dados menos de ataque (minimo 1).',r:'uncommon'},
+  {nm:'Ilusion',            co:'2 MP',ico:'&#128065;&#65039;',ds:'Los enemigos no pueden atacarte durante 1 turno.',r:'rare'},
+  {nm:'Confusion',          co:'2 MP',ico:'&#129300;',ds:'Un enemigo ataca a otro enemigo aleatorio.',r:'rare'},
+  // Sagrado / Luz
+  {nm:'Luz Divina',         co:'2 MP',ico:'&#10024;',ds:'Destruye automaticamente hasta 2 no-muertos con cualquier HP.',r:'rare'},
+  {nm:'Bendicion',          co:'1 MP',ico:'&#128267;',ds:'+1 dado de ataque a un aliado hasta fin de turno.',r:'common'},
+  {nm:'Exorcismo',          co:'2 MP',ico:'&#128267;',ds:'Mata instantaneamente a un no-muerto con HP menor o igual a 3.',r:'uncommon'},
+  // General arcano
+  {nm:'Teletransportar',    co:'3 MP',ico:'&#127752;',ds:'Muevete hasta 5 casillas ignorando obstaculos y monstruos.',r:'rare'},
+  {nm:'Paso de Sombra',     co:'1 MP',ico:'&#128064;',ds:'Invisible hasta que ataques. Enemigos no pueden ser objetivo.',r:'uncommon'},
+  {nm:'Vision Arcana',      co:'1 MP',ico:'&#128302;',ds:'Revela trampas y puertas secretas en las 2 salas siguientes.',r:'uncommon'},
+  {nm:'Escudo Arcano',      co:'1 MP',ico:'&#128737;&#65039;',ds:'+2 dados de defensa al lanzador hasta el proximo turno.',r:'uncommon'},
+  {nm:'Barrera Magica',     co:'2 MP',ico:'&#128737;&#65039;',ds:'Todo el grupo recibe +1 defensa hasta fin de combate.',r:'rare'},
+  {nm:'Cataclismo',         co:'5 MP',ico:'&#128165;',ds:'2D6 dano a todos los enemigos. +2 HP a todos los aliados.',r:'legendary'},
+];
+
+const EPOOL=[{nm:'Goblin',ico:'&#128122;',ty:'No-muerto',hp:2,mHp:2,atk:1,def:1,gld:10,xp:20},{nm:'Esqueleto',ico:'&#128128;',ty:'No-muerto',hp:3,mHp:3,atk:2,def:1,gld:15,xp:30},{nm:'Orco',ico:'&#128121;',ty:'Bestia',hp:4,mHp:4,atk:3,def:2,gld:20,xp:50},{nm:'Zombie',ico:'&#129535;',ty:'No-muerto',hp:5,mHp:5,atk:2,def:1,gld:12,xp:35},{nm:'Troll',ico:'&#129996;',ty:'Bestia',hp:7,mHp:7,atk:3,def:3,gld:30,xp:80},{nm:'Vampiro',ico:'&#129499;',ty:'No-muerto',hp:5,mHp:5,atk:3,def:2,gld:40,xp:90},{nm:'Demonio',ico:'&#128520;',ty:'Caos',hp:6,mHp:6,atk:4,def:2,gld:50,xp:120},{nm:'Dragon Joven',ico:'&#128009;',ty:'Bestia',hp:10,mHp:10,atk:5,def:3,gld:100,xp:250},{nm:'Hechicero Oscuro',ico:'&#129497;',ty:'Caos',hp:4,mHp:4,atk:4,def:1,gld:60,xp:150},{nm:'Golem de Piedra',ico:'&#128511;',ty:'Constructo',hp:8,mHp:8,atk:3,def:4,gld:35,xp:100}];
+const EVPOOL=[{ico:'&#128285;',tl:'Puerta Secreta',ds:'Vuestro Enano detecta una ranura oculta en la pared. Podria llevar a una sala de tesoros... o a una trampa.',ch:['Abrir la puerta (tirada de habilidad)','Ignorarla y seguir']},{ico:'&#129514;',tl:'Pocion Misteriosa',ds:'En el suelo yace un frasco de liquido burbujeante de color verde. Nadie sabe que contiene.',ch:['Beberla (D6: 1-3 dano, 4-6 curacion)','Dejarla aqui']},{ico:'&#128220;',tl:'Pergamino Antiguo',ds:'Un pergamino con escritura arcana. El Mago puede intentar descifrarlo.',ch:['Leer el pergamino','Pasar de largo']},{ico:'&#128176;',tl:'Cofre del Tesoro',ds:'Un enorme cofre con cerradura dorada. Brilla tenuemente.',ch:['Abrirlo (posible trampa)','Enano lo examina primero']},{ico:'&#128375;&#65039;',tl:'Sala de Aranas',ds:'Telas de arana cubren cada rincon. Algo se mueve en las sombras.',ch:['Avanzar en guardia','Usar antorcha para quemar las telas']},{ico:'&#128123;',tl:'Espiritu del Mazmorrero',ds:'Un fantasma dice conocer el camino mas corto... por un precio.',ch:['Pagar 30 oros','Ignorarle y explorar']},{ico:'&#127994;',tl:'Altar Antiguo',ds:'Un altar de piedra emana una energia extrana.',ch:['Rezar (+1 MP a todos los heroes)','Seguir adelante']},{ico:'&#128278;',tl:'Trampa de Flechas',ds:'El Elfo detecta un mecanismo oculto en el suelo.',ch:['Elfo lo desactiva (tirada)','Saltar con cuidado']}];
+const STORIES=[{tl:'La Tumba del Rey Olvidado',in:'Los aldeanos hablan de una tumba maldita donde duerme un rey hace mil anos. Sus tesoros estan intactos... y sus guardianes tambien.',ob:'Llegar a la camara central y recuperar el Sello Real.'},{tl:'El Mercader Desaparecido',in:'Un mercader no regreso de su viaje por los tuneles. Su familia ofrece recompensa. En los tuneles hay rastros de sangre.',ob:'Encontrar al mercader o sus pertenencias.'},{tl:'La Forja Maldita',in:'Una forja legendaria fue conquistada por fuerzas oscuras. Quien la controle podra crear armas indestructibles.',ob:'Limpiar la forja de enemigos y recuperar los planos.'},{tl:'El Oraculo en las Profundidades',in:'Un oraculo fue capturado por el Senor de los No-muertos. Su conocimiento es invaluable.',ob:'Liberar al oraculo antes de que sea corrompido.'},{tl:'Veneno en el Pozo',in:'El agua del pueblo esta envenenada. Los rastros llevan a una caverna cercana.',ob:'Encontrar y destruir la fuente del veneno.'},{tl:'La Biblioteca Perdida',in:'Una biblioteca arcana fue sellada hace siglos. Sus guardianes golem aun estan activos.',ob:'Alcanzar el sanctum interior y recuperar el Tomo Arcano.'}];
+const REWARDS=[[{ico:'&#128176;',n:'Oros de la mazmorra',v:'+50 oros/heroe'},{ico:'&#129514;',n:'Pocion de Curacion',v:'+2 unidades'}],[{ico:'&#128176;',n:'Cofre del tesoro',v:'+80 oros/heroe'},{ico:'&#11088;',n:'Experiencia',v:'+150 XP/heroe'}],[{ico:'&#11088;',n:'Experiencia de combate',v:'+200 XP/heroe'},{ico:'&#128505;&#65039;',n:'Espada Corta',v:'Objeto raro'}],[{ico:'&#128176;',n:'Botin de guerra',v:'+120 oros/heroe'},{ico:'&#128220;',n:'Pergamino Arcano',v:'Nuevo hechizo'}],[{ico:'&#128737;&#65039;',n:'Escudo Elfico',v:'Equip raro'},{ico:'&#11088;',n:'Experiencia',v:'+300 XP/heroe'}],[{ico:'&#128142;',n:'Anillo de Poder',v:'Objeto legendario'},{ico:'&#128176;',n:'Monedas antiguas',v:'+200 oros/heroe'}]];
+const TDEF=[{k:'gold',i:'&#128176;',n:'Monedas de Oro',u:'oros',s:10},{k:'potions',i:'&#129514;',n:'Pociones de Curacion',u:'uds',s:1},{k:'scrolls',i:'&#128220;',n:'Pergaminos Magicos',u:'uds',s:1},{k:'keys',i:'&#128285;',n:'Llaves y Artefactos',u:'uds',s:1}];
+const RN={common:'Comun',uncommon:'Poco comun',rare:'Raro',legendary:'Legendario',magic:'Hechizo'};
+const RC={common:'rc',uncommon:'ru',rare:'rr',legendary:'rl',magic:'rm'};
+const CF=['&#128128;','&#9876;&#65039;','&#128737;&#65039;','&#9876;&#65039;','&#128128;','&#9876;&#65039;'];
+// state
+const LSK='hq_v4';
+function loadS(){try{const r=localStorage.getItem(LSK);if(r)return JSON.parse(r)}catch(e){}return null}
+function dpUpdatePhoto(id,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const h=heroes.find(x=>x.id===id);
+    if(!h)return;
+    h.photo=e.target.result;
+    // Update visible avatar in detail panel
+    const dav=document.querySelector('.dpanel .dav');
+    if(dav){
+      let img=dav.querySelector('img');
+      if(!img){img=document.createElement('img');img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%';dav.appendChild(img);}
+      img.src=h.photo;
+      const ico=dav.querySelector('span');if(ico)ico.style.display='none';
+    }
+    rH();saveS();toast('&#128247; Foto actualizada');
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveS(){try{localStorage.setItem(LSK,JSON.stringify({heroes,gt,gi,cn,dh,sk}));fl()}catch(e){}}
+let stim;function fl(){const e=document.getElementById('sind');e.classList.add('v');clearTimeout(stim);stim=setTimeout(()=>e.classList.remove('v'),1800)}
+// State starts empty — loaded by session screen
+let heroes=[],gt={gold:0,potions:0,scrolls:0,keys:0},gi=[],cn='',dh=[],sk=null;
+let sT='barbaro',eHid=null,eSidx=-1,ciM='equip',ciR='common',giR='common';
+function rnd(a){return a[Math.floor(Math.random()*a.length)]}
+function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function openM(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  // Move to document root to escape any stacking context
+  if(el.parentElement!==document.documentElement){
+    document.documentElement.appendChild(el);
+  }
+  el.classList.add('open');
+}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+function closeMB(e,id){if(e.target===document.getElementById(id))closeM(id)}
+let tT;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2600)}
+function showTab(tab,btn){
+  closeHeroModal();
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('fab').classList.toggle('hidden',tab!=='heroes');
+  if(tab==='notes')renderN();
+  if(tab==='skirmish')renderSk();
+  if(tab==='mazo')renderMazo();
+}
+// HEROES
+function rH(){
+  const c=document.getElementById('hcon');c.querySelectorAll('.hcard').forEach(x=>x.remove());
+  document.getElementById('ehero').style.display=heroes.length?'none':'block';
+  heroes.forEach(h=>{
+    const hpp=(h.hp/h.maxHp)*100,mpp=(h.mp/h.maxMp)*100,dead=h.hp<=0;
+    const d=document.createElement('div');d.className='hcard'+(dead?' dead':'');
+    const avatarInner=h.photo?`<img src="${h.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0">`:`${h.ico}`;
+    d.innerHTML=`<div class="hch"><div class="hav" style="background:radial-gradient(circle at 40% 35%,${h.col}44,${h.col}11);position:relative;overflow:hidden">${avatarInner}</div><div style="flex:1"><div class="hnm" style="font-size:17px;${dead?'color:#888':''}">${h.name||'Sin nombre'}${dead?' <small>&#128128;</small>':''}</div><div class="hcl" style="font-size:12px">${h.cls}${h.sp?.length?' &bull; <span style="color:var(--mg);font-size:11px">&#10024;'+h.sp.length+'</span>':''}</div></div><div class="hlv" style="font-size:11px">NV ${h.level}</div></div>
+    <div class="hsts"><div class="sb"><span class="slb">VIDA</span><span class="sv hp">${h.hp}</span><span class="smx">/${h.maxHp}</span></div><div class="sb"><span class="slb">MANA</span><span class="sv mp">${h.mp}</span><span class="smx">/${h.maxMp}</span></div><div class="sb"><span class="slb">ATAQUE</span><span class="sv atk">${h.atk}</span><span class="smx">dados</span></div><div class="sb"><span class="slb">DEFENSA</span><span class="sv def">${h.def}</span><span class="smx">dados</span></div></div>
+    <div class="hbrs"><div class="brow"><span class="blb">HP</span><div class="btk"><div class="bf hpb" style="width:${hpp}%"></div></div><span class="btx">${h.hp}/${h.maxHp}</span></div><div class="brow"><span class="blb">MP</span><div class="btk"><div class="bf mpb" style="width:${mpp}%"></div></div><span class="btx">${h.mp}/${h.maxMp}</span></div></div>
+    <div class="cact" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr"><button class="cab" style="color:var(--bl)" onclick="qs(${h.id},'hp',-1)">&#128148;</button><button class="cab" style="color:var(--gr)" onclick="qs(${h.id},'hp',1)">&#10084;&#65039;</button><button class="cab" style="color:var(--mg)" onclick="qs(${h.id},'mp',-1)">&#128309;</button><button class="cab" onclick="showD(${h.id})">VER &#8250;</button><button class="cab" style="color:rgba(139,26,26,.7);font-size:14px" onclick="if(confirm('Eliminar a ${h.name}?')){ heroes=heroes.filter(x=>x.id!==${h.id});rH();saveS();toast('&#128128; ${h.name} eliminado');}">&#10005;</button></div>`;
+    c.appendChild(d);
+  });
+}
+function qs(id,st,d){const h=heroes.find(x=>x.id===id);if(!h)return;if(st==='hp')h.hp=Math.max(0,Math.min(h.maxHp,h.hp+d));if(st==='mp')h.mp=Math.max(0,Math.min(h.maxMp,h.mp+d));rH();saveS();if(st==='hp'&&h.hp===0)toast('&#128128; '+h.name+' ha caido');}
+function rEq(h,id){return(h.eq||[]).map((e,i)=>`<div class="esl" onclick="openEQ(${id},${i})"><span style="font-size:22px;width:30px;text-align:center">${e.ico}</span><div style="flex:1"><div style="font-size:9px;letter-spacing:1px;color:var(--stl);font-family:'Cinzel',serif;text-transform:uppercase">${e.sl}</div><div style="font-size:14px;color:var(--pa);font-weight:600">${e.nm}</div>${e.ds?`<div style="font-size:11px;color:var(--stl);font-style:italic">${e.ds}</div>`:''}<div class="${RC[e.r]||'rc'}" style="font-size:11px">${RN[e.r]||''}${e.a>0?' &bull; +'+e.a+' Ataque':''}${e.d>0?' &bull; +'+e.d+' Defensa':''}${e.custom?' &#9998;':''}</div></div><span style="color:var(--stl);font-size:18px">&#8250;</span></div>`).join('')}
+function rSp(h,id){if(!h.sp?.length)return`<div style="padding:11px 14px;font-size:13px;color:var(--stl);font-style:italic">Sin hechizos aprendidos.</div>`;return h.sp.map((s,i)=>`<div class="spsl"><span style="font-size:24px;width:32px;text-align:center">${s.ico||'&#10024;'}</span><div style="flex:1"><div style="font-family:'Cinzel',serif;font-size:13px;color:var(--pa)">${s.nm}</div><div style="font-size:12px;color:var(--mg)">${s.co||''}</div><div style="font-size:12px;color:var(--stl);font-style:italic">${s.ds}</div></div><button class="sprm" onclick="remSp(${id},${i})">X</button></div>`).join('')}
+function rInv(h,id){if(!h.inv?.length)return`<div style="padding:11px 14px;font-size:13px;color:var(--stl);font-style:italic">Inventario vacio.</div>`;return h.inv.map((it,i)=>`<div class="ivit"><span style="font-size:22px;width:30px;text-align:center">${it.ico||'&#128230;'}</span><div style="flex:1"><div style="font-size:14px;color:var(--pa);font-weight:600">${it.nm}</div><div style="font-size:12px;color:var(--stl);font-style:italic">${it.ds||''}</div></div><div style="font-family:'Cinzel',serif;font-size:14px;color:var(--go);min-width:24px;text-align:center">${it.qty||1}</div><div style="display:flex;gap:3px"><button class="ibt" onclick="adjHI(${id},${i},-1)">-</button><button class="ibt" onclick="adjHI(${id},${i},1)">+</button><button class="ibt del" onclick="remHI(${id},${i})">X</button></div></div>`).join('')}
+function showD(id){
+  const h=heroes.find(x=>x.id===id);
+  if(!h)return;
+  if(!h.sp)h.sp=[];
+  if(!h.inv)h.inv=[];
+
+  const p=document.createElement('div');
+  p.className='dpanel';
+  p.id='dpanel';
+
+  // Build avatar
+  const avContent = h.photo
+    ? '<img src="'+h.photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0">'
+    : h.ico;
+
+  // Build bonus name line
+  const bonusLine = h.bonusName
+    ? '<div style="font-size:10px;color:var(--god);font-style:italic;font-family:\'Cinzel\',serif;letter-spacing:1px;margin-top:2px">'+h.bonusName+'</div>'
+    : '';
+
+  // Build skills
+  const skillsHtml = h.sk.map(function(s){
+    const badge = s.pasiva
+      ? '<span style="font-family:\'Cinzel\',serif;font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:2px;border:1px solid;color:var(--gr);border-color:var(--grd);background:rgba(42,90,42,.2)">PASIVA</span>'
+      : '<span style="font-family:\'Cinzel\',serif;font-size:8px;letter-spacing:1px;padding:2px 6px;border-radius:2px;border:1px solid;color:var(--go);border-color:var(--god);background:rgba(201,150,42,.15)">ACTIVA</span>';
+    const costLine = s.c ? '<div style="font-size:10px;color:var(--mg);margin-bottom:2px">'+s.c+'</div>' : '';
+    return '<div style="padding:10px 13px;border-bottom:1px solid rgba(255,255,255,.04)">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+      + '<span style="font-family:\'Cinzel\',serif;font-size:13px;color:var(--pa)">'+s.n+'</span>'
+      + badge
+      + '</div>'
+      + costLine
+      + '<div style="font-size:12px;color:var(--stl);font-style:italic">'+s.d+'</div>'
+      + '</div>';
+  }).join('');
+
+  p.innerHTML =
+    '<div class="dtb">'
+      + '<button class="bbtn" onclick="closeD()">&#8249;</button>'
+      + '<span class="dttl">FICHA DE HEROE</span>'
+    + '</div>'
+
+    + '<div class="dhdr">'
+      + '<div style="position:relative;flex-shrink:0">'
+        + '<div class="dav" style="background:radial-gradient(circle at 40% 35%,'+h.col+'55,'+h.col+'11);position:relative;overflow:hidden;cursor:pointer" onclick="document.getElementById(\'dp-photo-'+id+'\').click()">'+avContent+'</div>'
+        + '<div style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--god);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:2px solid #1a1208" onclick="document.getElementById(\'dp-photo-'+id+'\').click()">&#128247;</div>'
+        + '<input type="file" id="dp-photo-'+id+'" accept="image/*" style="display:none" onchange="dpUpdatePhoto('+id+',this)">'
+      + '</div>'
+      + '<div>'
+        + '<div class="dname">'+h.name+'</div>'
+        + '<div class="dsubt">'+h.cls+' &bull; Nivel <span id="d-lv">'+h.level+'</span></div>'
+        + bonusLine
+        + '<div class="dgold">&#128176; <span id="d-go">'+h.gold+'</span> oros</div>'
+      + '</div>'
+    + '</div>'
+
+    + '<div class="scard">'
+      + '<div class="sct">ESTADISTICAS</div>'
+      + '<div class="sadj"><div class="alb">Vida<small>Max: '+h.maxHp+'</small></div><div class="acls"><button class="abtn" onclick="adjD('+id+',\'hp\',-1)">-</button><span class="aval" id="d-hp">'+h.hp+'</span><button class="abtn" onclick="adjD('+id+',\'hp\',1)">+</button></div></div>'
+      + '<div class="sadj"><div class="alb">Mana<small>Max: '+h.maxMp+'</small></div><div class="acls"><button class="abtn" onclick="adjD('+id+',\'mp\',-1)">-</button><span class="aval" id="d-mp">'+h.mp+'</span><button class="abtn" onclick="adjD('+id+',\'mp\',1)">+</button></div></div>'
+      + '<div class="sadj"><div class="alb">Oro<small>Propias</small></div><div class="acls"><button class="abtn" onclick="adjD('+id+',\'gold\',-10)">-</button><span class="aval" id="d-go2">'+h.gold+'</span><button class="abtn" onclick="adjD('+id+',\'gold\',10)">+</button></div></div>'
+      + '<div class="sadj"><div class="alb">Nivel<small>1-10</small></div><div class="acls"><button class="abtn" onclick="adjD('+id+',\'level\',-1)">-</button><span class="aval" id="d-lv2">'+h.level+'</span><button class="abtn" onclick="adjD('+id+',\'level\',1)">+</button></div></div>'
+    + '</div>'
+
+    + '<div class="scard" id="d-eq">'
+      + '<div class="sct">EQUIPAMIENTO'
+        + '<button class="sctb" onclick="openEQ('+id+',-1)">+ ANADIR</button>'
+      + '</div>'
+      + rEq(h,id)
+    + '</div>'
+
+    + '<div class="scard" id="d-sp">'
+      + '<div class="sct">HECHIZOS'
+        + '<button class="sctb" onclick="openSP('+id+')">+ HECHIZO</button>'
+      + '</div>'
+      + rSp(h,id)
+    + '</div>'
+
+    + '<div class="scard" id="d-iv">'
+      + '<div class="sct">INVENTARIO'
+        + '<button class="sctb" onclick="openCI(\'inv-hero\')">+ ANADIR</button>'
+      + '</div>'
+      + rInv(h,id)
+    + '</div>'
+
+    + '<div class="scard">'
+      + '<div class="sct">HABILIDADES</div>'
+      + skillsHtml
+    + '</div>'
+
+    + '<div class="scard">'
+      + '<div class="sct">NOTAS DEL HEROE</div>'
+      + '<textarea class="nfld" placeholder="Anotaciones personales..." rows="3" onblur="saveHN('+id+',this.value)" onchange="saveHN('+id+',this.value)">'+( h.notes||'' )+'</textarea>'
+    + '</div>'
+
+    + '<div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      + '<button onclick="revive('+id+')" style="background:linear-gradient(135deg,var(--grd),#1a3010);border:1px solid var(--grd);border-radius:4px;color:var(--gr);font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#10024; REVIVIR</button>'
+      + '<button onclick="delH('+id+')" style="background:linear-gradient(135deg,rgba(80,15,15,.7),rgba(50,10,10,.7));border:1px solid var(--bl);border-radius:4px;color:var(--bl);font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#128128; ELIMINAR</button>'
+    + '</div>';
+
+  document.documentElement.appendChild(p);
+}
+
+function closeD(){const p=document.getElementById('dpanel');if(p){p.style.opacity='0';p.style.transform='translateX(28px)';setTimeout(()=>p.remove(),200)}}
+function adjD(id,st,d){const h=heroes.find(x=>x.id===id);if(!h)return;if(st==='hp')h.hp=Math.max(0,Math.min(h.maxHp,h.hp+d));if(st==='mp')h.mp=Math.max(0,Math.min(h.maxMp,h.mp+d));if(st==='gold')h.gold=Math.max(0,h.gold+d);if(st==='level')h.level=Math.max(1,Math.min(10,h.level+d));const m={hp:'d-hp',mp:'d-mp',gold:'d-go',level:'d-lv'};[m[st],m[st]+'2'].forEach(k=>{const e=document.getElementById(k);if(e)e.textContent=h[st];});if(st==='gold'){const e=document.getElementById('d-go');if(e)e.textContent=h.gold;}rH();saveS();if(st==='hp'&&h.hp===0)toast('&#128128; '+h.name+' ha caido');}
+function saveHN(id,t){const h=heroes.find(x=>x.id===id);if(h){h.notes=t;saveS()}}
+function revive(id){const h=heroes.find(x=>x.id===id);if(!h)return;h.hp=Math.ceil(h.maxHp/2);h.mp=Math.ceil(h.maxMp/2);rH();saveS();toast('&#10024; '+h.name+' revivido');const e=document.getElementById('d-hp');if(e)e.textContent=h.hp;}
+function delH(id){if(!confirm('Eliminar este heroe?'))return;heroes=heroes.filter(x=>x.id!==id);closeD();rH();saveS();toast('Heroe eliminado')}
+function openEQ(hid,sidx,slotOverride){
+  eHid=hid;eSidx=sidx;
+  const h=heroes.find(x=>x.id===hid);if(!h)return;
+  const sl=sidx>=0?h.eq[sidx]:null;
+  const sn=slotOverride||(sl?sl.sl:'Arma');
+  document.getElementById('eqtit').textContent=sn;
+
+  const cat=(ICAL[sn]||ICAL['Arma']).filter(it=>!it.nm.startsWith('//'));
+  let slotHeader='';
+  if(sidx<0){
+    // Show slot chooser tabs
+    slotHeader=`<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+      ${['Arma','Armadura','Accesorio'].map(s=>`
+        <button onclick="openEQ(${hid},-1,'${s}')"
+          style="flex:1;min-width:80px;background:${sn===s?'rgba(201,150,42,.2)':'rgba(0,0,0,.4)'};
+            border:1px solid ${sn===s?'var(--go)':'rgba(201,150,42,.25)'};border-radius:4px;
+            color:${sn===s?'var(--go)':'var(--stl)'};font-family:'Cinzel',serif;
+            font-size:11px;letter-spacing:1px;padding:8px;cursor:pointer;touch-action:manipulation">
+          ${s==='Arma'?'&#9876;&#65039;':s==='Armadura'?'&#128737;&#65039;':'&#128141;'} ${s}
+        </button>`).join('')}
+    </div>`;
+  }
+
+  document.getElementById('eqopts').innerHTML=slotHeader+cat.map(it=>{
+    const enc=JSON.stringify(it).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const isCur=sl&&it.nm===sl.nm;
+    return`<div class="eopt${isCur?' cur':''}" onclick="selEQ(${enc})">
+      <span style="font-size:24px">${it.ico}</span>
+      <div style="flex:1">
+        <div style="font-size:14px;color:var(--pa);font-weight:600">${it.nm}</div>
+        ${it.ds?`<div style="font-size:12px;color:var(--stl);font-style:italic">${it.ds}</div>`:''}
+        <div class="${RC[it.r]||'rc'}" style="font-size:12px">${RN[it.r]||''}${it.a>0?' &bull; +'+it.a+' ATK':''}${it.d>0?' &bull; +'+it.d+' DEF':''}</div>
+      </div>
+      ${isCur?'<span style="color:var(--go);font-size:20px">&#10003;</span>':''}
+    </div>`;
+  }).join('');
+  openM('m-eq');
+}
+function selEQ(it){const h=heroes.find(x=>x.id===eHid);if(!h)return;if(eSidx>=0)h.eq[eSidx]={...h.eq[eSidx],...it};else h.eq.push({sl:it.sl||'Arma',...it});closeM('m-eq');saveS();toast('Equipamiento actualizado');const c=document.getElementById('d-eq');if(c){c.querySelectorAll('.esl').forEach(x=>x.remove());c.insertAdjacentHTML('beforeend',rEq(h,h.id));}rH();}
+function openSP(hid){
+  eHid=hid;
+  const h=heroes.find(x=>x.id===hid); if(!h) return;
+  const kn=(h.sp||[]).map(s=>s.nm);
+
+  const schools=[
+    {lbl:'&#128293; Fuego',    nms:['Bola de Fuego','Valentia','Tempestad de Fuego','Muro de Fuego']},
+    {lbl:'&#127774; Tierra',   nms:['Piel de Piedra','Pasar por la Roca','Terremoto']},
+    {lbl:'&#128167; Agua',     nms:['Curacion Corporal','Dormir','Niebla','Agua Purificadora']},
+    {lbl:'&#128168; Aire',     nms:['Genio','Rafaga','Tempestad','Vuelo']},
+    {lbl:'&#10024; Arcano',    nms:['Mano Fantasma','Reflejo','Drenaje de Vida','Clarividencia','Torpeza']},
+    {lbl:'&#128267; Luz',      nms:['Luz Divina','Bendicion','Exorcismo','Consagrar']},
+    {lbl:'&#9760;&#65039; Oscuro', nms:['Invocar Esqueleto','Maldicion','Drenar Vida']},
+    {lbl:'&#128065;&#65039; Ilusiones', nms:['Ilusion','Confusion','Sigilo Arcano']},
+    {lbl:'&#127744; Gran Poder',nms:['Tormenta Magica','Cataclismo']},
+  ];
+
+  let out='';
+  schools.forEach(function(sch){
+    const items=SCATS.filter(s=>sch.nms.includes(s.nm));
+    if(!items.length) return;
+    out+='<div style="font-family:\'Cinzel\',serif;font-size:10px;letter-spacing:2px;color:var(--god);'
+      +'padding:10px 2px 5px;border-bottom:1px solid rgba(201,150,42,.15);margin-bottom:5px">'+sch.lbl+'</div>';
+    out+=items.map(function(s){
+      const enc=JSON.stringify(s).replace(/"/g,'&quot;');
+      const isKn=kn.includes(s.nm);
+      return '<div class="eopt'+(isKn?' cur':'')+'" onclick="addSP('+enc+')">'
+        +'<span style="font-size:24px">'+s.ico+'</span>'
+        +'<div style="flex:1">'
+          +'<div style="font-family:\'Cinzel\',serif;font-size:13px;color:var(--pa);font-weight:600">'+s.nm+'</div>'
+          +'<div style="font-size:12px;color:var(--mg);margin-bottom:2px">'+s.co+'</div>'
+          +'<div style="font-size:12px;color:var(--stl);font-style:italic">'+s.ds+'</div>'
+        +'</div>'
+        +(isKn?'<span style="color:var(--mg);font-size:20px">&#10003;</span>':'')
+        +'</div>';
+    }).join('');
+  });
+  document.getElementById('spopts').innerHTML=out;
+  openM('m-sp');
+}
+
+function addSP(sp){const h=heroes.find(x=>x.id===eHid);if(!h)return;if(!h.sp)h.sp=[];if(h.sp.find(s=>s.nm===sp.nm)){toast('Ya conoces ese hechizo');return;}h.sp.push(sp);closeM('m-sp');saveS();toast('&#10024; Hechizo aprendido: '+sp.nm);const c=document.getElementById('d-sp');if(c){c.querySelectorAll('.spsl').forEach(x=>x.remove());const p=c.querySelector('[style*="Sin hechizos"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rSp(h,h.id));}rH();}
+function remSp(id,idx){const h=heroes.find(x=>x.id===id);if(!h)return;h.sp.splice(idx,1);saveS();const c=document.getElementById('d-sp');if(c){c.querySelectorAll('.spsl').forEach(x=>x.remove());const p=c.querySelector('[style*="Sin hechizos"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rSp(h,h.id));}rH();}
+function adjHI(id,idx,d){const h=heroes.find(x=>x.id===id);if(!h||!h.inv[idx])return;h.inv[idx].qty=Math.max(0,(h.inv[idx].qty||1)+d);if(h.inv[idx].qty===0)h.inv.splice(idx,1);saveS();const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}
+function remHI(id,idx){const h=heroes.find(x=>x.id===id);if(!h)return;h.inv.splice(idx,1);saveS();const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}
+function openHeroInvCatalog(hid){
+  eHid=hid;
+  const h=heroes.find(x=>x.id===hid); if(!h) return;
+  if(!h.inv) h.inv=[];
+
+  let out='<div style="font-family:\'Cinzel\',serif;font-size:10px;letter-spacing:2px;color:var(--god);padding:4px 0 8px">OBJETOS DEL JUEGO BASE</div>';
+  out+=IINV.map(function(it){
+    const alreadyHas=h.inv.find(x=>x.nm===it.nm);
+    return '<div class="eopt'+(alreadyHas?' cur':'')+'" onclick="addInvItem(\''+it.nm+'\')">'
+      +'<span style="font-size:24px">'+it.ico+'</span>'
+      +'<div style="flex:1">'
+        +'<div style="font-size:14px;color:var(--pa);font-weight:600">'+it.nm+'</div>'
+        +'<div style="font-size:12px;color:var(--stl);font-style:italic">'+it.ds+'</div>'
+        +'<div style="font-size:11px;color:var(--god)">'+RN[it.r]+'</div>'
+      +'</div>'
+      +(alreadyHas?'<span style="color:var(--go);font-size:18px">&#10003;</span>':'<span style="color:var(--stl);font-size:14px">+</span>')
+      +'</div>';
+  }).join('');
+
+  // Modal: reuse m-ci structure but with catalog content
+  document.getElementById('citit').textContent='Inventario';
+  document.getElementById('ci-n').style.display='none';
+  document.getElementById('ci-xweapon').style.display='none';
+  document.getElementById('ci-xspell').style.display='none';
+  document.getElementById('ci-xinv').style.display='none';
+  // Show catalog
+  let catDiv=document.getElementById('ci-catalog');
+  if(!catDiv){
+    catDiv=document.createElement('div');
+    catDiv.id='ci-catalog';
+    document.getElementById('ci-n').parentNode.insertBefore(catDiv,document.getElementById('ci-n'));
+  }
+  catDiv.innerHTML=out;
+  document.getElementById('ci-n').style.display='';
+  document.getElementById('ci-n').placeholder='O escribe nombre de objeto personalizado...';
+  document.getElementById('ci-xinv').style.display='block';
+  document.querySelectorAll('#ci-rg .rbt').forEach(b=>{b.classList.remove('sel');if(b.dataset.r==='common')b.classList.add('sel')});
+  ciR='common'; ciM='inv-hero';
+  openM('m-ci');
+}
+
+function addInvItem(nm){
+  const h=heroes.find(x=>x.id===eHid); if(!h) return;
+  if(!h.inv) h.inv=[];
+  const template=IINV.find(x=>x.nm===nm);
+  if(!template) return;
+  const existing=h.inv.find(x=>x.nm===nm);
+  if(existing){ existing.qty=(existing.qty||1)+1; }
+  else { h.inv.push({nm:template.nm,ico:template.ico,ds:template.ds,r:template.r,qty:1}); }
+  saveS();
+  toast(template.ico+' '+nm+' anadido');
+  // Refresh inv panel in dpanel
+  const c=document.getElementById('d-iv');
+  if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const ph=c.querySelector('[style*="Inventario"]');if(ph)ph.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}
+  // Re-open to show updated state
+  openHeroInvCatalog(eHid);
+}
+
+function openCI(mode){ciM=mode;document.getElementById('citit').textContent=mode.includes('spell')?'Crear Hechizo':mode.includes('inv')?'Anadir al Inventario':'Crear Objeto de Equipo';document.getElementById('ci-xw').style.display=mode==='equip'?'block':'none';document.getElementById('ci-xs').style.display=mode.includes('spell')?'block':'none';document.getElementById('ci-xv').style.display=(mode==='inv'||mode==='inv-hero')?'block':'none';document.querySelectorAll('#ci-rg .rbt').forEach(b=>{b.classList.remove('sel');if(b.dataset.r==='common')b.classList.add('sel')});ciR='common';['ci-n','ci-d','ci-i'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});closeM('m-eq');closeM('m-sp');openM('m-ci');}
+function selR(btn,ctx){const g=ctx==='gi'?'#gi-rg .rbt':'#ci-rg .rbt';document.querySelectorAll(g).forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');if(ctx==='gi')giR=btn.dataset.r;else ciR=btn.dataset.r;}
+function saveCI(){const nm=document.getElementById('ci-n').value.trim();const ds=document.getElementById('ci-d').value.trim();const ico=document.getElementById('ci-i').value.trim()||'&#128230;';if(!nm){toast('Escribe un nombre');return;}
+if(ciM==='equip'){const sl=document.getElementById('ci-sl').value;const a=parseInt(document.getElementById('ci-a').value)||0;const d=parseInt(document.getElementById('ci-df').value)||0;const it={sl,nm,ico,ds,r:ciR,a,d,custom:true};if(!ICAL[sl])ICAL[sl]=[];ICAL[sl].push(it);const h=heroes.find(x=>x.id===eHid);if(h){if(eSidx>=0)selEQ(it);else{h.eq.push(it);const c=document.getElementById('d-eq');if(c){c.querySelectorAll('.esl').forEach(x=>x.remove());c.insertAdjacentHTML('beforeend',rEq(h,h.id));}rH();saveS();}}toast('Objeto creado');}
+else if(ciM.includes('spell')){const co=document.getElementById('ci-c').value.trim()||'0 MP';const sp={nm,ico,ds,co,r:ciR};SCATS.push(sp);if(eHid)addSP(sp);else toast('&#10024; Hechizo creado al catalogo');}
+else{const qty=parseInt(document.getElementById('ci-q').value)||1;const it={nm,ico,ds,r:ciR,qty};if(ciM==='inv-hero'&&eHid){const h=heroes.find(x=>x.id===eHid);if(h){if(!h.inv)h.inv=[];h.inv.push(it);saveS();toast('Objeto anadido al heroe');const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}}else{gi.push(it);saveS();toast('Objeto anadido al grupo');renderGI();}}closeM('m-ci');}
+function openHeroModal(){
+  sT = Object.keys(HT)[0];
+  // Reset to step 1
+  const s1 = document.getElementById('nh-step1');
+  const s2 = document.getElementById('nh-step2');
+  if(s1) s1.style.display='block';
+  if(s2) s2.style.display='none';
+  renderClassGrid();
+  const m = document.getElementById('m-nh');
+  if(m){
+    if(m.parentElement!==document.documentElement){
+      document.documentElement.appendChild(m);
+    }
+    m.style.display='flex';
+  }
+}
+
+function nhNextStep(){
+  const cls = HT[sT];
+  if(!cls){ toast('Elige una clase primero'); return; }
+  // Fill preview
+  const ico = document.getElementById('nh-prev-ico');
+  const nm  = document.getElementById('nh-prev-name');
+  const st  = document.getElementById('nh-prev-stats');
+  const sk  = document.getElementById('nh-prev-skills');
+  if(ico) ico.textContent = cls.ico;
+  if(nm)  nm.textContent  = cls.cls;
+  if(st)  st.textContent  = 'HP '+cls.hp+' • MP '+cls.mp+' • ATK '+cls.atk+' • DEF '+cls.def;
+  if(sk && cls.sk) sk.innerHTML = cls.sk.map(s=>'&#9670; '+s.n).join(' &nbsp;');
+  document.getElementById('nh-step1').style.display='none';
+  document.getElementById('nh-step2').style.display='block';
+  const inp = document.getElementById('hinp');
+  if(inp){ inp.value=''; setTimeout(()=>inp.focus(),150); }
+}
+
+function nhBackStep(){
+  document.getElementById('nh-step1').style.display='block';
+  document.getElementById('nh-step2').style.display='none';
+  renderClassGrid();
+}
+
+function closeHeroModal(){
+  const m = document.getElementById('m-nh');
+  if(m) m.style.display='none';
+}
+
+function selT(btn){
+  document.querySelectorAll('#class-grid button').forEach(b=>{
+    b.style.borderColor='rgba(201,150,42,.2)';
+    b.style.background='linear-gradient(160deg,#1e1810,#2a2010)';
+    b.style.color='#ddd0a8';
+  });
+  btn.style.borderColor='#c9962a';
+  btn.style.background='linear-gradient(160deg,#2a1e0a,#3a2a10)';
+  btn.style.color='#c9962a';
+  sT = btn.dataset.type;
+}
+
+function renderClassGrid(){
+  const grid = document.getElementById('class-grid');
+  if(!grid) return;
+  const cats = {};
+  Object.entries(HT).forEach(([key,cls])=>{
+    const cat = cls.cat||'Original';
+    if(!cats[cat]) cats[cat]=[];
+    cats[cat].push({key,cls});
+  });
+  let out='';
+  Object.entries(cats).forEach(([cat,list])=>{
+    out+=`<div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:#7a5a18;text-transform:uppercase;padding:10px 2px 6px;border-bottom:1px solid rgba(201,150,42,.15);margin-bottom:6px">${cat}</div>`;
+    out+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px">`;
+    list.forEach(({key,cls})=>{
+      const isSel = key===sT;
+      out+=`<button data-type="${key}" onclick="selT(this)"
+        style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;
+               background:${isSel?'linear-gradient(160deg,#2a1e0a,#3a2a10)':'linear-gradient(160deg,#1e1810,#2a2010)'};
+               border:1px solid ${isSel?'#c9962a':'rgba(201,150,42,.2)'};
+               border-radius:6px;cursor:pointer;touch-action:manipulation;
+               color:${isSel?'#c9962a':'#ddd0a8'};transition:all .15s">
+        <span style="font-size:28px;line-height:1">${cls.ico}</span>
+        <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:.5px">${cls.cls}</span>
+        <span style="font-size:8px;color:#5a504a;line-height:1.4">HP${cls.hp} &bull; MP${cls.mp} &bull; ATK${cls.atk} &bull; DEF${cls.def}</span>
+      </button>`;
+    });
+    if(list.length%2!==0) out+=`<div></div>`;
+    out+=`</div>`;
+  });
+  grid.innerHTML=out;
+}
+
+
+function createH(){
+  const nm = document.getElementById('hinp').value.trim();
+  if(!nm){toast('Escribe un nombre');return;}
+  if(heroes.length>=6){toast('Maximo 6 heroes');return;}
+  const t = HT[sT];
+  if(!t){toast('Selecciona una clase');return;}
+  const t_copy = JSON.parse(JSON.stringify(t));
+  const h = {
+    id:Date.now(), type:sT, notes:'', gold:100, level:1, xp:0, photo:null,
+    ...t_copy,
+    name:nm,  // always after spread so template can't overwrite it
+  };
+  heroes.push(h);
+  closeHeroModal();
+  rH(); saveS();
+  toast(t.ico+' '+nm+' se une a la aventura!');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  ORACLE SYSTEM — Adventure lore + question-based gameplay
+// ══════════════════════════════════════════════════════════════════════════
+
+const CONDITIONS = {
+  'No-muertos': {
+    ico:'&#128128;', col:'#8b1a1a', type:'PERJUICIO',
+    effect:'Los No-Muertos son mas poderosos en esta mision.',
+    rules:[
+      {ico:'&#128128;',txt:'Los esqueletos y zombies reciben +1 dado de ataque.'},
+      {ico:'&#9760;&#65039;',txt:'Los no-muertos no huyen aunque les quede 1 HP.'},
+      {ico:'&#10024;',txt:'La magia de Luz (Exorcismo, Luz Divina) cuesta +1 MP adicional.'},
+    ]
+  },
+  'Trampas': {
+    ico:'&#9888;&#65039;', col:'#8a6a1a', type:'PERJUICIO',
+    effect:'La sala esta llena de trampas ocultas y mecanismos mortales.',
+    rules:[
+      {ico:'&#9888;&#65039;',txt:'Al entrar en cada sala nueva, tira 1D6. Con 1-2, hay una trampa activa.'},
+      {ico:'&#9874;&#65039;',txt:'Las trampas infligen 1D4 de dano. El Enano puede intentar desactivarlas (4+ en 1D6).'},
+      {ico:'&#128270;',txt:'Buscar activamente trampas consume toda la accion del turno.'},
+    ]
+  },
+  'Gran tesoro': {
+    ico:'&#128176;', col:'#c9962a', type:'BONIFICACION',
+    effect:'Esta mision ofrece recompensas excepcionales para los valientes.',
+    rules:[
+      {ico:'&#128176;',txt:'Al completar la mision, cada heroe recibe +50 oros adicionales.'},
+      {ico:'&#128142;',txt:'Hay un objeto magico extra oculto en la sala del jefe.'},
+      {ico:'&#11088;',txt:'Los heroes reciben +100 XP bonus por cada enemigo de elite derrotado.'},
+    ]
+  },
+  'Goblins': {
+    ico:'&#128121;', col:'#5a8a2a', type:'PERJUICIO',
+    effect:'Los goblins patrullan cada rincon. Nunca estais solos.',
+    rules:[
+      {ico:'&#128121;',txt:'Al inicio de cada turno, tira 1D6. Con 6, aparece 1 goblin de refuerzo.'},
+      {ico:'&#128483;',txt:'Los goblins llaman refuerzos si no son eliminados en el mismo turno que se detectan.'},
+      {ico:'&#128176;',txt:'Cada goblin lleva 5 oros en equipo saqueado.'},
+    ]
+  },
+  'Pistas': {
+    ico:'&#128285;', col:'#4a80d4', type:'BONIFICACION',
+    effect:'Hay informacion valiosa escondida en la mazmorra.',
+    rules:[
+      {ico:'&#128285;',txt:'Al explorar cada sala, tira 1D6. Con 5-6, encuentras una pista que revela el camino correcto.'},
+      {ico:'&#128172;',txt:'Las pistas pueden desbloquear dialogos con PNJs que dan ventajas en combate.'},
+      {ico:'&#128220;',txt:'Reunir 3 pistas revela la ubicacion del objetivo final.'},
+    ]
+  },
+  'Ilusiones': {
+    ico:'&#128064;', col:'#7a2a9a', type:'PERJUICIO',
+    effect:'La realidad se distorsiona. No todo lo que ves es real.',
+    rules:[
+      {ico:'&#128064;',txt:'Al entrar en una sala, tira 1D6. Con 1-2, los enemigos que ves son ilusiones (no hacen dano).'},
+      {ico:'&#128302;',txt:'El Mago puede gastar 1 MP para identificar si algo es real antes de actuar.'},
+      {ico:'&#9760;&#65039;',txt:'Atacar a una ilusion gasta la accion del heroe sin efecto.'},
+    ]
+  },
+  'Magia': {
+    ico:'&#128302;', col:'#4a80d4', type:'BONIFICACION',
+    effect:'La energia arcana impregna cada piedra. El potencial magico es enorme.',
+    rules:[
+      {ico:'&#10024;',txt:'El Mago y el Elfo recuperan 1 MP adicional al inicio de cada turno.'},
+      {ico:'&#128302;',txt:'Los hechizos de area afectan a 1 casilla extra de radio.'},
+      {ico:'&#9889;',txt:'Los pergaminos encontrados se pueden usar sin ser Mago.'},
+    ]
+  },
+  'Veneno': {
+    ico:'&#129500;', col:'#5a8a2a', type:'PERJUICIO',
+    effect:'El ambiente esta contaminado. El veneno acecha en cada rincon.',
+    rules:[
+      {ico:'&#129500;',txt:'No se puede usar Agua para recuperar vida. Si se intenta, tira 1D6: ese es el dano recibido.'},
+      {ico:'&#128167;',txt:'Las pociones de Agua Purificadora curan el veneno pero no dan HP.'},
+      {ico:'&#9760;&#65039;',txt:'Al inicio de cada sala nueva, tira 1D6. Con 1, un heroe aleatorio pierde 1 HP por veneno ambiental.'},
+    ]
+  },
+  'Criaturas': {
+    ico:'&#128027;', col:'#7a5a18', type:'PERJUICIO',
+    effect:'Bestias salvajes acechan en las sombras.',
+    rules:[
+      {ico:'&#128027;',txt:'Los animales y bestias reciben +1 dado de movimiento (se mueven mas rapido).'},
+      {ico:'&#129505;',txt:'Las bestias siempre atacan primero al heroe con menos HP.'},
+      {ico:'&#128293;',txt:'El fuego causa +1 dado de dano adicional a todas las bestias.'},
+    ]
+  },
+  'Agua corrompida': {
+    ico:'&#128167;', col:'#2a4a7f', type:'PERJUICIO',
+    effect:'El agua esta envenenada. Beberla puede ser mortal.',
+    rules:[
+      {ico:'&#128167;',txt:'No se puede usar Curacion Corporal (hechizo de Agua). Si se usa, tira 1D6: ese es el dano.'},
+      {ico:'&#129514;',txt:'Las pociones de curacion pierden eficacia: curan 1D4 menos (minimo 0).'},
+      {ico:'&#10052;&#65039;',txt:'El hechizo Niebla esta prohibido. El agua de cualquier fuente esta contaminada.'},
+    ]
+  },
+  'Golems': {
+    ico:'&#129302;', col:'#5a504a', type:'PERJUICIO',
+    effect:'Guardianes de piedra vigilantes e implacables.',
+    rules:[
+      {ico:'&#129302;',txt:'Los Golems son inmunes a hechizos de Fuego y no pueden ser quemados.'},
+      {ico:'&#9874;&#65039;',txt:'Las armas contundentes (mazas, martillos) causan +1 dado de dano a Golems.'},
+      {ico:'&#9760;&#65039;',txt:'Si un Golem recibe 0 dano en un ataque, contraataca inmediatamente.'},
+    ]
+  },
+  'Vigilancia': {
+    ico:'&#128064;', col:'#4a80d4', type:'PERJUICIO',
+    effect:'Los guardianes estan en estado de alerta maxima.',
+    rules:[
+      {ico:'&#128064;',txt:'Los enemigos no pueden ser sorprendidos. No se aplica el bono de ataque por sorpresa.'},
+      {ico:'&#128483;',txt:'Al abrir cualquier puerta, los enemigos de la sala adyacente se alertan automaticamente.'},
+      {ico:'&#9889;',txt:'El hechizo Paso de Sombra no funciona si ya has atacado en esta mision.'},
+    ]
+  },
+};
+
+const LORE_POOL = [
+  {tl:'La Tumba del Rey Olvidado',ty:'Cripta',badge:'Oscuridad',bcol:'#5a3a8a',
+   in:'Los aldeanos de Millhaven hablan en susurros de una tumba maldita al norte del bosque. Hace mil anos, el rey Aldric fue enterrado con sus tesoros y sus guardias... que juraron protegerle incluso en la muerte. Esta noche, vosotros cruzais ese umbral.',
+   ob:'Alcanzad la camara central. Recuperad el Sello Real de Aldric.',
+   tags:['No-muertos','Trampas','Gran tesoro'],tagcols:['var(--bl)','#8a6a1a','var(--gol)'],
+   atmosphere:'El aire huele a polvo de siglos. Antorchas que nadie encendio arden solas.'},
+  {tl:'El Mercader Desaparecido',ty:'Mazmorra',badge:'Misterio',bcol:'#2a4a7f',
+   in:'Torvin, comerciante de especias, partio hace cinco dias. No llego. Los tuneles del Paso Norte son los mas cortos, el siempre los usaba. Ya no.',
+   ob:'Encontrad a Torvin vivo o muerto. Traed prueba de su destino.',
+   tags:['Goblins','Trampas','Pistas'],tagcols:['#5a8a2a','#8a6a1a','var(--mg)'],
+   atmosphere:'Pisadas en el barro. Algunas humanas, otras no.'},
+  {tl:'La Forja del Caos',ty:'Forja',badge:'Peligro Extremo',bcol:'#8b1a1a',
+   in:'Bajo el Monte Karrath existe una forja donde se forjaron las Espadas del Caos. Un culto la ha reactivado. Si completan el ritual, el proximo ejercito de Zargon portara armas que ningun escudo puede detener.',
+   ob:'Destruid la Forja del Caos. Matad al Forjador antes del amanecer.',
+   tags:['Golems','Trampas','Gran tesoro'],tagcols:['#5a504a','#8a6a1a','var(--gol)'],
+   atmosphere:'El calor es insoportable. El metal rojo incandescente chorrea por las paredes.'},
+  {tl:'El Oraculo Encadenado',ty:'Santuario',badge:'Urgencia',bcol:'#2a6a2a',
+   in:'La vidente Sera lleva tres semanas sin hablar. Sus ojos ven algo que no puede decir: esta hechizada. El hechizo viene de las profundidades de su propio santuario, corrompido por una entidad llamada El Murmurante.',
+   ob:'Descended al nivel inferior. Destruid el Vinculo del Murmullo.',
+   tags:['Ilusiones','Magia','Vigilancia'],tagcols:['var(--pul)','var(--mg)','var(--mb)'],
+   atmosphere:'Vuestras voces se repiten solas. Cada sombra parece moverse cuando no la mirais.'},
+  {tl:'El Pozo Envenenado',ty:'Caverna',badge:'Urgencia Popular',bcol:'#4a7a2a',
+   in:'Tres ninos del pueblo enfermaron en un dia. Luego cinco adultos. El medico lo confirmo: veneno en las aguas. Alguien, o algo, esta contaminando el agua desde dentro de la tierra.',
+   ob:'Localizad la fuente del veneno. Destruid o sellad el origen.',
+   tags:['Veneno','Criaturas','Agua corrompida'],tagcols:['#5a8a2a','#7a5a18','var(--mb)'],
+   atmosphere:'El goteo del agua es constante. Tiene un color levemente verdoso.'},
+  {tl:'La Biblioteca de los Prohibidos',ty:'Biblioteca',badge:'Conocimiento Oscuro',bcol:'#5a2a7f',
+   in:'El mago Aldous encontro el Grimorio de Kael-Noth. Tambien encontro que la biblioteca fue sellada por una razon: sus guardianes golem siguen activos, y el Grimorio tiene opinion propia.',
+   ob:'Entrad en la biblioteca sellada. Recovered el Grimorio sin leerlo.',
+   tags:['Golems','Magia','Vigilancia'],tagcols:['#5a504a','var(--mg)','var(--mb)'],
+   atmosphere:'Silencio absoluto. Los libros se mueven solos entre los estantes. Uno os esta mirando.'},
+];
+
+
+const LORE_INTROS_EXTRA = [
+  'La luna esta roja esta noche. Los viejos dicen que eso no augura nada bueno.',
+  'Vuestro cliente pago por adelantado y en oro. Eso suele significar que el peligro es real.',
+  'El ultimo grupo que entro aqui no volvio. Sus armas aparecieron en la puerta del pueblo. Sin sangre.',
+  'Un cuervo negro os ha seguido desde el pueblo. Se ha detenido justo ante la entrada. No pasa.',
+  'El Enano ya ha estado aqui. Hace veinte anos. No quiere hablar de lo que vio.',
+  'Segun los mapas del Imperio, este lugar no existe. Pero vosotros estais ante sus puertas.',
+];
+
+const ORACLE_QUESTIONS = [
+  {cat:'Exploracion',ico:'&#128682;',lbl:'Veo alguna puerta?',hint:'Al entrar o mirar alrededor',
+   rolls:[
+     {range:[1,2],res:'No hay puertas visibles',det:'Las paredes son de piedra maciza. Callejon sin salida... o hay algo que no veis.',fx:null},
+     {range:[3,4],res:'Hay una puerta',det:'Una puerta de madera reforzada con hierro. Tiene cerradura pero no llave a la vista.',fx:{ico:'&#128682;',txt:'Puerta encontrada'}},
+     {range:[5,5],res:'Hay dos puertas',det:'Una al norte y otra al este. La del norte tiene marcas de arañazos recientes.',fx:{ico:'&#128682;&#128682;',txt:'Dos salidas disponibles'}},
+     {range:[6,6],res:'Puerta secreta detectada',det:'El Enano nota una corriente de aire en la pared sur. Solo visible si se busca activamente.',fx:{ico:'&#128285;',txt:'Puerta secreta — +1 Llave si se abre'}},
+   ]},
+  {cat:'Exploracion',ico:'&#128064;',lbl:'Que contiene esta sala?',hint:'Al explorar una habitacion nueva',
+   rolls:[
+     {range:[1,1],res:'Sala vacia',det:'Polvo y silencio. Nada de valor, nada de peligro.',fx:null},
+     {range:[2,3],res:'Objetos abandonados',det:'Restos de un campamento: sacos rasgados, huesos de comida. Alguien vivio aqui.',fx:{ico:'&#128220;',txt:'Inspeccion posible (+tirada)'}},
+     {range:[4,4],res:'Trampa oculta',det:'El suelo suena distinto. Hay una trampa de presion. El Enano puede intentar desactivarla.',fx:{ico:'&#9888;&#65039;',txt:'Trampa detectada antes de activarse'}},
+     {range:[5,5],res:'Enemigos en emboscada',det:'Demasiado silencioso. Siluetas en las sombras. Os han visto antes que vosotros a ellos.',fx:{ico:'&#9876;&#65039;',txt:'COMBATE — Enemigos con ventaja de inicio'}},
+     {range:[6,6],res:'Algo valioso',det:'Una caja fuerte empotrada en la pared, medio oculta tras una piedra suelta.',fx:{ico:'&#128176;',txt:'Tesoro — requiere tirada de magia o fuerza'}},
+   ]},
+  {cat:'Exploracion',ico:'&#128270;',lbl:'Hay algo oculto aqui?',hint:'Buscar activamente en la sala',
+   rolls:[
+     {range:[1,3],res:'Nada que encontrar',det:'Registrais cada rincon. Paredes solidas, suelo firme.',fx:null},
+     {range:[4,4],res:'Pasaje secreto',det:'Una piedra se mueve al presionarla. Detras hay un pasadizo estrecho.',fx:{ico:'&#128285;',txt:'Pasaje secreto descubierto'}},
+     {range:[5,5],res:'Objeto escondido',det:'Bajo una baldosa suelta: una bolsa de cuero con monedas y un pergamino.',fx:{ico:'&#128176;',txt:'+25 oros + 1 pergamino'}},
+     {range:[6,6],res:'Altar oculto',det:'Detras de un tapiz podrido hay un altar antiguo que emana energia magica debil.',fx:{ico:'&#128302;',txt:'+1 MP a quien lo active (tirada)'}},
+   ]},
+  {cat:'Exploracion',ico:'&#128483;',lbl:'Esta tranquila la zona?',hint:'Antes de avanzar a territorio nuevo',
+   rolls:[
+     {range:[1,2],res:'Peligro inminente',det:'Ruidos cercanos. Algo se mueve al otro lado de la pared.',fx:{ico:'&#9888;&#65039;',txt:'Prepararse para combate'}},
+     {range:[3,4],res:'Relativa calma',det:'Silencio. Solo vuestros propios pasos.',fx:null},
+     {range:[5,5],res:'Completamente despejado',det:'La zona esta limpia. El polvo esta sin disturbar. Este camino no ha sido pisado en mucho tiempo.',fx:{ico:'&#10003;',txt:'Avance seguro garantizado'}},
+     {range:[6,6],res:'Trampa de ruido',det:'Hay campanillas de alarma atadas a un hilo casi invisible.',fx:{ico:'&#128278;',txt:'Detectado: desactivar o evitar'}},
+   ]},
+  {cat:'Combate',ico:'&#9876;&#65039;',lbl:'Cuantos enemigos hay?',hint:'Al entrar en una sala con presencia',
+   rolls:[
+     {range:[1,2],res:'1 enemigo solitario',det:'Un guardian solo. Alerta pero no ha visto al grupo.',fx:{ico:'&#128121;',txt:'1 enemigo — Combate normal'}},
+     {range:[3,4],res:'2 o 3 enemigos',det:'Un grupo pequeno. Dos en primera linea, uno en retaguardia.',fx:{ico:'&#128121;&#128121;',txt:'2-3 enemigos — Distribuir ataques'}},
+     {range:[5,5],res:'Patrulla de 4',det:'Una patrulla coordinada. Si uno grita, vienen refuerzos en 1D3 turnos.',fx:{ico:'&#9760;&#65039;',txt:'4 enemigos — PELIGRO, posibles refuerzos'}},
+     {range:[6,6],res:'Emboscada numerosa',det:'Mas de los esperados. Salen de las sombras, de columnas, del techo.',fx:{ico:'&#128128;',txt:'5+ enemigos — Retirada puede ser necesaria'}},
+   ]},
+  {cat:'Combate',ico:'&#128128;',lbl:'Que tipo de enemigo es?',hint:'Para identificar la amenaza',
+   rolls:[
+     {range:[1,2],res:'No-muerto fragil',det:'Esqueletos o zombies basicos. Lentos, predecibles. Vulnerables a magia de luz.',fx:{ico:'&#9876;&#65039;',txt:'Ataque contundente +1 dado'}},
+     {range:[3,3],res:'Bestia salvaje',det:'Lobo gigante o arana monstruosa. Rapida y agresiva. Va al heroe con menos armadura.',fx:{ico:'&#9888;&#65039;',txt:'Objetivo al heroe mas debil'}},
+     {range:[4,4],res:'Humanoide armado',det:'Goblin u orco con tactica. Usa cobertura, bloquea puertas.',fx:{ico:'&#128737;&#65039;',txt:'Defensa activa — tira 1 dado extra'}},
+     {range:[5,5],res:'Guerrero elite',det:'Armadura pesada, arma de dos manos. Reduce el primer dano recibido a la mitad.',fx:{ico:'&#9889;',txt:'Resistencia — primer ataque -2 dano'}},
+     {range:[6,6],res:'Criatura magica',det:'Espectro o demonio menor. Inmune a armas no magicas.',fx:{ico:'&#128302;',txt:'Solo dano magico efectivo'}},
+   ]},
+  {cat:'Combate',ico:'&#128165;',lbl:'El enemigo huye o lucha?',hint:'Cuando un enemigo esta debilitado',
+   rolls:[
+     {range:[1,2],res:'Lucha hasta la muerte',det:'Este enemigo no siente miedo. Seguira combatiendo mientras pueda moverse.',fx:{ico:'&#9876;&#65039;',txt:'Sin opcion de huida'}},
+     {range:[3,4],res:'Intenta retroceder',det:'Busca distancia pero no huye. Se reagrupa con otro enemigo.',fx:{ico:'&#128694;',txt:'Movimiento defensivo'}},
+     {range:[5,5],res:'Huye y avisa',det:'Se da la vuelta y corre gritando. En 2 turnos llegaran 1D2 refuerzos.',fx:{ico:'&#9888;&#65039;',txt:'ALERTA — refuerzos en 2 turnos'}},
+     {range:[6,6],res:'Se rinde',det:'Cae de rodillas. Puede tener informacion, un objeto, o pide clemencia.',fx:{ico:'&#128172;',txt:'Posible interrogatorio o botin extra'}},
+   ]},
+  {cat:'Combate',ico:'&#128148;',lbl:'Que pasa si caigo?',hint:'Cuando un heroe llega a 0 HP',
+   rolls:[
+     {range:[1,2],res:'Herida grave',det:'El heroe cae inconsciente pero estable. Sus companeros pueden revivirle con una pocion.',fx:{ico:'&#129514;',txt:'Necesita pocion o turno de aliado'}},
+     {range:[3,4],res:'Aturdido',det:'No cae, pero queda aturdido 1 turno. No puede atacar ni moverse.',fx:{ico:'&#11015;&#65039;',txt:'-2 defensa, sin acciones 1 turno'}},
+     {range:[5,5],res:'Herida de combate',det:'Cae pero se recupera solo al final del combate con 1 HP.',fx:{ico:'&#128137;',txt:'Recuperacion automatica a 1 HP'}},
+     {range:[6,6],res:'Sacrificio heroico',det:'Al caer, realiza un ultimo ataque con 3 dados de golpe final.',fx:{ico:'&#9876;&#65039;',txt:'Ataque final: 3 dados antes de caer'}},
+   ]},
+  {cat:'Tesoro',ico:'&#128176;',lbl:'Que hay en el cofre?',hint:'Al abrir un cofre o encontrar un tesoro',
+   rolls:[
+     {range:[1,1],res:'Cofre trampa',det:'Una trampa de gas. El primero en abrirlo recibe 1D4 dano.',fx:{ico:'&#129500;',txt:'1D4 dano al abridor'}},
+     {range:[2,3],res:'Monedas',det:'Entre 20 y 60 monedas de oro segun el tamano del cofre.',fx:{ico:'&#128176;',txt:'+1D6x10 oros'}},
+     {range:[4,4],res:'Equipo util',det:'Una pocion de curacion, un frasco de aceite, vendas limpias.',fx:{ico:'&#129514;',txt:'+1 pocion +1 pocion menor'}},
+     {range:[5,5],res:'Arma o armadura',det:'Una pieza de equipo en buen estado.',fx:{ico:'&#9876;&#65039;',txt:'Equipo utilizable — ver tabla'}},
+     {range:[6,6],res:'Objeto magico',det:'Algo que brilla en la oscuridad. Valioso... o peligroso.',fx:{ico:'&#128302;',txt:'Objeto magico — identificar antes de usar'}},
+   ]},
+  {cat:'Tesoro',ico:'&#129514;',lbl:'Hay pociones aqui?',hint:'Al buscar en una sala o sobre un enemigo',
+   rolls:[
+     {range:[1,3],res:'Sin pociones',det:'Nada de valor liquido. Ni frascos, ni elixires.',fx:null},
+     {range:[4,5],res:'1 pocion de curacion',det:'Un frasco de vidrio con liquido rojo. Restaura 1D4+2 HP.',fx:{ico:'&#129514;',txt:'+1 Pocion de Curacion'}},
+     {range:[6,6],res:'Pocion especial',det:'Un frasco de color inusual. Podria ser fuerza, velocidad o invisibilidad.',fx:{ico:'&#128302;',txt:'Pocion especial — tirada de Mago para identificar'}},
+   ]},
+  {cat:'Magia',ico:'&#10024;',lbl:'Siento magia en la sala?',hint:'El Mago o el Elfo pueden preguntar esto',
+   rolls:[
+     {range:[1,2],res:'Sin presencia magica',det:'Zona magicamente muerta. Los hechizos costaran 1 MP extra.',fx:{ico:'&#128683;',txt:'Zona sin magia — hechizos +1 MP'}},
+     {range:[3,4],res:'Residuos arcanos',det:'Alguien uso magia aqui recientemente. Los rastros se estan disipando.',fx:{ico:'&#128302;',txt:'Rastro magico detectable'}},
+     {range:[5,5],res:'Campo magico activo',det:'Hay una trampa magica o un escudo. El Mago puede intentar neutralizarla.',fx:{ico:'&#9889;',txt:'Trampa magica — tirada 4+ para desactivar'}},
+     {range:[6,6],res:'Fuente de poder',det:'Un nexo de energia arcana. El Mago y el Elfo recuperan 2 MP al entrar.',fx:{ico:'&#10024;',txt:'+2 MP para Mago y Elfo (una vez)'}},
+   ]},
+  {cat:'Magia',ico:'&#127792;',lbl:'Que tiene el altar?',hint:'Al encontrar un altar',
+   rolls:[
+     {range:[1,2],res:'Altar corrupto',det:'Emana energia oscura. -1 HP por turno en zona del altar.',fx:{ico:'&#9760;&#65039;',txt:'-1 HP/turno en zona del altar'}},
+     {range:[3,4],res:'Altar neutro',det:'Antiguo, sin uso. Podria activarse si el Mago lo intenta.',fx:{ico:'&#128302;',txt:'Activacion posible — tirada de Mago'}},
+     {range:[5,5],res:'Altar de curacion',det:'Simbolo de deidad de la luz. Toca para recuperar 1D3 HP (una vez).',fx:{ico:'&#128154;',txt:'+1D3 HP a un heroe (una vez)'}},
+     {range:[6,6],res:'Altar de poder',det:'La energia emana con fuerza. Un heroe gana +1 a todos sus dados de ataque esta mision.',fx:{ico:'&#128293;',txt:'+1 dado ataque hasta fin de mision'}},
+   ]},
+  {cat:'Magia',ico:'&#127922;',lbl:'Que dice el pergamino?',hint:'Al encontrar un pergamino o libro',
+   rolls:[
+     {range:[1,2],res:'Ilegible o trampa',det:'El texto se borra al tocarlo, o al leerlo el lector sufre -1 ataque 2 turnos.',fx:{ico:'&#128128;',txt:'Maldicion — -1 ataque 2 turnos al lector'}},
+     {range:[3,4],res:'Mapa parcial',det:'Un mapa a medias que indica la ubicacion de una sala con botin.',fx:{ico:'&#128205;',txt:'Mapa — ventaja en proxima exploracion'}},
+     {range:[5,5],res:'Hechizo escrito',det:'El Mago puede aprender este hechizo y lanzarlo gratis una vez.',fx:{ico:'&#10024;',txt:'Hechizo gratis (primer uso)'}},
+     {range:[6,6],res:'Informacion critica',det:'Contiene datos sobre el jefe: debilidades y donde esta.',fx:{ico:'&#9889;',txt:'+1 dado contra el jefe de esta mision'}},
+   ]},
+  {cat:'Narrativa',ico:'&#128172;',lbl:'Encuentro a alguien vivo?',hint:'Al entrar en una sala inesperadamente habitada',
+   rolls:[
+     {range:[1,2],res:'Solo enemigos',det:'Quien hay aqui no tiene buenas intenciones.',fx:null},
+     {range:[3,3],res:'Prisionero aterrado',det:'Una persona encadenada, viva pero en shock. Puede soltar informacion.',fx:{ico:'&#128172;',txt:'PNJ rescatable — informacion disponible'}},
+     {range:[4,4],res:'Mercenario neutral',det:'Un aventurero herido pero combativo. Podria unirse o vender informacion.',fx:{ico:'&#9876;&#65039;',txt:'Aliado potencial o informante'}},
+     {range:[5,5],res:'Comerciante perdido',det:'Un mercader con pociones y equipo basico a precio de emergencia.',fx:{ico:'&#128176;',txt:'Tienda de emergencia disponible'}},
+     {range:[6,6],res:'Sabio o mago aliado',det:'Un mago anciano que conoce el camino al objetivo. Puede acompañarles.',fx:{ico:'&#128302;',txt:'Guia con conocimiento del dungeon'}},
+   ]},
+  {cat:'Narrativa',ico:'&#128483;',lbl:'Que ruido oigo?',hint:'Al detenerse y escuchar activamente',
+   rolls:[
+     {range:[1,1],res:'Silencio absoluto',det:'Ni siquiera el goteo del agua. Esto puede ser muy malo.',fx:null},
+     {range:[2,3],res:'Sonidos lejanos',det:'Pasos, voces, metal chocando. Hay actividad pero a distancia.',fx:{ico:'&#9888;&#65039;',txt:'Actividad detectada — avanzar con cuidado'}},
+     {range:[4,4],res:'Crujidos en el techo',det:'Vibracion en la roca sobre vuestras cabezas.',fx:{ico:'&#127968;',txt:'Posible derrumbe o criatura grande encima'}},
+     {range:[5,5],res:'Respiracion cercana',det:'A menos de diez pasos. Algo en la misma sala que vosotros y no os ha visto aun.',fx:{ico:'&#128064;',txt:'Ataque por sorpresa: +2 dados primer turno'}},
+     {range:[6,6],res:'Mecanismo activado',det:'Un click. Algo se ha puesto en marcha. Teneis 2 turnos.',fx:{ico:'&#9201;&#65039;',txt:'CUENTA ATRAS — 2 turnos antes del evento'}},
+   ]},
+  {cat:'Narrativa',ico:'&#128293;',lbl:'Que presiente el grupo?',hint:'Pregunta narrativa general de atmosfera',
+   rolls:[
+     {range:[1,2],res:'Mal presentimiento',det:'La tension es palpable. Alguien va a salir herido de esta sala.',fx:{ico:'&#9888;&#65039;',txt:'El master puede activar un encuentro dificil'}},
+     {range:[3,4],res:'Calma tensa',det:'Todo parece bajo control, pero esto es demasiado facil.',fx:null},
+     {range:[5,5],res:'Sensacion de progreso',det:'Estais en el camino correcto. El objetivo esta cerca.',fx:{ico:'&#10003;',txt:'El objetivo esta a 1-2 salas'}},
+     {range:[6,6],res:'Momento heroico',det:'Algo eleva el animo. Un heroe puede declarar un Momento Heroico: acto extraordinario mas alla de los dados.',fx:{ico:'&#11088;',txt:'Momento Heroico — el jugador narra una accion libre'}},
+   ]},
+];
+
+const ORACLE_CATS = [...new Set(ORACLE_QUESTIONS.map(q=>q.cat))];
+
+let currentAdventure = null;
+let oracleLog = [];
+let usedQuestions = new Set();
+
+function startSk(){
+  const lore = rnd(LORE_POOL);
+  const extraIntro = rnd(LORE_INTROS_EXTRA);
+  currentAdventure = {lore, extraIntro, started:Date.now(), phase:'explore'};
+  oracleLog=[];usedQuestions=new Set();
+  if(!sk)sk={};
+  sk.adventure=currentAdventure;sk.oracleLog=oracleLog;
+  saveS();renderSk();
+}
+
+let _openCat = null;
+
+function renderSk(){
+  const c=document.getElementById('skcon');
+  if(!currentAdventure){
+    c.innerHTML=`
+      <div style="padding:40px 20px;text-align:center">
+        <div style="font-size:68px;margin-bottom:20px;opacity:.4">&#128302;</div>
+        <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--god);letter-spacing:2px;margin-bottom:12px">EL ORACULO ESPERA</div>
+        <div style="font-size:15px;color:var(--stl);font-style:italic;line-height:1.9;margin-bottom:32px">
+          Cada pregunta genera una respuesta<br>con contexto narrativo y efectos.<br>Usalo durante tu turno de HeroQuest.
+        </div>
+      </div>
+      <button class="new-adv-btn" onclick="startSk()">&#128302; NUEVA AVENTURA &#9876;&#65039;</button>`;
+    return;
+  }
+  const adv=currentAdventure, lore=adv.lore;
+  const tagsHtml=(lore.tags||[]).map((t,i)=>{
+    const col=lore.tagcols?lore.tagcols[i]:'var(--pad)';
+    const cond=CONDITIONS[t];
+    const ico=cond?cond.ico:'&#127919;';
+    return`<button class="lore-tag" onclick="showCondition('${t}')"
+      style="color:${col};border-color:${col}66;background:rgba(0,0,0,.5)">
+      ${ico} ${t}
+    </button>`;
+  }).join('');
+
+  const catDef=[
+    {id:'Exploracion',lbl:'EXPLORAR',ico:'&#128270;',col:'var(--go)'},
+    {id:'Combate',    lbl:'COMBATE', ico:'&#9876;&#65039;',col:'var(--bl)'},
+    {id:'Tesoro',     lbl:'TESORO',  ico:'&#128176;',col:'var(--gol)'},
+    {id:'Magia',      lbl:'MAGIA',   ico:'&#10024;', col:'var(--mg)'},
+    {id:'Narrativa',  lbl:'NARRATIVA',ico:'&#128172;',col:'var(--pul)'},
+  ];
+
+  const questionsHtml=catDef.map(({id:cat,lbl,ico,col})=>{
+    const qs=ORACLE_QUESTIONS.filter(q=>q.cat===cat);
+    if(!qs.length) return '';
+    const qBtns=qs.map((q,qi)=>{
+      const qKey=cat+'_'+qi, isUsed=usedQuestions.has(qKey);
+      return`<button onclick="askOracle(${ORACLE_QUESTIONS.indexOf(q)},'${qKey}')"
+        style="width:100%;background:${isUsed?'rgba(0,0,0,.25)':'rgba(0,0,0,.4)'};
+          border:1px solid rgba(201,150,42,.2);border-radius:4px;
+          padding:12px 14px;display:flex;align-items:center;gap:12px;
+          cursor:pointer;touch-action:manipulation;opacity:${isUsed?.7:1};
+          text-align:left;transition:all .15s">
+        <span style="font-size:22px;flex-shrink:0">${q.ico}</span>
+        <div style="flex:1">
+          <div style="font-family:'Cinzel',serif;font-size:14px;color:${isUsed?'var(--stl)':'var(--pa)'};letter-spacing:.3px">${q.lbl}</div>
+          <div style="font-size:12px;color:var(--stl);font-style:italic;margin-top:2px">${q.hint}</div>
+        </div>
+        <span style="color:var(--god);font-size:20px">&#8250;</span>
+      </button>`;
+    }).join('');
+
+    return`<div style="margin:0 14px">
+      <button onclick="toggleCat('${cat}')"
+        style="width:100%;background:rgba(0,0,0,.35);
+          border:1px solid rgba(201,150,42,.25);border-radius:6px;
+          padding:14px 16px;display:flex;align-items:center;gap:12px;
+          cursor:pointer;touch-action:manipulation;margin-bottom:6px">
+        <span style="font-size:24px">${ico}</span>
+        <span style="font-family:'Cinzel',serif;font-size:15px;color:${col};letter-spacing:1px;flex:1;text-align:left">${lbl}</span>
+        <span id="ocat-arrow-${cat}" style="color:var(--god);font-size:22px;transition:transform .2s">&#8250;</span>
+      </button>
+      <div id="ocat-body-${cat}" style="display:none;flex-direction:column;gap:7px;padding-bottom:8px">
+        ${qBtns}
+      </div>
+    </div>`;
+  }).join('<div style="height:6px"></div>');
+
+  const logHtml=oracleLog.length?`
+    <div class="sk-log" style="margin:16px 14px 0">
+      <div class="sk-log-title">&#128220; REGISTRO DE SESION</div>
+      ${oracleLog.slice(0,8).map(l=>`<div class="sk-log-item">${l}</div>`).join('')}
+    </div>`:'';
+
+  c.innerHTML=`
+    <div class="lore-card">
+      <div class="lore-header">
+        <div style="flex:1">
+          <div class="lore-title">${lore.tl}</div>
+          <div class="lore-obj" style="font-size:13px">&#127919; ${lore.ob}</div>
+        </div>
+        <span class="lore-badge" style="color:${lore.bcol||'var(--go)'};border-color:${lore.bcol||'var(--god)'}66;background:${lore.bcol||'#2a1a08'}22;font-size:11px">${lore.badge}</span>
+      </div>
+      <div class="lore-body">
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--god);margin-bottom:8px">&#128304; LORE</div>
+        ${lore.in}
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(201,150,42,.1);font-size:13px;color:var(--stl);font-style:italic">&#128293; ${adv.extraIntro}</div>
+      </div>
+      <div class="lore-footer">${tagsHtml}</div>
+    </div>
+
+    <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:var(--god);text-align:center;padding:16px 0 10px">&#9876; CONSULTAR EL ORACULO &#9876;</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">${questionsHtml}</div>
+
+    ${logHtml}
+
+    <div style="padding:20px 14px 0">
+      <button onclick="if(confirm('Iniciar nueva aventura?')){currentAdventure=null;sk=null;usedQuestions=new Set();oracleLog=[];saveS();renderSk();}"
+        style="width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:5px;
+          color:var(--god);font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;padding:14px;cursor:pointer">
+        &#9876;&#65039; NUEVA AVENTURA
+      </button>
+    </div>`;
+}
+
+
+function showCondition(tagName){
+  const cond = CONDITIONS[tagName];
+  if(!cond) return;
+  const old = document.getElementById('cond-overlay');
+  if(old) old.remove();
+
+  const rulesHtml = (cond.rules||[]).map(r=>
+    '<div class="cond-rule">'
+    + '<span class="cond-rule-ico">'+r.ico+'</span>'
+    + '<span class="cond-rule-txt">'+r.txt+'</span>'
+    + '</div>'
+  ).join('');
+
+  const typeColor = cond.type==='BONIFICACION' ? 'var(--gr)' : 'var(--bl)';
+  const typeBg    = cond.type==='BONIFICACION' ? 'rgba(42,90,42,.3)' : 'rgba(139,26,26,.3)';
+
+  const el = document.createElement('div');
+  el.id = 'cond-overlay';
+  el.className = 'cond-overlay';
+  el.innerHTML =
+    '<div class="cond-popup">'
+      + '<div class="cond-header" style="border-bottom:2px solid '+cond.col+'">'
+        + '<div style="display:flex;align-items:center;gap:10px">'
+          + '<span style="font-size:34px">'+cond.ico+'</span>'
+          + '<div>'
+            + '<div class="cond-name" style="color:'+cond.col+'">'+tagName+'</div>'
+            + '<div class="cond-type" style="color:'+typeColor+';background:'+typeBg+';padding:2px 8px;border-radius:3px;display:inline-block;margin-top:2px">'+cond.type+'</div>'
+          + '</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="cond-body">'
+        + '<div class="cond-effect">'+cond.effect+'</div>'
+        + '<div class="cond-rules">'+rulesHtml+'</div>'
+        + '<button class="cond-close" onclick="document.getElementById(\'cond-overlay\').remove()">&#10003; Entendido</button>'
+      + '</div>'
+    + '</div>';
+
+  el.addEventListener('click', function(e){ if(e.target===el) el.remove(); });
+  document.documentElement.appendChild(el);
+}
+
+
+function toggleCat(cat){
+  const body  = document.getElementById('ocat-body-'+cat);
+  const arrow = document.getElementById('ocat-arrow-'+cat);
+  if(!body) return;
+  const isOpen = body.style.display === 'flex';
+
+  // Close all
+  document.querySelectorAll('[id^="ocat-body-"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id^="ocat-arrow-"]').forEach(el => el.style.transform = '');
+
+  if(!isOpen){
+    // Open this one
+    body.style.cssText = 'display:flex;flex-direction:column;gap:7px;padding-bottom:8px';
+    if(arrow) arrow.style.transform = 'rotate(90deg)';
+    _openCat = cat;
+    setTimeout(() => body.scrollIntoView({behavior:'smooth', block:'nearest'}), 80);
+  } else {
+    _openCat = null;
+  }
+}
+
+
+
+function askOracle(qIdx,qKey){
+  const q=ORACLE_QUESTIONS[qIdx]; if(!q) return;
+  const roll=ri(1,6);
+  let result=q.rolls[q.rolls.length-1];
+  for(const r of q.rolls){ if(roll>=r.range[0]&&roll<=r.range[1]){result=r;break;} }
+  usedQuestions.add(qKey);
+
+  const col = roll<=2?'var(--bl)': roll<=4?'var(--pad)': roll===5?'var(--go)': 'var(--gol)';
+  const lbls= ['','ADVERSO','ADVERSO','NEUTRO','NEUTRO','FAVORABLE','&#11088; CRITICO'];
+  const rollLabel = lbls[roll]||'';
+
+  const fxHtml = result.fx ? `
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;
+      background:rgba(0,0,0,.4);border-radius:5px;border:1px solid rgba(201,150,42,.2)">
+      <span style="font-size:26px">${result.fx.ico}</span>
+      <span style="font-family:'Cinzel',serif;font-size:13px;color:var(--pa);letter-spacing:.5px;line-height:1.4">${result.fx.txt}</span>
+    </div>` : '';
+
+  // Remove old popup
+  const old=document.getElementById('oracle-popup'); if(old) old.remove();
+
+  const popup=document.createElement('div');
+  popup.id='oracle-popup';
+  popup.style.cssText='position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:20px;animation:fIn .2s ease';
+  popup.innerHTML=`
+    <div style="background:linear-gradient(160deg,#1e1810,#100c06);
+      border:2px solid ${col};border-radius:10px;
+      width:100%;max-width:400px;overflow:hidden;
+      box-shadow:0 0 50px rgba(0,0,0,.95),0 0 24px ${col}44;
+      animation:popIn .28s cubic-bezier(.34,1.4,.64,1)">
+
+      <!-- Header -->
+      <div style="background:rgba(0,0,0,.5);padding:13px 16px;
+        display:flex;align-items:center;justify-content:space-between;
+        border-bottom:1px solid ${col}44">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:22px">${q.ico}</span>
+          <span style="font-family:'Cinzel',serif;font-size:12px;color:var(--god);letter-spacing:1px">${q.lbl}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:'Cinzel',serif;font-size:15px;color:${col};font-weight:700">&#127922; ${roll}</span>
+          <button onclick="document.getElementById('oracle-popup').remove()"
+            style="background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:50%;
+            width:30px;height:30px;color:var(--stl);font-size:16px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;touch-action:manipulation">&#10005;</button>
+        </div>
+      </div>
+
+      <!-- Roll level badge -->
+      <div style="text-align:center;padding:16px 16px 8px">
+        <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:4px;color:${col};margin-bottom:10px">${rollLabel}</div>
+        <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;
+          color:${col};text-shadow:0 0 24px ${col}66;line-height:1.25;margin-bottom:10px">
+          ${result.res}
+        </div>
+      </div>
+
+      <!-- Narrative detail -->
+      <div style="padding:0 18px 14px">
+        <div style="font-size:15px;color:var(--pad);line-height:1.75;font-style:italic;
+          border-top:1px solid rgba(255,255,255,.07);padding-top:14px">
+          ${result.det}
+        </div>
+        ${fxHtml}
+      </div>
+
+      <!-- Buttons -->
+      <div style="padding:12px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;
+        border-top:1px solid rgba(255,255,255,.07)">
+        <button onclick="askOracle(${qIdx},'${qKey}')"
+          style="background:rgba(0,0,0,.5);border:1px solid rgba(201,150,42,.35);border-radius:5px;
+          color:var(--god);font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;
+          padding:12px;cursor:pointer;touch-action:manipulation">
+          &#127922; Tirar de nuevo
+        </button>
+        <button onclick="document.getElementById('oracle-popup').remove()"
+          style="background:linear-gradient(135deg,var(--grd),#1a3010);border:1px solid var(--grd);
+          border-radius:5px;color:var(--gr);font-family:'Cinzel',serif;font-size:12px;
+          letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">
+          &#10003; Anotado
+        </button>
+      </div>
+    </div>`;
+
+  popup.addEventListener('click', e=>{ if(e.target===popup) popup.remove(); });
+  document.documentElement.appendChild(popup);
+
+  // Log
+  oracleLog.unshift(`${q.ico} <strong style="color:${col}">${result.res}</strong> — ${q.lbl} (&#127922;${roll})`);
+  if(oracleLog.length>20) oracleLog.pop();
+  if(sk) sk.oracleLog=oracleLog;
+  saveS();
+
+  // Re-render questions (marks used), restore open category, then re-attach popup
+  renderSk();
+  if(_openCat){ setTimeout(()=>{ const b=document.getElementById('ocat-body-'+_openCat); if(b){b.style.cssText='display:flex;flex-direction:column;gap:7px;padding-bottom:8px'; const a=document.getElementById('ocat-arrow-'+_openCat); if(a)a.style.transform='rotate(90deg)';} }, 10); }
+  document.body.appendChild(popup);
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════
+// SESSION SCREEN
+// ══════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// MAZO — D20 tables generated per mission
+// ══════════════════════════════════════════════════════
+
+// Table definitions per mission type
+const MAZO_TABLES = {
+  Cripta: [
+    { title:'Encuentros en la Cripta', sub:'Tira 1D20 al entrar en cada sala',
+      rows:[
+        [1,  'Trampa de gas. Todos los heroes pierden 1 HP.'],
+        [2,  'Suelo inestable. Movimiento reducido a la mitad este turno.'],
+        [3,  '1 Esqueleto solitario. Patrulla sin alertar a los demas.'],
+        [4,  'Sala vacia. Polvo y silencio. Avanza con cautela.'],
+        [5,  '2 Esqueletos. Estan de cara a la pared. Ventaja de sorpresa.'],
+        [6,  'Trampa de agujas. El primero en entrar recibe 1D4 de dano.'],
+        [7,  '1 Zombie lento. Muy resistente. Reduce su defensa atacando en diagonal.'],
+        [8,  'Altar profanado. El Mago pierde 1 MP al pasar junto a el.'],
+        [9,  '3 Esqueletos en formacion. Atacan todos a la vez.'],
+        [10, 'Sala del tesoro menor. 1D6x10 oros en un cofre sin trampa.'],
+        [11, '1 Espectro. Solo dano magico. Atraviesa muros.'],
+        [12, 'Trampa de foso oculta. Tira 1D6: 1-2 caes (2 HP dano).'],
+        [13, '2 Zombies. Uno lleva un objeto de equipo basico.'],
+        [14, 'Camara sellada. Puerta requiere llave o fuerza (tira 4+ en 1D6).'],
+        [15, 'El Guardian de la Tumba. Jefe: 6 HP, 3 dados ataque, 2 defensa.'],
+        [16, 'Sala de sarcofagos. 1D3 esqueletos despiertan al entrar.'],
+        [17, 'Pocion de curacion abandonada. La primera que se tome esta envenenada (50%).'],
+        [18, 'Vision del Rey. El heroe con mas HP pierde 1 turno aterrado.'],
+        [19, 'Camara del tesoro principal. Cofre con objeto magico + 50 oros.'],
+        [20, 'El Espiritu del Rey Aldric. Jefe final: 8 HP, 4 ATK, 3 DEF. Inmortal hasta destruir su sello.'],
+      ]
+    },
+    { title:'Eventos del Mas Alla', sub:'Tira 1D20 al inicio de cada turno del Master',
+      rows:[
+        [1,  'Nada ocurre. La cripta respira.'],
+        [2,  'Un crujido lejano. Los heroes deben tirar Mente (1D6, 4+) o pierden 1 accion.'],
+        [3,  'Las antorchas se apagan. Movimiento -1 casilla hasta reencenderlas.'],
+        [4,  'Nada ocurre.'],
+        [5,  'Un muerto se levanta de un sarcofago adyacente (1 esqueleto, 2 HP).'],
+        [6,  'Nada ocurre.'],
+        [7,  'Frio sepulcral. Los hechizos de Fuego cuestan +1 MP este turno.'],
+        [8,  'Nada ocurre.'],
+        [9,  'El suelo tiembla. Todos los heroes pierden 1 casilla de movimiento.'],
+        [10, 'Nada ocurre.'],
+        [11, 'Los muertos oyen. Los no-muertos en la misma sala reciben +1 iniciativa.'],
+        [12, 'Nada ocurre.'],
+        [13, 'Sangre en las paredes. El Enano detecta una puerta secreta cercana.'],
+        [14, 'Nada ocurre.'],
+        [15, 'Una sombra se mueve. El heroe mas alejado del grupo pierde 1 HP.'],
+        [16, 'Nada ocurre.'],
+        [17, 'El viento de la muerte. Todos los hechizos activos se cancelan.'],
+        [18, 'Nada ocurre.'],
+        [19, 'Vision del pasado. El grupo recibe la ubicacion del objetivo final.'],
+        [20, 'Refuerzo de no-muertos. 1D3 esqueletos aparecen en la entrada.'],
+      ]
+    },
+  ],
+  Mazmorra: [
+    { title:'Encuentros en la Mazmorra', sub:'Tira 1D20 al entrar en cada sala',
+      rows:[
+        [1,  'Trampa de ballesta automatica. 1D4 dano al primer heroe en entrar.'],
+        [2,  '2 Goblins dormidos. Sorpresa garantizada si el grupo no hace ruido.'],
+        [3,  'Sala vacia con restos de un campamento reciente.'],
+        [4,  '1 Orco de guardia. Alerta. Llama refuerzos al segundo turno.'],
+        [5,  'Trampa de red. Heroe paralizado 1 turno (Enano puede escapar tirando 3+).'],
+        [6,  '3 Goblins con arcos. Atacan desde la distancia, se cubren entre si.'],
+        [7,  'Mercader atrapado. Vende 1 pocion de curacion a precio de emergencia (30 oros).'],
+        [8,  '1 Troll. Regenera 1 HP por turno. Solo el dano de fuego lo detiene.'],
+        [9,  'Pasaje secreto. Tira 1D6: 4+ el Enano lo descubre (salta a la siguiente sala).'],
+        [10, '2 Orcos con escudos. +2 defensa cada uno. Flanquear elimina el bonus.'],
+        [11, 'Sala del tesoro. Cofre con 1D6x15 oros y una pocion.'],
+        [12, 'Trampa de fuego. 1D6 dano en area 2x2 (tira 4+ para esquivar).'],
+        [13, '1 Fimir. 5 HP, 3 ATK, 2 DEF. Poderoso pero lento.'],
+        [14, 'Sala inundada. Movimiento a la mitad. El fuego no funciona aqui.'],
+        [15, '4 Goblins en emboscada. Atacan desde todas las direcciones.'],
+        [16, 'El cocinero de los goblins. 3 HP, lleva una Pocion de Fuerza.'],
+        [17, 'Trampa de gases. Zona 3x3: tira 3+ o pierdes accion por nauseas.'],
+        [18, 'Sala del lider. 1 Orco Jefe: 7 HP, 4 ATK, 3 DEF. Tiene la llave maestra.'],
+        [19, 'Altar del caos. El Mago puede absorber 2 MP gratuitos (riesgo: 1-2 en 1D6 = 1 HP dano).'],
+        [20, 'Torvin encontrado. Vivo pero herido (1 HP). Necesita escolta hasta la salida.'],
+      ]
+    },
+  ],
+  Forja: [
+    { title:'Peligros de la Forja', sub:'Tira 1D20 al entrar en cada zona',
+      rows:[
+        [1,  'Explosion de vapor. Todos en la sala reciben 1 HP de dano de calor.'],
+        [2,  '2 Cultistas armados. Intentan alertar a los demas si no se eliminan rapido.'],
+        [3,  'Sala de fundicion. Suelo caliente: permanecer aqui cuesta 1 HP por turno.'],
+        [4,  '1 Golem de escoria. Inmune al fuego. Debil a hielo y agua.'],
+        [5,  'Trampa de acero fundido. Tira 3+ para evitar 1D4 dano.'],
+        [6,  '3 Cultistas con antorchas. El fuego no funciona contra ellos.'],
+        [7,  'Armeria saqueada. 1D3 armas basicas dispersas en el suelo.'],
+        [8,  'El Maestro Herrero. 6 HP, 4 ATK, 2 DEF. Inmortal mientras la Forja este activa.'],
+        [9,  'Canal de lava. Solo puede cruzarse con Vuelo o saltando (tira 4+).'],
+        [10, '2 Golems de lava. 4 HP, 3 ATK, inmunes al fuego. Se mueven por la lava.'],
+        [11, 'Sala de enfriamiento. Temperatura normal. Recupera 1 HP al entrar.'],
+        [12, 'Trampa de engranajes. Tira 4+ para no quedar atrapado 1 turno.'],
+        [13, '1 Demonio Menor. Solo dano magico. Vuela sobre obstaculos.'],
+        [14, 'El ritual en curso. Interrumpirlo requiere 3 acciones en el altar.'],
+        [15, 'Explosion de la Forja. Todos reciben 1D4 dano si no hay cobertura.'],
+        [16, '4 Cultistas mas el Forjador. El momento del enfrentamiento.'],
+        [17, 'Grieta en el suelo. Puede cruzarse pero cuesta 2 casillas extra.'],
+        [18, 'La Forja del Caos. Para destruirla: 3 ataques exitosos con agua o hielo.'],
+        [19, 'Camara del tesoro forjado. Arma magica de nivel raro + 60 oros.'],
+        [20, 'El Gran Forjador. Jefe: 10 HP, 5 ATK, 4 DEF. Usa la Espada del Caos.'],
+      ]
+    },
+  ],
+  Santuario: [
+    { title:'Ilusiones del Santuario', sub:'Tira 1D20 al explorar cada zona',
+      rows:[
+        [1,  'Todo lo que ves es falso. Los enemigos son ilusiones (no hacen dano real).'],
+        [2,  '1 Guardián ilusorio. Parece poderoso pero 1 ataque lo deshace.'],
+        [3,  'Pasillo que cambia. El grupo da vueltas: tira 4+ para orientarte.'],
+        [4,  'Sala real. 1 Guardian verdadero: 4 HP, 2 ATK, 2 DEF.'],
+        [5,  'Reflejo de heroe. Una copia de un heroe aleatorio ataca con sus mismas stats.'],
+        [6,  'El suelo no es solido. Tira 3+ o cae (2 HP dano, pierdes tu turno).'],
+        [7,  'Sala de ofrendas. 1D6x10 oros y una pocion real.'],
+        [8,  'Murmullos del Murmurante. Todos los heroes pierden 1 MP.'],
+        [9,  '3 Espectros ilusorios. Son reales al 50% (tira 1D6: 4-6 = reales).'],
+        [10, 'El Vinculo del Murmullo. Objetivo: destruirlo con 2 ataques magicos o sagrados.'],
+        [11, 'Sala del espejo. Ataca al espejo para abrir el camino (1 ataque cualquiera).'],
+        [12, 'Silencio total. Los hechizos fallan con 1-2 en 1D6.'],
+        [13, 'Vision de la verdad. El Mago revela que 1 enemigo visible es real.'],
+        [14, '2 Guardianes Arcanos. Reales. 5 HP, 3 ATK, 3 DEF. Inmunes a ilusiones.'],
+        [15, 'Trampa de confusion. Heroe aleatorio ataca a un aliado (tira 4+ para resistir).'],
+        [16, 'La vidente Sera. Herida: da informacion sobre el camino si la proteges.'],
+        [17, 'Portal inestable. Teleporta a un heroe aleatorio a sala anterior (o siguiente con 5+).'],
+        [18, 'El Murmurante Manifestado. Jefe: 7 HP, 4 ATK. Divide su dano entre 2 heroes.'],
+        [19, 'Vinculo roto. El santuario empieza a estabilizarse. +1 dado defensa para todos.'],
+        [20, 'Sera liberada. La mision se completa. +100 XP para todos los heroes.'],
+      ]
+    },
+  ],
+  Caverna: [
+    { title:'Peligros de la Caverna', sub:'Tira 1D20 al explorar cada zona',
+      rows:[
+        [1,  'Roca inestable. Tira 3+ o el techo cae (1D3 dano a todos).'],
+        [2,  '2 Serpientes Gigantes. 3 HP cada una. Veneno: 1 HP extra al fin del turno.'],
+        [3,  'Corriente de agua toxica. No se puede beber. Cruzarla da 1 HP dano.'],
+        [4,  'Sala seca y segura. Recupera 1 HP al descansar aqui (consume 1 turno).'],
+        [5,  '1 Babosa Toxica. 4 HP. Su baba ralentiza: -1 movimiento por 2 turnos.'],
+        [6,  'Trampa de gases verdes. 1D4 dano en area 3x3.'],
+        [7,  'Fuente de agua pura oculta. Ignora el efecto de Agua Corrompida 1 vez.'],
+        [8,  '3 Ratas Gigantes. Rapidas: 2 movimientos por turno. 2 HP cada una.'],
+        [9,  'El Brujo de Pantano. 6 HP, 2 ATK, 2 DEF. Crea zona toxica al morir.'],
+        [10, 'Caverna inundada parcialmente. Movimiento a la mitad en el agua.'],
+        [11, 'Nido de serpientes. 1D3 serpientes despiertan si el grupo hace ruido.'],
+        [12, 'La fuente del veneno. Objetivo: destruirla con 2 ataques fisicos potentes.'],
+        [13, '1 Elemental de Cieno. 5 HP. Inmune al fisico. Debil al fuego y el hielo.'],
+        [14, 'Pasaje estrecho. Solo puede pasar de uno en uno (facil emboscada).'],
+        [15, 'Sala de cristales toxicos. Brillan pero tocarlos da 1 HP dano.'],
+        [16, 'El Guardian del Pozo. 8 HP, 4 ATK, 3 DEF. Controla las aguas.'],
+        [17, 'Cura natural. Plantas medicinales: 1 heroe recupera 1D4 HP.'],
+        [18, 'Camara del origen. El veneno brota de aqui. Destruir la fuente completa la mision.'],
+        [19, 'Tesoro del brujo. 40 oros + 1 pocion de antidoto + 1 amuleto.'],
+        [20, 'El veneno purificado. El agua vuelve a fluir limpia. Mision completada. +80 XP.'],
+      ]
+    },
+  ],
+  Biblioteca: [
+    { title:'Peligros de la Biblioteca', sub:'Tira 1D20 al explorar cada zona',
+      rows:[
+        [1,  'Libro trampa. Al abrirlo explota: 1D4 dano al lector.'],
+        [2,  '2 Golems de Papel. 3 HP. Debiles al fuego pero pueden quemarse (dano en area).'],
+        [3,  'Sala de lectura. Pergamino util: el Mago aprende 1 hechizo gratis.'],
+        [4,  '1 Guardian Arcano. 5 HP, 3 ATK, 3 DEF. Inmune a hechizos no sagrados.'],
+        [5,  'Estanteria animada. Bloquea el paso. 1 ataque la rompe (2 HP).'],
+        [6,  'El Grimorio pulsa. Todos pierden 1 MP. El Mago gana 1 MP.'],
+        [7,  '3 Golems de Papel. Uno lleva un mapa de las salas siguientes.'],
+        [8,  'Trampa de tinta magica. Cegado 1 turno (tira 3+ para esquivar).'],
+        [9,  'Sala de archivos. Encuentra 1 pista sobre la debilidad del jefe.'],
+        [10, '2 Guardianes Arcanos. Uno tiene la llave de la camara del Grimorio.'],
+        [11, 'El Grimorio habla. Un heroe aleatorio recibe una vision: +2 dados en 1 ataque a elegir.'],
+        [12, 'Escalera magica. Puede subir a nivel superior (nueva zona de 1D6 salas).'],
+        [13, '4 Golems de Papel en cadena. Si uno cae, los demas se irritan (+1 ATK restantes).'],
+        [14, 'Camara sellada con el Grimorio. Requiere 2 llaves o 1 hechizo de Tierra.'],
+        [15, 'El Grimorio reacciona. Todos los heroes tiran 1D6: 1-2 pierden 1 hechizo memorizado.'],
+        [16, 'Manifestacion del Grimorio. 8 HP, 5 ATK magico, 4 DEF. Vuela.'],
+        [17, 'Sala del fundador. Altar que restaura 2 MP a todos los heroes.'],
+        [18, 'El Grimorio capturado. Guardarlo sin leerlo completa la mision.'],
+        [19, 'Bonus de sabiduria. Heroe que lleve el Grimorio gana +50 XP extra.'],
+        [20, 'Aldous aparece. El mago da al grupo 1 objeto magico de su eleccion.'],
+      ]
+    },
+  ],
+};
+
+let currentD20 = null;
+
+function renderMazo(){
+  const c = document.getElementById('mazocon');
+  if(!c) return;
+
+  if(!currentAdventure){
+    c.innerHTML = '<div style="padding:40px 20px;text-align:center">'
+      + '<div style="font-size:64px;margin-bottom:16px;opacity:.4">&#127922;</div>'
+      + '<div style="font-family:\'Cinzel\',serif;font-size:15px;color:var(--god);letter-spacing:2px;margin-bottom:10px">SIN MISION ACTIVA</div>'
+      + '<div style="font-size:14px;color:var(--stl);font-style:italic;line-height:1.8">Inicia una escaramuza para generar<br>las tablas D20 de la mision.</div>'
+      + '</div>';
+    return;
+  }
+
+  const lore   = currentAdventure.lore;
+  const ty     = lore.ty || 'Mazmorra';
+  const tables = MAZO_TABLES[ty] || MAZO_TABLES['Mazmorra'];
+
+  let html = '<div style="padding:14px 14px 80px">';
+
+  // Mission header
+  html += '<div style="font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:2px;color:var(--god);'
+        + 'text-align:center;padding:10px 0 14px">&#127922; TABLAS D20 — ' + lore.tl.toUpperCase() + '</div>';
+
+  tables.forEach(function(tbl, ti){
+    const resultId = 'mazo-result-' + ti;
+    const hlId     = 'mazo-hl-' + ti;
+
+    html += '<div class="mazo-card">';
+
+    // Card header with roll button
+    html += '<div class="mazo-card-header">'
+          + '<div><div class="mazo-card-title">' + tbl.title + '</div>'
+          + '<div class="mazo-card-sub">' + tbl.sub + '</div></div>'
+          + '<div style="display:flex;align-items:center;gap:10px">'
+          + '<span class="d20-result" id="' + resultId + '">—</span>'
+          + '<button class="d20-roll-btn" onclick="rollD20(' + ti + ')">'
+          + '&#127922; D20</button>'
+          + '</div>'
+          + '</div>';
+
+    // Table
+    html += '<div style="overflow-x:auto"><table class="d20-table">';
+    html += '<thead><tr><th>&#127922;</th><th>RESULTADO</th></tr></thead><tbody id="' + hlId + '">';
+
+    tbl.rows.forEach(function(row){
+      html += '<tr id="mazo-row-' + ti + '-' + row[0] + '">'
+            + '<td>' + row[0] + '</td>'
+            + '<td>' + row[1] + '</td>'
+            + '</tr>';
+    });
+
+    html += '</tbody></table></div></div>';
+  });
+
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function rollD20(tableIdx){
+  const roll = Math.floor(Math.random() * 20) + 1;
+  const resultEl = document.getElementById('mazo-result-' + tableIdx);
+
+  if(resultEl){
+    resultEl.classList.remove('rolling');
+    void resultEl.offsetWidth; // force reflow
+    resultEl.textContent = roll;
+    resultEl.classList.add('rolling');
+  }
+
+  // Highlight matching row
+  // First clear all highlights for this table
+  const lore   = currentAdventure && currentAdventure.lore;
+  const ty     = lore ? (lore.ty || 'Mazmorra') : 'Mazmorra';
+  const tables = MAZO_TABLES[ty] || MAZO_TABLES['Mazmorra'];
+  const tbl    = tables[tableIdx];
+  if(tbl){
+    tbl.rows.forEach(function(row){
+      const rowEl = document.getElementById('mazo-row-' + tableIdx + '-' + row[0]);
+      if(rowEl){
+        rowEl.style.background = '';
+        rowEl.style.color = '';
+      }
+    });
+    const target = document.getElementById('mazo-row-' + tableIdx + '-' + roll);
+    if(target){
+      target.style.background = 'rgba(201,150,42,.18)';
+      target.style.color = 'var(--go)';
+      setTimeout(function(){
+        target.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }, 200);
+    }
+  }
+}
+
+
+function initSessionScreen(){
+  const raw=localStorage.getItem(LSK);
+  let saveData=null;
+  if(raw){try{saveData=JSON.parse(raw);}catch(e){}}
+  const slotEl=document.getElementById('ss-save-slot');
+  const btnsEl=document.getElementById('ss-buttons');
+  const hasSave=saveData&&(saveData.heroes?.length>0||saveData.cn||saveData.gi?.length);
+  if(hasSave){
+    const heroChips=(saveData.heroes||[]).map(h=>{
+      const av=h.photo?`<img src="${h.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`<span style="font-size:14px">${h.ico||'&#129497;'}</span>`;
+      return`<div class="ss-hero-chip"><div class="ss-hero-avatar">${av}</div><span class="ss-hero-name">${h.name||'?'}</span></div>`;
+    }).join('');
+    const heroCount=saveData.heroes?.length||0;
+    const advName=saveData.sk?.adventure?.lore?.tl||null;
+    const gold=saveData.gt?.gold||0;
+    slotEl.innerHTML=`<div class="ss-save-preview">
+      <div class="ss-save-label">&#128190; Partida guardada</div>
+      ${heroCount?`<div class="ss-save-heroes">${heroChips}</div>`:''}
+      <div class="ss-save-meta">${heroCount} heroe${heroCount!==1?'s':''} &bull; ${gold} oros${advName?` &bull; ${advName}`:''}</div>
+    </div>`;
+    btnsEl.innerHTML=`
+      <button class="ss-btn ss-btn-continue" onclick="continueSession()">&#128190; CONTINUAR PARTIDA</button>
+      <button class="ss-btn ss-btn-new" onclick="confirmNewSession()">&#9876;&#65039; NUEVA SESION</button>
+      <button class="ss-btn ss-btn-delete" onclick="confirmDeleteSave()">&#128465;&#65039; Borrar datos guardados</button>`;
+  } else {
+    slotEl.innerHTML=`<div class="ss-save-preview"><div class="ss-no-save">&#128302; No hay partida guardada.<br>Crea tus heroes y comienza la aventura.</div></div>`;
+    btnsEl.innerHTML=`<button class="ss-btn ss-btn-new" onclick="continueSession()">&#9876;&#65039; NUEVA PARTIDA</button>`;
+  }
+}
+function continueSession(){
+  const raw=localStorage.getItem(LSK);
+  if(raw){try{const d=JSON.parse(raw);heroes=d.heroes??[];gt=d.gt??{gold:0,potions:0,scrolls:0,keys:0};gi=d.gi??[];cn=d.cn??'';dh=d.dh??[];sk=d.sk??null;if(sk?.adventure)currentAdventure=sk.adventure;if(sk?.oracleLog)oracleLog=sk.oracleLog;}catch(e){}}
+  dismissSessionScreen();
+}
+function confirmNewSession(){
+  document.getElementById('ss-buttons').innerHTML=`
+    <div style="background:rgba(139,26,26,.15);border:1px solid var(--bld);border-radius:5px;padding:14px;margin-bottom:14px;text-align:center">
+      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--bl);margin-bottom:6px">&#9888;&#65039; NUEVA SESION</div>
+      <div style="font-size:12px;color:var(--pad);line-height:1.6">Se creara una nueva partida.<br>Los datos actuales quedan guardados.</div>
+    </div>
+    <button class="ss-btn ss-btn-new" onclick="startNewSession()">&#9876;&#65039; CONFIRMAR</button>
+    <button class="ss-btn ss-btn-delete" onclick="initSessionScreen()">&#8249; Cancelar</button>`;
+}
+function startNewSession(){
+  heroes=[];gt={gold:0,potions:0,scrolls:0,keys:0};gi=[];cn='';dh=[];sk=null;
+  currentAdventure=null;oracleLog=[];usedQuestions=new Set();
+  saveS();dismissSessionScreen();
+}
+function confirmDeleteSave(){
+  document.getElementById('ss-buttons').innerHTML=`
+    <div style="background:rgba(139,26,26,.2);border:1px solid var(--bl);border-radius:5px;padding:14px;margin-bottom:14px;text-align:center">
+      <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--bl);margin-bottom:6px">&#128128; BORRAR TODO</div>
+      <div style="font-size:12px;color:var(--pad);line-height:1.6">Esta accion es irreversible.<br>Se perderan heroes, inventario y notas.</div>
+    </div>
+    <button class="ss-btn" style="background:linear-gradient(135deg,var(--bl),var(--bld));border:1px solid var(--bl);color:var(--pa)" onclick="deleteSaveAndStart()">&#128128; BORRAR Y EMPEZAR</button>
+    <button class="ss-btn ss-btn-delete" onclick="initSessionScreen()">&#8249; Cancelar</button>`;
+}
+function deleteSaveAndStart(){
+  localStorage.removeItem(LSK);
+  heroes=[];gt={gold:0,potions:0,scrolls:0,keys:0};gi=[];cn='';dh=[];sk=null;
+  currentAdventure=null;oracleLog=[];usedQuestions=new Set();
+  dismissSessionScreen();
+}
+function dismissSessionScreen(){
+  const el=document.getElementById('session-screen');
+  if(!el)return;
+  el.style.transition='opacity .4s ease,transform .4s ease';
+  el.style.opacity='0';el.style.transform='scale(1.04)';
+  setTimeout(()=>{el.remove();bootApp();},380);
+}
+function bootApp(){
+  rH();renderDH();renderN();renderSk();
+  if(!localStorage.getItem('hq_pwa_hint')){
+    setTimeout(()=>{if(!window.matchMedia('(display-mode: standalone)').matches){toast('&#128247; Instala: Menu → Anadir a pantalla de inicio');localStorage.setItem('hq_pwa_hint','1');}},2000);
+  }
+}
+
+// INIT
+initSessionScreen();
+</script>
+
+
+<!-- MODALS: moved to end of body for proper z-index stacking -->
+<div class="movl" id="m-eq" onclick="closeM('m-eq')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mtit"><span id="eqtit">Equipamiento</span><button class="mcls" onclick="closeM('m-eq')">X</button></div>
+    <div id="eqopts"></div>
+    <button class="bsec" onclick="openCI('equip')">+ Crear objeto personalizado</button>
+  </div>
+</div>
+
+<div class="movl" id="m-sp" onclick="closeM('m-sp')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mtit"><span>Anadir Hechizo</span><button class="mcls" onclick="closeM('m-sp')">X</button></div>
+    <div id="spopts"></div>
+    <button class="bsec" onclick="openCI('spell')">+ Crear hechizo personalizado</button>
+  </div>
+</div>
+
+<div class="movl" id="m-ci" onclick="closeMB(event,'m-ci')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mtit"><span id="citit">Crear Objeto</span><button class="mcls" onclick="closeM('m-ci')">X</button></div>
+    <label class="ilb">Nombre</label><input class="ifl" id="ci-n" placeholder="Nombre del objeto..." maxlength="30" autocomplete="off">
+    <label class="ilb">Descripcion / Efecto</label><input class="ifl" id="ci-d" placeholder="Efecto o historia..." maxlength="80" autocomplete="off">
+    <label class="ilb">Icono (emoji)</label><input class="ifl" id="ci-i" placeholder="?" maxlength="4" style="font-size:20px;text-align:center" autocomplete="off">
+    <div id="ci-xw" style="display:none">
+      <label class="ilb">Slot</label>
+      <select class="slf" id="ci-sl"><option value="Arma">Arma</option><option value="Armadura">Armadura</option><option value="Accesorio">Accesorio</option></select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px">
+        <div><label class="ilb">Bonus Ataque</label><input class="ifl" id="ci-a" type="number" value="0" min="0" max="10" style="margin-bottom:0"></div>
+        <div><label class="ilb">Bonus Defensa</label><input class="ifl" id="ci-df" type="number" value="0" min="0" max="10" style="margin-bottom:0"></div>
+      </div>
+    </div>
+    <div id="ci-xs" style="display:none">
+      <label class="ilb">Coste de Mana</label><input class="ifl" id="ci-c" placeholder="ej: 2 MP" maxlength="10" autocomplete="off">
+    </div>
+    <div id="ci-xv" style="display:none">
+      <label class="ilb">Cantidad inicial</label><input class="ifl" id="ci-q" type="number" value="1" min="1" max="99" autocomplete="off">
+    </div>
+    <label class="ilb">Rareza</label>
+    <div class="rgrd" id="ci-rg">
+      <button class="rbt sel" data-r="common" onclick="selR(this,'ci')">COMUN</button>
+      <button class="rbt" data-r="uncommon" onclick="selR(this,'ci')">POCO</button>
+      <button class="rbt" data-r="rare" onclick="selR(this,'ci')">RARO</button>
+      <button class="rbt" data-r="legendary" onclick="selR(this,'ci')">LEGEND</button>
+    </div>
+    <button class="bpri" onclick="saveCI()">GUARDAR</button>
+  </div>
+</div>
+
+<div class="movl" id="m-ginv" onclick="closeMB(event,'m-ginv')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mtit"><span>Anadir al Inventario</span><button class="mcls" onclick="closeM('m-ginv')">X</button></div>
+    <label class="ilb">Nombre</label><input class="ifl" id="gn" placeholder="Nombre..." maxlength="30" autocomplete="off">
+    <label class="ilb">Descripcion</label><input class="ifl" id="gd" placeholder="Efecto..." maxlength="80" autocomplete="off">
+    <label class="ilb">Icono</label><input class="ifl" id="gi2" placeholder="?" maxlength="4" style="font-size:20px;text-align:center" autocomplete="off">
+    <label class="ilb">Cantidad</label><input class="ifl" id="gq" type="number" value="1" min="1" max="99" autocomplete="off">
+    <label class="ilb">Rareza</label>
+    <div class="rgrd" id="gi-rg">
+      <button class="rbt sel" data-r="common" onclick="selR(this,'gi')">COMUN</button>
+      <button class="rbt" data-r="uncommon" onclick="selR(this,'gi')">POCO</button>
+      <button class="rbt" data-r="rare" onclick="selR(this,'gi')">RARO</button>
+      <button class="rbt" data-r="legendary" onclick="selR(this,'gi')">LEGEND</button>
+    </div>
+    <button class="bpri" onclick="saveGI()">ANADIR</button>
+  </div>
+</div>
+
+</body>
+</html>
