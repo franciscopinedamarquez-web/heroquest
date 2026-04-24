@@ -1011,16 +1011,84 @@ function adjD(id,st,d){const h=heroes.find(x=>x.id===id);if(!h)return;if(st==='h
 function saveHN(id,t){const h=heroes.find(x=>x.id===id);if(h){h.notes=t;saveS()}}
 function revive(id){const h=heroes.find(x=>x.id===id);if(!h)return;h.hp=Math.ceil(h.maxHp/2);h.mp=Math.ceil(h.maxMp/2);rH();saveS();toast('&#10024; '+h.name+' revivido');const e=document.getElementById('d-hp');if(e)e.textContent=h.hp;}
 function delH(id){if(!confirm('Eliminar este heroe?'))return;heroes=heroes.filter(x=>x.id!==id);closeD();rH();saveS();toast('Heroe eliminado')}
-function openEQ(hid,sidx){
-  eHid=hid;eSidx=sidx;const h=heroes.find(x=>x.id===hid);if(!h)return;
-  const sl=sidx>=0?h.eq[sidx]:null;const sn=sl?sl.sl:'Arma';
-  document.getElementById('eqtit').textContent=sidx>=0?sn:'Nuevo objeto';
-  const cat=ICAL[sn]||ICAL['Arma'];
-  document.getElementById('eqopts').innerHTML=cat.map(it=>`<div class="eopt${sl&&it.nm===sl.nm?' cur':''}" onclick="selEQ(${JSON.stringify(it).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')})"><span style="font-size:24px">${it.ico}</span><div style="flex:1"><div style="font-size:14px;color:var(--pa);font-weight:600">${it.nm}</div>${it.ds?`<div style="font-size:11px;color:var(--stl);font-style:italic">${it.ds}</div>`:''}<div class="${RC[it.r]||'rc'}" style="font-size:11px">${RN[it.r]||''}${it.a>0?' &bull; +'+it.a+' ATK':''}${it.d>0?' &bull; +'+it.d+' DEF':''}</div></div>${sl&&it.nm===sl.nm?'<span style="color:var(--go);font-size:18px">&#10003;</span>':''}</div>`).join('');
+function openEQ(hid,sidx,slotOverride){
+  eHid=hid;eSidx=sidx;
+  const h=heroes.find(x=>x.id===hid);if(!h)return;
+  const sl=sidx>=0?h.eq[sidx]:null;
+  const sn=slotOverride||(sl?sl.sl:'Arma');
+  document.getElementById('eqtit').textContent=sn;
+
+  const cat=(ICAL[sn]||ICAL['Arma']).filter(it=>!it.nm.startsWith('//'));
+  let slotHeader='';
+  if(sidx<0){
+    // Show slot chooser tabs
+    slotHeader=`<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+      ${['Arma','Armadura','Accesorio'].map(s=>`
+        <button onclick="openEQ(${hid},-1,'${s}')"
+          style="flex:1;min-width:80px;background:${sn===s?'rgba(201,150,42,.2)':'rgba(0,0,0,.4)'};
+            border:1px solid ${sn===s?'var(--go)':'rgba(201,150,42,.25)'};border-radius:4px;
+            color:${sn===s?'var(--go)':'var(--stl)'};font-family:'Cinzel',serif;
+            font-size:11px;letter-spacing:1px;padding:8px;cursor:pointer;touch-action:manipulation">
+          ${s==='Arma'?'&#9876;&#65039;':s==='Armadura'?'&#128737;&#65039;':'&#128141;'} ${s}
+        </button>`).join('')}
+    </div>`;
+  }
+
+  document.getElementById('eqopts').innerHTML=slotHeader+cat.map(it=>{
+    const enc=JSON.stringify(it).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const isCur=sl&&it.nm===sl.nm;
+    return`<div class="eopt${isCur?' cur':''}" onclick="selEQ(${enc})">
+      <span style="font-size:24px">${it.ico}</span>
+      <div style="flex:1">
+        <div style="font-size:14px;color:var(--pa);font-weight:600">${it.nm}</div>
+        ${it.ds?`<div style="font-size:12px;color:var(--stl);font-style:italic">${it.ds}</div>`:''}
+        <div class="${RC[it.r]||'rc'}" style="font-size:12px">${RN[it.r]||''}${it.a>0?' &bull; +'+it.a+' ATK':''}${it.d>0?' &bull; +'+it.d+' DEF':''}</div>
+      </div>
+      ${isCur?'<span style="color:var(--go);font-size:20px">&#10003;</span>':''}
+    </div>`;
+  }).join('');
   openM('m-eq');
 }
 function selEQ(it){const h=heroes.find(x=>x.id===eHid);if(!h)return;if(eSidx>=0)h.eq[eSidx]={...h.eq[eSidx],...it};else h.eq.push({sl:it.sl||'Arma',...it});closeM('m-eq');saveS();toast('Equipamiento actualizado');const c=document.getElementById('d-eq');if(c){c.querySelectorAll('.esl').forEach(x=>x.remove());c.insertAdjacentHTML('beforeend',rEq(h,h.id));}rH();}
-function openSP(hid){eHid=hid;const h=heroes.find(x=>x.id===hid);if(!h)return;const kn=(h.sp||[]).map(s=>s.nm);document.getElementById('spopts').innerHTML=SCATS.map(s=>`<div class="eopt${kn.includes(s.nm)?' cur':''}" onclick="addSP(${JSON.stringify(s).replace(/"/g,'&quot;')})"><span style="font-size:24px">${s.ico}</span><div style="flex:1"><div style="font-family:'Cinzel',serif;font-size:13px;color:var(--pa);font-weight:600">${s.nm}</div><div style="font-size:12px;color:var(--mg);margin-bottom:2px">${s.co}</div><div style="font-size:12px;color:var(--stl);font-style:italic">${s.ds}</div></div>${kn.includes(s.nm)?'<span style="color:var(--mg);font-size:18px">&#10003;</span>':''}</div>`).join('');openM('m-sp');}
+function openSP(hid){
+  eHid=hid;
+  const h=heroes.find(x=>x.id===hid);if(!h)return;
+  const kn=(h.sp||[]).map(s=>s.nm);
+
+  // Group by school based on order in SCATS (detect school from comments — use index ranges)
+  const schools = [
+    {name:'&#128293; Fuego',      items:SCATS.filter(s=>['Bola de Fuego','Dardo de Fuego','Nova de Fuego','Muro de Fuego'].includes(s.nm))},
+    {name:'&#9889; Rayos',        items:SCATS.filter(s=>['Rayo','Cadena de Rayos'].includes(s.nm))},
+    {name:'&#10052;&#65039; Hielo',items:SCATS.filter(s=>['Ventisca','Muro de Hielo','Lanza de Hielo'].includes(s.nm))},
+    {name:'&#128154; Curacion',   items:SCATS.filter(s=>['Curar','Gran Curacion','Regenerar'].includes(s.nm))},
+    {name:'&#128737;&#65039; Defensa',items:SCATS.filter(s=>['Escudo Arcano','Barrera Magica','Reflejo de Hechizo'].includes(s.nm))},
+    {name:'&#127752; Movimiento', items:SCATS.filter(s=>['Teletransportar','Paso de Sombra','Vision Arcana'].includes(s.nm))},
+    {name:'&#10024; Luz / Sagrado',items:SCATS.filter(s=>['Luz Divina','Bendicion','Exorcismo','Consagrar'].includes(s.nm))},
+    {name:'&#9760;&#65039; Oscuro',items:SCATS.filter(s=>['Drenar Vida','Invocar Esqueleto','Maldicion'].includes(s.nm))},
+    {name:'&#128065;&#65039; Ilusiones',items:SCATS.filter(s=>['Ilusion','Confusion'].includes(s.nm))},
+    {name:'&#127744; Arcano',     items:SCATS.filter(s=>['Tormenta Magica','Invocacion Elemental','Cataclismo'].includes(s.nm))},
+  ].filter(g=>g.items.length>0);
+
+  let html='';
+  schools.forEach(({name,items})=>{
+    html+=`<div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--god);padding:10px 2px 5px;border-bottom:1px solid rgba(201,150,42,.15);margin-bottom:5px">${name}</div>`;
+    html+=items.map(s=>{
+      const enc=JSON.stringify(s).replace(/"/g,'&quot;');
+      const isKn=kn.includes(s.nm);
+      return`<div class="eopt${isKn?' cur':''}" onclick="addSP(${enc})">
+        <span style="font-size:24px">${s.ico}</span>
+        <div style="flex:1">
+          <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--pa);font-weight:600">${s.nm}</div>
+          <div style="font-size:12px;color:var(--mg);margin-bottom:2px">${s.co}</div>
+          <div style="font-size:12px;color:var(--stl);font-style:italic">${s.ds}</div>
+        </div>
+        ${isKn?'<span style="color:var(--mg);font-size:20px">&#10003;</span>':''}
+      </div>`;
+    }).join('');
+  });
+  document.getElementById('spopts').innerHTML=html;
+  openM('m-sp');
+}
 function addSP(sp){const h=heroes.find(x=>x.id===eHid);if(!h)return;if(!h.sp)h.sp=[];if(h.sp.find(s=>s.nm===sp.nm)){toast('Ya conoces ese hechizo');return;}h.sp.push(sp);closeM('m-sp');saveS();toast('&#10024; Hechizo aprendido: '+sp.nm);const c=document.getElementById('d-sp');if(c){c.querySelectorAll('.spsl').forEach(x=>x.remove());const p=c.querySelector('[style*="Sin hechizos"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rSp(h,h.id));}rH();}
 function remSp(id,idx){const h=heroes.find(x=>x.id===id);if(!h)return;h.sp.splice(idx,1);saveS();const c=document.getElementById('d-sp');if(c){c.querySelectorAll('.spsl').forEach(x=>x.remove());const p=c.querySelector('[style*="Sin hechizos"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rSp(h,h.id));}rH();}
 function adjHI(id,idx,d){const h=heroes.find(x=>x.id===id);if(!h||!h.inv[idx])return;h.inv[idx].qty=Math.max(0,(h.inv[idx].qty||1)+d);if(h.inv[idx].qty===0)h.inv.splice(idx,1);saveS();const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}
@@ -1290,6 +1358,8 @@ function startSk(){
   saveS();renderSk();
 }
 
+let _openCat = null;
+
 function renderSk(){
   const c=document.getElementById('skcon');
   if(!currentAdventure){
@@ -1345,7 +1415,7 @@ function renderSk(){
         <span style="font-family:'Cinzel',serif;font-size:15px;color:${col};letter-spacing:1px;flex:1;text-align:left">${lbl}</span>
         <span id="ocat-arrow-${cat}" style="color:var(--god);font-size:22px;transition:transform .2s">&#8250;</span>
       </button>
-      <div id="ocat-body-${cat}" style="display:none;display:none;flex-direction:column;gap:7px;padding-bottom:8px">
+      <div id="ocat-body-${cat}" style="display:none;flex-direction:column;gap:7px;padding-bottom:8px">
         ${qBtns}
       </div>
     </div>`;
@@ -1391,24 +1461,23 @@ function renderSk(){
 
 
 function toggleCat(cat){
-  const body=document.getElementById('ocat-body-'+cat);
-  const arrow=document.getElementById('ocat-arrow-'+cat);
+  const body  = document.getElementById('ocat-body-'+cat);
+  const arrow = document.getElementById('ocat-arrow-'+cat);
   if(!body) return;
-  const open = body.style.display!=='flex' && body.style.display!=='block';
-  // Close all others
-  document.querySelectorAll('[id^="ocat-body-"]').forEach(el=>{
-    el.style.display='none';
-  });
-  document.querySelectorAll('[id^="ocat-arrow-"]').forEach(el=>{
-    el.style.transform='';
-  });
-  if(open){
-    body.style.display='flex';
-    body.style.flexDirection='column';
-    body.style.gap='7px';
-    body.style.paddingBottom='8px';
-    if(arrow) arrow.style.transform='rotate(90deg)';
-    setTimeout(()=>body.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+  const isOpen = body.style.display === 'flex';
+
+  // Close all
+  document.querySelectorAll('[id^="ocat-body-"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id^="ocat-arrow-"]').forEach(el => el.style.transform = '');
+
+  if(!isOpen){
+    // Open this one
+    body.style.cssText = 'display:flex;flex-direction:column;gap:7px;padding-bottom:8px';
+    if(arrow) arrow.style.transform = 'rotate(90deg)';
+    _openCat = cat;
+    setTimeout(() => body.scrollIntoView({behavior:'smooth', block:'nearest'}), 80);
+  } else {
+    _openCat = null;
   }
 }
 
@@ -1507,8 +1576,9 @@ function askOracle(qIdx,qKey){
   if(sk) sk.oracleLog=oracleLog;
   saveS();
 
-  // Re-render questions (marks used) then re-attach popup
+  // Re-render questions (marks used), restore open category, then re-attach popup
   renderSk();
+  if(_openCat){ setTimeout(()=>{ const b=document.getElementById('ocat-body-'+_openCat); if(b){b.style.cssText='display:flex;flex-direction:column;gap:7px;padding-bottom:8px'; const a=document.getElementById('ocat-arrow-'+_openCat); if(a)a.style.transform='rotate(90deg)';} }, 10); }
   document.body.appendChild(popup);
 }
 
