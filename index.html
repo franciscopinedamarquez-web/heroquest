@@ -14,24 +14,24 @@
 :root{--pa:#f2e8d0;--pad:#ddd0a8;--bl:#8b1a1a;--bld:#5c0f0f;--go:#c9962a;--god:#7a5a18;--gol:#f0c040;--st:#2a2420;--stl:#5a504a;--mb:#2a4a7f;--mg:#4a80d4;--gr:#5ab05a;--grd:#2a5a2a;--pu:#7a2a9a;--pul:#b060d4;--fs:15px;--fs-sm:12px;--fs-xs:11px}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overscroll-behavior:none}
-body{font-family:'Crimson Pro',serif;background:var(--st);color:var(--pa);max-width:430px;margin:0 auto;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom)}
+body{font-family:'Crimson Pro',serif;background:var(--st);color:var(--pa);max-width:430px;margin:0 auto;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom);font-size:16px}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(201,150,42,.07) 0%,transparent 55%),radial-gradient(ellipse at 80% 100%,rgba(139,26,26,.09) 0%,transparent 55%);pointer-events:none;z-index:0}
 header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0d0a07,var(--st));border-bottom:2px solid var(--god);padding:11px 16px 6px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.8)}
 header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);letter-spacing:8px;margin-top:1px}
-.logo{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--go);letter-spacing:3px}
+.logo{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--go);letter-spacing:3px}
 .logo span{color:var(--bl)}
 .sind{position:absolute;top:10px;right:12px;font-size:9px;color:var(--god);font-family:'Cinzel',serif;opacity:0;transition:opacity .5s}
 .sind.v{opacity:1}
 .tabs{display:flex;background:#12100d;border-bottom:1px solid var(--god);position:sticky;top:58px;z-index:99}
-.tb{flex:1;padding:9px 2px 7px;background:none;border:none;color:var(--stl);font-family:'Cinzel',serif;font-size:10px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;touch-action:manipulation;transition:color .2s}
-.tb .ti{font-size:16px}
+.tb{flex:1;padding:10px 2px 8px;background:none;border:none;color:var(--stl);font-family:'Cinzel',serif;font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;touch-action:manipulation;transition:color .2s}
+.tb .ti{font-size:18px}
 .tb.active{color:var(--go);border-bottom-color:var(--go);background:rgba(201,150,42,.06)}
 .view{display:none;animation:fIn .25s ease;padding-bottom:24px}
 .view.active{display:block}
 @keyframes fIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.stit{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--god);text-align:center;padding:11px 0 3px;text-transform:uppercase}
+.stit{font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;color:var(--god);text-align:center;padding:11px 0 3px;text-transform:uppercase}
 .scard{margin:10px 14px 0;background:linear-gradient(135deg,#1e1810,#2a2218);border:1px solid rgba(201,150,42,.2);border-radius:4px;overflow:hidden}
-.sct{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--god);padding:7px 13px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(201,150,42,.1);text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
+.sct{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--god);padding:7px 13px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(201,150,42,.1);text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
 .sctb{background:none;border:1px solid rgba(201,150,42,.3);color:var(--god);font-family:'Cinzel',serif;font-size:8px;padding:3px 7px;border-radius:2px;cursor:pointer;touch-action:manipulation}
 .sctb:active{background:rgba(201,150,42,.1)}
 /* hero cards */
@@ -40,27 +40,27 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .hcard:active{transform:scale(.985)}
 .hcard.dead{opacity:.5;filter:grayscale(.6)}
 .hch{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(201,150,42,.15)}
-.hav{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--god);flex-shrink:0}
-.hnm{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--go)}
-.hcl{font-size:13px;color:var(--pad);font-style:italic}
-.hlv{background:var(--bld);border:1px solid var(--bl);color:var(--pa);font-family:'Cinzel',serif;font-size:11px;padding:3px 7px;border-radius:2px;white-space:nowrap}
+.hav{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid var(--god);flex-shrink:0}
+.hnm{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--go)}
+.hcl{font-size:14px;color:var(--pad);font-style:italic}
+.hlv{background:var(--bld);border:1px solid var(--bl);color:var(--pa);font-family:'Cinzel',serif;font-size:12px;padding:3px 7px;border-radius:2px;white-space:nowrap}
 .hsts{display:grid;grid-template-columns:repeat(4,1fr)}
 .sb{padding:6px 3px;text-align:center;border-right:1px solid rgba(201,150,42,.1)}
 .sb:last-child{border-right:none}
-.slb{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--stl);text-transform:uppercase;display:block;margin-bottom:1px}
-.sv{font-family:'Cinzel',serif;font-size:21px;font-weight:700;line-height:1}
+.slb{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;color:var(--stl);text-transform:uppercase;display:block;margin-bottom:1px}
+.sv{font-family:'Cinzel',serif;font-size:23px;font-weight:700;line-height:1}
 .hp{color:var(--bl)}.mp{color:var(--mg)}.atk{color:var(--go)}.def{color:var(--gr)}
-.smx{font-size:9px;color:var(--stl);display:block}
+.smx{font-size:11px;color:var(--stl);display:block}
 .hbrs{padding:6px 12px 8px;display:flex;flex-direction:column;gap:4px}
 .brow{display:flex;align-items:center;gap:6px}
-.blb{font-size:9px;font-family:'Cinzel',serif;color:var(--stl);width:14px}
+.blb{font-size:11px;font-family:'Cinzel',serif;color:var(--stl);width:14px}
 .btk{flex:1;height:6px;background:rgba(0,0,0,.5);border-radius:1px;overflow:hidden}
 .bf{height:100%;border-radius:1px;transition:width .4s ease}
 .hpb{background:linear-gradient(90deg,var(--bld),var(--bl))}
 .mpb{background:linear-gradient(90deg,var(--mb),var(--mg))}
-.btx{font-size:12px;color:var(--pad);min-width:30px;text-align:right}
+.btx{font-size:13px;color:var(--pad);min-width:30px;text-align:right}
 .cact{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(201,150,42,.1)}
-.cab{padding:8px 2px;background:none;border:none;border-right:1px solid rgba(201,150,42,.1);font-size:16px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;color:var(--pa)}
+.cab{padding:12px 2px;background:none;border:none;border-right:1px solid rgba(201,150,42,.1);font-size:21px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;color:var(--pa)}
 .cab:last-child{border-right:none;font-family:'Cinzel',serif;font-size:9px;color:var(--god)}
 .cab:active{background:rgba(255,255,255,.05)}
 /* detail panel */
@@ -70,22 +70,22 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .bbtn{background:none;border:none;color:var(--go);font-size:22px;cursor:pointer;padding:2px;touch-action:manipulation}
 .dttl{font-family:'Cinzel',serif;font-size:11px;color:var(--god);letter-spacing:2px;flex:1}
 .dhdr{background:linear-gradient(180deg,#0d0a07,#1a150e);padding:16px 13px;border-bottom:1px solid var(--god);display:flex;align-items:center;gap:13px}
-.dav{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;border:3px solid var(--go);box-shadow:0 0 16px rgba(201,150,42,.3)}
-.dname{font-family:'Cinzel',serif;font-size:21px;font-weight:700;color:var(--go)}
-.dsubt{font-size:12px;color:var(--pad);font-style:italic}
+.dav{width:82px;height:82px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;border:3px solid var(--go);box-shadow:0 0 16px rgba(201,150,42,.3)}
+.dname{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--go)}
+.dsubt{font-size:14px;color:var(--pad);font-style:italic}
 .dgold{font-family:'Cinzel',serif;font-size:12px;color:var(--gol);margin-top:3px}
 .sadj{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
 .sadj:last-child{border-bottom:none}
-.alb{font-size:15px;color:var(--pad);flex:1}
+.alb{font-size:16px;color:var(--pad);flex:1}
 .alb small{display:block;font-size:10px;color:var(--stl)}
 .acls{display:flex;align-items:center}
-.abtn{width:38px;height:38px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);color:var(--go);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:2px;touch-action:manipulation}
+.abtn{width:42px;height:42px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);color:var(--go);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:2px;touch-action:manipulation}
 .abtn:active{background:rgba(201,150,42,.2);transform:scale(.9)}
-.aval{min-width:52px;text-align:center;font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--pa)}
-.esl{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s}
+.aval{min-width:56px;text-align:center;font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--pa)}
+.esl{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s}
 .esl:last-child{border-bottom:none}
 .esl:active{background:rgba(201,150,42,.07)}
-.spsl{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.spsl{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
 .spsl:last-child{border-bottom:none}
 .sprm{background:none;border:none;color:var(--stl);font-size:15px;cursor:pointer;touch-action:manipulation}
 .sprm:active{color:var(--bl)}
@@ -181,9 +181,9 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .lore-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--go),transparent)}
 .lore-header{padding:12px 14px 8px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(201,150,42,.15)}
 .lore-badge{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;padding:4px 9px;border-radius:2px;border:1px solid;text-transform:uppercase}
-.lore-title{font-family:'Cinzel',serif;font-size:19px;font-weight:700;color:var(--go);margin-bottom:2px}
+.lore-title{font-family:'Cinzel',serif;font-size:21px;font-weight:700;color:var(--go);margin-bottom:2px}
 .lore-obj{font-size:11px;color:var(--god);font-family:'Cinzel',serif;letter-spacing:.5px}
-.lore-body{padding:13px 15px;font-size:14px;color:var(--pad);line-height:1.7;font-style:italic;border-bottom:1px solid rgba(201,150,42,.1)}
+.lore-body{padding:14px 16px;font-size:15px;color:var(--pad);line-height:1.7;font-style:italic;border-bottom:1px solid rgba(201,150,42,.1)}
 .lore-footer{padding:8px 14px;display:flex;gap:8px;flex-wrap:wrap}
 .lore-tag{font-size:10px;font-family:'Cinzel',serif;padding:3px 8px;border-radius:2px;background:rgba(0,0,0,.4);border:1px solid}
 /* Oracle question categories */
@@ -197,8 +197,8 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .oq-inner{display:flex;align-items:center;gap:10px;padding:10px 12px}
 .oq-ico{font-size:20px;flex-shrink:0;width:28px;text-align:center}
 .oq-text{flex:1}
-.oq-label{font-family:'Cinzel',serif;font-size:13px;color:var(--pa);letter-spacing:.5px;display:block;margin-bottom:1px}
-.oq-hint{font-size:12px;color:var(--stl);font-style:italic}
+.oq-label{font-family:'Cinzel',serif;font-size:15px;color:var(--pa);letter-spacing:.5px;display:block;margin-bottom:1px}
+.oq-hint{font-size:13px;color:var(--stl);font-style:italic}
 .oq-arrow{color:var(--god);font-size:14px;flex-shrink:0}
 .oq-btn.used{border-color:rgba(201,150,42,.1);opacity:.6}
 .oq-btn.used .oq-label{color:var(--stl)}
@@ -209,8 +209,8 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .oa-question{font-family:'Cinzel',serif;font-size:10px;color:var(--god);letter-spacing:1px;flex:1}
 .oa-dice{font-family:'Cinzel',serif;font-size:10px;color:var(--stl)}
 .oa-body{padding:12px 14px}
-.oa-result{font-family:'Cinzel',serif;font-size:17px;font-weight:700;margin-bottom:6px}
-.oa-detail{font-size:15px;color:var(--pad);line-height:1.6;font-style:italic}
+.oa-result{font-family:'Cinzel',serif;font-size:19px;font-weight:700;margin-bottom:6px}
+.oa-detail{font-size:16px;color:var(--pad);line-height:1.6;font-style:italic}
 .oa-effect{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:rgba(0,0,0,.3);border-radius:3px;border:1px solid rgba(201,150,42,.15)}
 .oa-effect-ico{font-size:18px}
 .oa-effect-txt{font-size:11px;color:var(--pa);font-family:'Cinzel',serif;letter-spacing:.5px}
@@ -222,7 +222,7 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 /* Log */
 .sk-log{margin:0 14px;padding:9px 12px;background:rgba(0,0,0,.3);border:1px solid rgba(201,150,42,.1);border-radius:4px;max-height:130px;overflow-y:auto}
 .sk-log-title{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--stl);margin-bottom:5px;text-transform:uppercase}
-.sk-log-item{font-size:11px;color:var(--pad);padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);line-height:1.4}
+.sk-log-item{font-size:13px;color:var(--pad);padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);line-height:1.4}
 .sk-log-item:last-child{border-bottom:none}
 /* New adventure button */
 .new-adv-btn{display:block;width:calc(100% - 28px);margin:14px auto 0;background:linear-gradient(135deg,var(--bl),var(--bld));border:1px solid var(--bl);border-radius:5px;color:var(--pa);font-family:'Cinzel',serif;font-size:12px;font-weight:600;letter-spacing:2px;padding:13px;cursor:pointer;touch-action:manipulation;text-align:center}
@@ -247,7 +247,7 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 .fab.hidden{display:none}
 .empty{padding:52px 26px;text-align:center}
 .eico{font-size:48px;margin-bottom:12px;opacity:.4}
-.etxt{font-family:'Cinzel',serif;font-size:10px;color:var(--stl);letter-spacing:1px;line-height:1.8}
+.etxt{font-family:'Cinzel',serif;font-size:13px;color:var(--stl);letter-spacing:1px;line-height:1.8}
 
 /* ── MODAL OVERLAY ── */
 .movl{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:none;align-items:flex-end;justify-content:center}
@@ -479,7 +479,17 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
     <button class="bsec" style="margin-top:7px" onclick="openM('m-ginv')">+ Anadir objeto al grupo</button>
   </div>
 </div>
-<button class="fab" id="fab" onclick="openHeroModal()" title="Nuevo Heroe">+</button>
+<button id="fab" onclick="openHeroModal()" style="
+  position:fixed;bottom:calc(26px + env(safe-area-inset-bottom));right:20px;
+  width:66px;height:66px;z-index:200;
+  background:linear-gradient(145deg,#b02020,#6a1010);
+  border:3px solid #d04040;border-radius:50%;
+  color:#f2e8d0;font-size:36px;font-weight:900;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;touch-action:manipulation;
+  box-shadow:0 6px 28px rgba(139,26,26,.8),0 0 0 5px rgba(139,26,26,.18),inset 0 1px 0 rgba(255,150,150,.2);
+  transition:transform .15s,box-shadow .15s;
+">+</button>
 <!-- new hero modal -->
 <div id="m-nh" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeHeroModal()">
   <div style="background:linear-gradient(180deg,#1e1810,#140f08);border:1px solid #7a5a18;border-top:2px solid #c9962a;border-radius:10px 10px 0 0;width:100%;max-width:430px;padding:20px 18px 32px;max-height:88vh;overflow-y:auto">
@@ -968,9 +978,9 @@ function rH(){
   });
 }
 function qs(id,st,d){const h=heroes.find(x=>x.id===id);if(!h)return;if(st==='hp')h.hp=Math.max(0,Math.min(h.maxHp,h.hp+d));if(st==='mp')h.mp=Math.max(0,Math.min(h.maxMp,h.mp+d));rH();saveS();if(st==='hp'&&h.hp===0)toast('&#128128; '+h.name+' ha caido');}
-function rEq(h,id){return(h.eq||[]).map((e,i)=>`<div class="esl" onclick="openEQ(${id},${i})"><span style="font-size:18px;width:26px;text-align:center">${e.ico}</span><div style="flex:1"><div style="font-size:8px;letter-spacing:1px;color:var(--stl);font-family:'Cinzel',serif;text-transform:uppercase">${e.sl}</div><div style="font-size:12px;color:var(--pa)">${e.nm}</div><div class="${RC[e.r]||'rc'}" style="font-size:10px">${RN[e.r]||''}${e.a>0?' +'+e.a+'&#9876;':''}${e.d>0?' +'+e.d+'&#128737;':''}${e.custom?' &#9998;':''}</div></div><span style="color:var(--stl)">&#8250;</span></div>`).join('')}
-function rSp(h,id){if(!h.sp?.length)return`<div style="padding:9px 12px;font-size:11px;color:var(--stl);font-style:italic">Sin hechizos aprendidos.</div>`;return h.sp.map((s,i)=>`<div class="spsl"><span style="font-size:18px;width:26px;text-align:center">${s.ico||'&#10024;'}</span><div style="flex:1"><div style="font-family:'Cinzel',serif;font-size:11px;color:var(--pa)">${s.nm}</div><div style="font-size:10px;color:var(--mg)">${s.co||''}</div><div style="font-size:10px;color:var(--stl);font-style:italic">${s.ds}</div></div><button class="sprm" onclick="remSp(${id},${i})">X</button></div>`).join('')}
-function rInv(h,id){if(!h.inv?.length)return`<div style="padding:9px 12px;font-size:11px;color:var(--stl);font-style:italic">Inventario vacio.</div>`;return h.inv.map((it,i)=>`<div class="ivit"><span style="font-size:18px;width:26px;text-align:center">${it.ico||'&#128230;'}</span><div style="flex:1"><div style="font-size:12px;color:var(--pa)">${it.nm}</div><div style="font-size:10px;color:var(--stl);font-style:italic">${it.ds||''}</div></div><div style="font-family:'Cinzel',serif;font-size:12px;color:var(--go);min-width:22px;text-align:center">${it.qty||1}</div><div style="display:flex;gap:3px"><button class="ibt" onclick="adjHI(${id},${i},-1)">-</button><button class="ibt" onclick="adjHI(${id},${i},1)">+</button><button class="ibt del" onclick="remHI(${id},${i})">X</button></div></div>`).join('')}
+function rEq(h,id){return(h.eq||[]).map((e,i)=>`<div class="esl" onclick="openEQ(${id},${i})"><span style="font-size:22px;width:30px;text-align:center">${e.ico}</span><div style="flex:1"><div style="font-size:9px;letter-spacing:1px;color:var(--stl);font-family:'Cinzel',serif;text-transform:uppercase">${e.sl}</div><div style="font-size:14px;color:var(--pa);font-weight:600">${e.nm}</div>${e.ds?`<div style="font-size:11px;color:var(--stl);font-style:italic">${e.ds}</div>`:''}<div class="${RC[e.r]||'rc'}" style="font-size:11px">${RN[e.r]||''}${e.a>0?' &bull; +'+e.a+' Ataque':''}${e.d>0?' &bull; +'+e.d+' Defensa':''}${e.custom?' &#9998;':''}</div></div><span style="color:var(--stl);font-size:18px">&#8250;</span></div>`).join('')}
+function rSp(h,id){if(!h.sp?.length)return`<div style="padding:11px 14px;font-size:13px;color:var(--stl);font-style:italic">Sin hechizos aprendidos.</div>`;return h.sp.map((s,i)=>`<div class="spsl"><span style="font-size:24px;width:32px;text-align:center">${s.ico||'&#10024;'}</span><div style="flex:1"><div style="font-family:'Cinzel',serif;font-size:13px;color:var(--pa)">${s.nm}</div><div style="font-size:12px;color:var(--mg)">${s.co||''}</div><div style="font-size:12px;color:var(--stl);font-style:italic">${s.ds}</div></div><button class="sprm" onclick="remSp(${id},${i})">X</button></div>`).join('')}
+function rInv(h,id){if(!h.inv?.length)return`<div style="padding:11px 14px;font-size:13px;color:var(--stl);font-style:italic">Inventario vacio.</div>`;return h.inv.map((it,i)=>`<div class="ivit"><span style="font-size:22px;width:30px;text-align:center">${it.ico||'&#128230;'}</span><div style="flex:1"><div style="font-size:14px;color:var(--pa);font-weight:600">${it.nm}</div><div style="font-size:12px;color:var(--stl);font-style:italic">${it.ds||''}</div></div><div style="font-family:'Cinzel',serif;font-size:14px;color:var(--go);min-width:24px;text-align:center">${it.qty||1}</div><div style="display:flex;gap:3px"><button class="ibt" onclick="adjHI(${id},${i},-1)">-</button><button class="ibt" onclick="adjHI(${id},${i},1)">+</button><button class="ibt del" onclick="remHI(${id},${i})">X</button></div></div>`).join('')}
 function showD(id){
   const h=heroes.find(x=>x.id===id);if(!h)return;
   if(!h.sp)h.sp=[];if(!h.inv)h.inv=[];
@@ -1006,11 +1016,11 @@ function openEQ(hid,sidx){
   const sl=sidx>=0?h.eq[sidx]:null;const sn=sl?sl.sl:'Arma';
   document.getElementById('eqtit').textContent=sidx>=0?sn:'Nuevo objeto';
   const cat=ICAL[sn]||ICAL['Arma'];
-  document.getElementById('eqopts').innerHTML=cat.map(it=>`<div class="eopt${sl&&it.nm===sl.nm?' cur':''}" onclick="selEQ(${JSON.stringify(it).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')})"><span style="font-size:18px">${it.ico}</span><div style="flex:1"><div style="font-size:12px;color:var(--pa)">${it.nm}</div><div class="${RC[it.r]||'rc'}" style="font-size:10px">${RN[it.r]||''}${it.a>0?' +'+it.a+'&#9876;':''}${it.d>0?' +'+it.d+'&#128737;':''}</div></div>${sl&&it.nm===sl.nm?'<span style="color:var(--go)">&#10003;</span>':''}</div>`).join('');
+  document.getElementById('eqopts').innerHTML=cat.map(it=>`<div class="eopt${sl&&it.nm===sl.nm?' cur':''}" onclick="selEQ(${JSON.stringify(it).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')})"><span style="font-size:24px">${it.ico}</span><div style="flex:1"><div style="font-size:14px;color:var(--pa);font-weight:600">${it.nm}</div>${it.ds?`<div style="font-size:11px;color:var(--stl);font-style:italic">${it.ds}</div>`:''}<div class="${RC[it.r]||'rc'}" style="font-size:11px">${RN[it.r]||''}${it.a>0?' &bull; +'+it.a+' ATK':''}${it.d>0?' &bull; +'+it.d+' DEF':''}</div></div>${sl&&it.nm===sl.nm?'<span style="color:var(--go);font-size:18px">&#10003;</span>':''}</div>`).join('');
   openM('m-eq');
 }
 function selEQ(it){const h=heroes.find(x=>x.id===eHid);if(!h)return;if(eSidx>=0)h.eq[eSidx]={...h.eq[eSidx],...it};else h.eq.push({sl:it.sl||'Arma',...it});closeM('m-eq');saveS();toast('Equipamiento actualizado');const c=document.getElementById('d-eq');if(c){c.querySelectorAll('.esl').forEach(x=>x.remove());c.insertAdjacentHTML('beforeend',rEq(h,h.id));}rH();}
-function openSP(hid){eHid=hid;const h=heroes.find(x=>x.id===hid);if(!h)return;const kn=(h.sp||[]).map(s=>s.nm);document.getElementById('spopts').innerHTML=SCATS.map(s=>`<div class="eopt${kn.includes(s.nm)?' cur':''}" onclick="addSP(${JSON.stringify(s).replace(/"/g,'&quot;')})"><span style="font-size:18px">${s.ico}</span><div style="flex:1"><div style="font-family:'Cinzel',serif;font-size:11px;color:var(--pa)">${s.nm}</div><div style="font-size:10px;color:var(--mg)">${s.co}</div><div style="font-size:10px;color:var(--stl);font-style:italic">${s.ds}</div></div>${kn.includes(s.nm)?'<span style="color:var(--mg)">&#10003;</span>':''}</div>`).join('');openM('m-sp');}
+function openSP(hid){eHid=hid;const h=heroes.find(x=>x.id===hid);if(!h)return;const kn=(h.sp||[]).map(s=>s.nm);document.getElementById('spopts').innerHTML=SCATS.map(s=>`<div class="eopt${kn.includes(s.nm)?' cur':''}" onclick="addSP(${JSON.stringify(s).replace(/"/g,'&quot;')})"><span style="font-size:24px">${s.ico}</span><div style="flex:1"><div style="font-family:'Cinzel',serif;font-size:13px;color:var(--pa);font-weight:600">${s.nm}</div><div style="font-size:12px;color:var(--mg);margin-bottom:2px">${s.co}</div><div style="font-size:12px;color:var(--stl);font-style:italic">${s.ds}</div></div>${kn.includes(s.nm)?'<span style="color:var(--mg);font-size:18px">&#10003;</span>':''}</div>`).join('');openM('m-sp');}
 function addSP(sp){const h=heroes.find(x=>x.id===eHid);if(!h)return;if(!h.sp)h.sp=[];if(h.sp.find(s=>s.nm===sp.nm)){toast('Ya conoces ese hechizo');return;}h.sp.push(sp);closeM('m-sp');saveS();toast('&#10024; Hechizo aprendido: '+sp.nm);const c=document.getElementById('d-sp');if(c){c.querySelectorAll('.spsl').forEach(x=>x.remove());const p=c.querySelector('[style*="Sin hechizos"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rSp(h,h.id));}rH();}
 function remSp(id,idx){const h=heroes.find(x=>x.id===id);if(!h)return;h.sp.splice(idx,1);saveS();const c=document.getElementById('d-sp');if(c){c.querySelectorAll('.spsl').forEach(x=>x.remove());const p=c.querySelector('[style*="Sin hechizos"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rSp(h,h.id));}rH();}
 function adjHI(id,idx,d){const h=heroes.find(x=>x.id===id);if(!h||!h.inv[idx])return;h.inv[idx].qty=Math.max(0,(h.inv[idx].qty||1)+d);if(h.inv[idx].qty===0)h.inv.splice(idx,1);saveS();const c=document.getElementById('d-iv');if(c){c.querySelectorAll('.ivit').forEach(x=>x.remove());const p=c.querySelector('[style*="Inventario"]');if(p)p.remove();c.insertAdjacentHTML('beforeend',rInv(h,h.id));}}
@@ -1283,200 +1293,225 @@ function startSk(){
 function renderSk(){
   const c=document.getElementById('skcon');
   if(!currentAdventure){
-    c.innerHTML=`<div style="padding:40px 20px;text-align:center">
-      <div style="font-size:64px;margin-bottom:18px;opacity:.4">&#128302;</div>
-      <div style="font-family:'Cinzel',serif;font-size:15px;color:var(--god);letter-spacing:2px;margin-bottom:10px">EL ORACULO ESPERA</div>
-      <div style="font-size:14px;color:var(--stl);font-style:italic;line-height:1.8;margin-bottom:28px">
-        Cada pregunta genera una respuesta<br>con contexto narrativo y efectos.<br>Usalo durante tu turno de HeroQuest.
+    c.innerHTML=`
+      <div style="padding:40px 20px;text-align:center">
+        <div style="font-size:68px;margin-bottom:20px;opacity:.4">&#128302;</div>
+        <div style="font-family:'Cinzel',serif;font-size:17px;color:var(--god);letter-spacing:2px;margin-bottom:12px">EL ORACULO ESPERA</div>
+        <div style="font-size:15px;color:var(--stl);font-style:italic;line-height:1.9;margin-bottom:32px">
+          Cada pregunta genera una respuesta<br>con contexto narrativo y efectos.<br>Usalo durante tu turno de HeroQuest.
+        </div>
       </div>
-    </div>
-    <button class="new-adv-btn" onclick="startSk()">&#128302; NUEVA AVENTURA &#9876;&#65039;</button>`;
+      <button class="new-adv-btn" onclick="startSk()">&#128302; NUEVA AVENTURA &#9876;&#65039;</button>`;
     return;
   }
-  const adv=currentAdventure,lore=adv.lore;
-  const tagsHtml=(lore.tags||[]).map((t,i)=>`<span class="lore-tag" style="color:${lore.tagcols?lore.tagcols[i]:'var(--pad)'};border-color:${lore.tagcols?lore.tagcols[i]+'66':'rgba(201,150,42,.3)'}">${t}</span>`).join('');
+  const adv=currentAdventure, lore=adv.lore;
+  const tagsHtml=(lore.tags||[]).map((t,i)=>`<span class="lore-tag" style="color:${lore.tagcols?lore.tagcols[i]:'var(--pad)'};border-color:${lore.tagcols?lore.tagcols[i]+'66':'rgba(201,150,42,.3)'};font-size:12px">${t}</span>`).join('');
 
-  // Collapsible category sections
-  const catIcons={Exploracion:'&#128270;',Combate:'&#9876;&#65039;',Tesoro:'&#128176;',Magia:'&#10024;',Narrativa:'&#128172;'};
-  const catColors={Exploracion:'var(--go)',Combate:'var(--bl)',Tesoro:'var(--gol)',Magia:'var(--mg)',Narrativa:'var(--pul)'};
+  const catDef=[
+    {id:'Exploracion',lbl:'EXPLORAR',ico:'&#128270;',col:'var(--go)'},
+    {id:'Combate',    lbl:'COMBATE', ico:'&#9876;&#65039;',col:'var(--bl)'},
+    {id:'Tesoro',     lbl:'TESORO',  ico:'&#128176;',col:'var(--gol)'},
+    {id:'Magia',      lbl:'MAGIA',   ico:'&#10024;', col:'var(--mg)'},
+    {id:'Narrativa',  lbl:'NARRATIVA',ico:'&#128172;',col:'var(--pul)'},
+  ];
 
-  const questionsHtml=ORACLE_CATS.map(cat=>{
+  const questionsHtml=catDef.map(({id:cat,lbl,ico,col})=>{
     const qs=ORACLE_QUESTIONS.filter(q=>q.cat===cat);
-    const col=catColors[cat]||'var(--go)';
-    const ico=catIcons[cat]||'&#128302;';
+    if(!qs.length) return '';
     const qBtns=qs.map((q,qi)=>{
-      const qKey=cat+'_'+qi,isUsed=usedQuestions.has(qKey);
-      return`<button class="oq-btn${isUsed?' used':''}" onclick="askOracle(${ORACLE_QUESTIONS.indexOf(q)},'${qKey}')">
-        <div class="oq-inner">
-          <span class="oq-ico">${q.ico}</span>
-          <div class="oq-text">
-            <span class="oq-label">${q.lbl}</span>
-            <span class="oq-hint">${q.hint}</span>
-          </div>
-          <span class="oq-arrow">&#8250;</span>
+      const qKey=cat+'_'+qi, isUsed=usedQuestions.has(qKey);
+      return`<button onclick="askOracle(${ORACLE_QUESTIONS.indexOf(q)},'${qKey}')"
+        style="width:100%;background:${isUsed?'rgba(0,0,0,.25)':'rgba(0,0,0,.4)'};
+          border:1px solid rgba(201,150,42,.2);border-radius:4px;
+          padding:12px 14px;display:flex;align-items:center;gap:12px;
+          cursor:pointer;touch-action:manipulation;opacity:${isUsed?.7:1};
+          text-align:left;transition:all .15s">
+        <span style="font-size:22px;flex-shrink:0">${q.ico}</span>
+        <div style="flex:1">
+          <div style="font-family:'Cinzel',serif;font-size:14px;color:${isUsed?'var(--stl)':'var(--pa)'};letter-spacing:.3px">${q.lbl}</div>
+          <div style="font-size:12px;color:var(--stl);font-style:italic;margin-top:2px">${q.hint}</div>
         </div>
+        <span style="color:var(--god);font-size:20px">&#8250;</span>
       </button>`;
     }).join('');
-    return`<div class="oracle-section" id="ocat-${cat}">
-      <button class="oracle-cat-btn" onclick="toggleCat('${cat}')"
-        style="width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(201,150,42,.2);border-radius:5px;
-               padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;touch-action:manipulation;
-               margin:0 14px;width:calc(100% - 28px)">
-        <span style="font-size:22px">${ico}</span>
-        <span style="font-family:'Cinzel',serif;font-size:13px;color:${col};letter-spacing:1px;flex:1;text-align:left">${cat.toUpperCase()}</span>
-        <span id="ocat-arrow-${cat}" style="color:var(--god);font-size:18px;transition:transform .2s">&#8250;</span>
+
+    return`<div style="margin:0 14px">
+      <button onclick="toggleCat('${cat}')"
+        style="width:100%;background:rgba(0,0,0,.35);
+          border:1px solid rgba(201,150,42,.25);border-radius:6px;
+          padding:14px 16px;display:flex;align-items:center;gap:12px;
+          cursor:pointer;touch-action:manipulation;margin-bottom:6px">
+        <span style="font-size:24px">${ico}</span>
+        <span style="font-family:'Cinzel',serif;font-size:15px;color:${col};letter-spacing:1px;flex:1;text-align:left">${lbl}</span>
+        <span id="ocat-arrow-${cat}" style="color:var(--god);font-size:22px;transition:transform .2s">&#8250;</span>
       </button>
-      <div id="ocat-body-${cat}" style="display:none;padding:6px 14px 4px">
-        <div class="oracle-questions">${qBtns}</div>
+      <div id="ocat-body-${cat}" style="display:none;display:none;flex-direction:column;gap:7px;padding-bottom:8px">
+        ${qBtns}
       </div>
     </div>`;
-  }).join('<div style="height:8px"></div>');
+  }).join('<div style="height:6px"></div>');
 
   const logHtml=oracleLog.length?`
-    <div class="sk-log" style="margin-top:16px">
-      <div class="sk-log-title">&#128220; Registro de la sesion</div>
+    <div class="sk-log" style="margin:16px 14px 0">
+      <div class="sk-log-title">&#128220; REGISTRO DE SESION</div>
       ${oracleLog.slice(0,8).map(l=>`<div class="sk-log-item">${l}</div>`).join('')}
-    </div>`:''
+    </div>`:'';
 
   c.innerHTML=`
     <div class="lore-card">
-      <div class="lore-header"><div style="flex:1">
-        <div class="lore-title">${lore.tl}</div>
-        <div class="lore-obj">&#127919; ${lore.ob}</div>
+      <div class="lore-header">
+        <div style="flex:1">
+          <div class="lore-title">${lore.tl}</div>
+          <div class="lore-obj" style="font-size:13px">&#127919; ${lore.ob}</div>
+        </div>
+        <span class="lore-badge" style="color:${lore.bcol||'var(--go)'};border-color:${lore.bcol||'var(--god)'}66;background:${lore.bcol||'#2a1a08'}22;font-size:11px">${lore.badge}</span>
       </div>
-      <span class="lore-badge" style="color:${lore.bcol||'var(--go)'};border-color:${lore.bcol||'var(--god)'}66;background:${lore.bcol||'#2a1a08'}22">${lore.badge}</span></div>
       <div class="lore-body">
-        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--god);margin-bottom:7px">&#128304; LORE DE INICIO</div>
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--god);margin-bottom:8px">&#128304; LORE</div>
         ${lore.in}
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(201,150,42,.1);font-size:13px;color:var(--stl);font-style:italic">&#128293; ${adv.extraIntro}</div>
       </div>
       <div class="lore-footer">${tagsHtml}</div>
     </div>
 
-    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--god);text-align:center;padding:14px 0 8px">&#9876; CONSULTAR EL ORACULO &#9876;</div>
+    <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:var(--god);text-align:center;padding:16px 0 10px">&#9876; CONSULTAR EL ORACULO &#9876;</div>
 
-    <div style="display:flex;flex-direction:column;gap:8px">
-      ${questionsHtml}
-    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">${questionsHtml}</div>
 
     ${logHtml}
 
-    <button class="new-adv-btn" style="margin-top:20px;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);color:var(--god)" onclick="if(confirm('Iniciar nueva aventura? Se perdera el registro.')){currentAdventure=null;sk=null;usedQuestions=new Set();oracleLog=[];saveS();renderSk();}">
-      &#9876;&#65039; NUEVA AVENTURA
-    </button>`;
+    <div style="padding:20px 14px 0">
+      <button onclick="if(confirm('Iniciar nueva aventura?')){currentAdventure=null;sk=null;usedQuestions=new Set();oracleLog=[];saveS();renderSk();}"
+        style="width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:5px;
+          color:var(--god);font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;padding:14px;cursor:pointer">
+        &#9876;&#65039; NUEVA AVENTURA
+      </button>
+    </div>`;
 }
+
 
 function toggleCat(cat){
   const body=document.getElementById('ocat-body-'+cat);
   const arrow=document.getElementById('ocat-arrow-'+cat);
-  if(!body)return;
-  const open=body.style.display==='none';
-  body.style.display=open?'block':'none';
-  if(arrow)arrow.style.transform=open?'rotate(90deg)':'';
+  if(!body) return;
+  const open = body.style.display!=='flex' && body.style.display!=='block';
+  // Close all others
+  document.querySelectorAll('[id^="ocat-body-"]').forEach(el=>{
+    el.style.display='none';
+  });
+  document.querySelectorAll('[id^="ocat-arrow-"]').forEach(el=>{
+    el.style.transform='';
+  });
+  if(open){
+    body.style.display='flex';
+    body.style.flexDirection='column';
+    body.style.gap='7px';
+    body.style.paddingBottom='8px';
+    if(arrow) arrow.style.transform='rotate(90deg)';
+    setTimeout(()=>body.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+  }
 }
 
 
+
 function askOracle(qIdx,qKey){
-  const q=ORACLE_QUESTIONS[qIdx];if(!q)return;
+  const q=ORACLE_QUESTIONS[qIdx]; if(!q) return;
   const roll=ri(1,6);
   let result=q.rolls[q.rolls.length-1];
-  for(const r of q.rolls){if(roll>=r.range[0]&&roll<=r.range[1]){result=r;break;}}
+  for(const r of q.rolls){ if(roll>=r.range[0]&&roll<=r.range[1]){result=r;break;} }
   usedQuestions.add(qKey);
 
-  const col=roll<=2?'var(--bl)':roll<=4?'var(--pad)':roll===5?'var(--go)':'var(--gol)';
-  const rollLabel=roll<=2?'ADVERSO':roll<=4?'NEUTRO':roll===5?'FAVORABLE':'&#11088; CRITICO';
-  const fxHtml=result.fx?`
-    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;
-      background:rgba(0,0,0,.4);border-radius:4px;border:1px solid rgba(201,150,42,.2)">
-      <span style="font-size:22px">${result.fx.ico}</span>
-      <span style="font-family:'Cinzel',serif;font-size:12px;color:var(--pa);letter-spacing:.5px">${result.fx.txt}</span>
-    </div>`:'';
+  const col = roll<=2?'var(--bl)': roll<=4?'var(--pad)': roll===5?'var(--go)': 'var(--gol)';
+  const lbls= ['','ADVERSO','ADVERSO','NEUTRO','NEUTRO','FAVORABLE','&#11088; CRITICO'];
+  const rollLabel = lbls[roll]||'';
 
-  // CLOSE existing popup
-  const old=document.getElementById('oracle-popup');if(old)old.remove();
+  const fxHtml = result.fx ? `
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;
+      background:rgba(0,0,0,.4);border-radius:5px;border:1px solid rgba(201,150,42,.2)">
+      <span style="font-size:26px">${result.fx.ico}</span>
+      <span style="font-family:'Cinzel',serif;font-size:13px;color:var(--pa);letter-spacing:.5px;line-height:1.4">${result.fx.txt}</span>
+    </div>` : '';
 
-  // BUILD central popup
+  // Remove old popup
+  const old=document.getElementById('oracle-popup'); if(old) old.remove();
+
   const popup=document.createElement('div');
   popup.id='oracle-popup';
-  popup.style.cssText=`position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.82);
-    display:flex;align-items:center;justify-content:center;padding:20px;
-    animation:fIn .2s ease`;
+  popup.style.cssText='position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:20px;animation:fIn .2s ease';
   popup.innerHTML=`
-    <div style="background:linear-gradient(160deg,#1e1810,#120c04);
-      border:2px solid ${col};border-radius:8px;
-      width:100%;max-width:390px;overflow:hidden;
-      box-shadow:0 0 40px rgba(0,0,0,.9),0 0 20px ${col}33;
-      animation:popIn .25s cubic-bezier(.34,1.4,.64,1)">
+    <div style="background:linear-gradient(160deg,#1e1810,#100c06);
+      border:2px solid ${col};border-radius:10px;
+      width:100%;max-width:400px;overflow:hidden;
+      box-shadow:0 0 50px rgba(0,0,0,.95),0 0 24px ${col}44;
+      animation:popIn .28s cubic-bezier(.34,1.4,.64,1)">
 
-      <!-- Dice roll header -->
-      <div style="background:rgba(0,0,0,.5);padding:12px 16px;
+      <!-- Header -->
+      <div style="background:rgba(0,0,0,.5);padding:13px 16px;
         display:flex;align-items:center;justify-content:space-between;
         border-bottom:1px solid ${col}44">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:18px">${q.ico}</span>
-          <span style="font-family:'Cinzel',serif;font-size:11px;color:var(--god);letter-spacing:1px">${q.lbl}</span>
-        </div>
         <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-family:'Cinzel',serif;font-size:13px;color:${col}">&#127922; ${roll}</span>
+          <span style="font-size:22px">${q.ico}</span>
+          <span style="font-family:'Cinzel',serif;font-size:12px;color:var(--god);letter-spacing:1px">${q.lbl}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:'Cinzel',serif;font-size:15px;color:${col};font-weight:700">&#127922; ${roll}</span>
           <button onclick="document.getElementById('oracle-popup').remove()"
-            style="background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);border-radius:50%;
-              width:28px;height:28px;color:var(--stl);font-size:15px;cursor:pointer;
-              display:flex;align-items:center;justify-content:center">&#10005;</button>
+            style="background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:50%;
+            width:30px;height:30px;color:var(--stl);font-size:16px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;touch-action:manipulation">&#10005;</button>
         </div>
       </div>
 
-      <!-- Result badge -->
-      <div style="text-align:center;padding:14px 16px 8px">
-        <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;
-          color:${col};margin-bottom:8px">${rollLabel}</div>
-        <div style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;
-          color:${col};text-shadow:0 0 20px ${col}55;line-height:1.2;margin-bottom:8px">
+      <!-- Roll level badge -->
+      <div style="text-align:center;padding:16px 16px 8px">
+        <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:4px;color:${col};margin-bottom:10px">${rollLabel}</div>
+        <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;
+          color:${col};text-shadow:0 0 24px ${col}66;line-height:1.25;margin-bottom:10px">
           ${result.res}
         </div>
       </div>
 
-      <!-- Detail text -->
-      <div style="padding:0 16px 12px">
-        <div style="font-size:15px;color:var(--pad);line-height:1.7;font-style:italic;
-          border-top:1px solid rgba(255,255,255,.06);padding-top:12px">
+      <!-- Narrative detail -->
+      <div style="padding:0 18px 14px">
+        <div style="font-size:15px;color:var(--pad);line-height:1.75;font-style:italic;
+          border-top:1px solid rgba(255,255,255,.07);padding-top:14px">
           ${result.det}
         </div>
         ${fxHtml}
       </div>
 
-      <!-- Actions -->
-      <div style="padding:10px 14px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;
-        border-top:1px solid rgba(255,255,255,.06)">
+      <!-- Buttons -->
+      <div style="padding:12px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;
+        border-top:1px solid rgba(255,255,255,.07)">
         <button onclick="askOracle(${qIdx},'${qKey}')"
-          style="background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:4px;
-            color:var(--god);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;
-            padding:10px;cursor:pointer;touch-action:manipulation">
+          style="background:rgba(0,0,0,.5);border:1px solid rgba(201,150,42,.35);border-radius:5px;
+          color:var(--god);font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;
+          padding:12px;cursor:pointer;touch-action:manipulation">
           &#127922; Tirar de nuevo
         </button>
         <button onclick="document.getElementById('oracle-popup').remove()"
           style="background:linear-gradient(135deg,var(--grd),#1a3010);border:1px solid var(--grd);
-            border-radius:4px;color:var(--gr);font-family:'Cinzel',serif;font-size:11px;
-            letter-spacing:1px;padding:10px;cursor:pointer;touch-action:manipulation">
+          border-radius:5px;color:var(--gr);font-family:'Cinzel',serif;font-size:12px;
+          letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">
           &#10003; Anotado
         </button>
       </div>
     </div>`;
 
-  // Tap outside closes
   popup.addEventListener('click', e=>{ if(e.target===popup) popup.remove(); });
   document.body.appendChild(popup);
 
-  // Log entry
+  // Log
   oracleLog.unshift(`${q.ico} <strong style="color:${col}">${result.res}</strong> — ${q.lbl} (&#127922;${roll})`);
-  if(oracleLog.length>20)oracleLog.pop();
-  if(sk)sk.oracleLog=oracleLog;
+  if(oracleLog.length>20) oracleLog.pop();
+  if(sk) sk.oracleLog=oracleLog;
   saveS();
 
-  // Update used state on the button
+  // Re-render questions (marks used) then re-attach popup
   renderSk();
-  // Re-show popup (renderSk removes it)
   document.body.appendChild(popup);
 }
+
 
 // ══════════════════════════════════════════════════════════════════════════
 // SESSION SCREEN
