@@ -471,10 +471,10 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 <nav class="tabs">
   <button class="tb active" onclick="showTab('heroes',this)"><span class="ti">&#9876;&#65039;</span>HEROES</button>
   <button class="tb" onclick="showTab('skirmish',this)"><span class="ti">&#128506;&#65039;</span>ESCARAMUZA</button>
-  <button class="tb" onclick="showTab('mazo',this)"><span class="ti">&#127922;</span>MAZO</button>
+  <button class="tb" onclick="showTab('inventario',this)"><span class="ti">&#127919;</span>INVENTARIO</button>
   <button class="tb" onclick="showTab('ciudad',this)"><span class="ti">&#127968;</span>CIUDAD</button>
   <button class="tb" onclick="showTab('guarida',this)"><span class="ti">&#127956;&#65039;</span>GUARIDA</button>
-  <button class="tb" onclick="showTab('notes',this)"><span class="ti">&#128214;</span>NOTAS</button>
+  <button class="tb" onclick="showTab('notes',this)"><span class="ti">&#128212;</span>CRÓNICA</button>
 </nav>
 <div class="view active" id="view-heroes">
   <div class="hgrid" id="hcon">
@@ -488,15 +488,7 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
   <div class="skv" id="skcon"></div>
 </div>
 </div>
-<div class="view" id="view-mazo">
-  <div class="mazo-view" id="mazocon">
-    <div style="padding:40px 20px;text-align:center">
-      <div style="font-size:64px;margin-bottom:16px;opacity:.4">&#127922;</div>
-      <div style="font-family:'Cinzel',serif;font-size:15px;color:var(--god);letter-spacing:2px;margin-bottom:10px">SIN MISION ACTIVA</div>
-      <div style="font-size:14px;color:var(--stl);font-style:italic;line-height:1.8">Inicia una nueva escaramuza para<br>generar las tablas D20 de la mision.</div>
-    </div>
-  </div>
-</div>
+<div class="view" id="view-inventario"><div id="invcon" style="padding-bottom:80px"></div></div>
 <div class="view" id="view-guarida">
   <div id="guaridacon" style="padding-bottom:80px"></div>
 </div>
@@ -505,13 +497,10 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 </div>
 <div class="view" id="view-notes">
   <div class="nv">
-    <p class="stit">DIARIO DE CAMPANA</p>
-    <textarea class="nfld" id="cnotes" placeholder="Anota eventos, pistas, mapas..." rows="5"></textarea>
-    <p class="stit" style="margin-top:13px">TESORO DEL GRUPO</p>
-    <div id="tlist"></div>
-    <p class="stit" style="margin-top:13px">INVENTARIO DEL GRUPO</p>
-    <div id="ginv"></div>
-    <button class="bsec" style="margin-top:7px" onclick="openM('m-ginv')">+ Anadir objeto al grupo</button>
+    <p class="stit">&#128212; CRÓNICA DE CAMPAÑA</p>
+    <div id="esquirlas-panel" style="margin-bottom:16px"></div>
+    <p class="stit" style="margin-top:4px">DIARIO</p>
+    <textarea class="nfld" id="cnotes" placeholder="Anota eventos, pistas, mapas, secretos descubiertos..." rows="5"></textarea>
   </div>
 </div>
 <button id="fab" onclick="openHeroModal()" style="
@@ -657,7 +646,7 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
   <!-- Buttons filled by JS -->
   <div id="ss-buttons" style="width:100%"></div>
 
-  <div class="ss-version">v6.0 &bull; PWA &bull; 2026</div>
+  <div class="ss-version">v14.0 &bull; PWA &bull; 2026</div>
 </div>
 <script>
 const HT={
@@ -1037,11 +1026,15 @@ function dpUpdatePhoto(id,input){
   reader.readAsDataURL(file);
 }
 
-function saveS(){try{localStorage.setItem(LSK,JSON.stringify({heroes,gt,gi,cn,dh,sk}));fl()}catch(e){}}
+function saveS(){try{localStorage.setItem(LSK,JSON.stringify({heroes,gt,gi,cn,dh,sk,guaridaRestLog,esquirlas,esquirlasPozo,guaridaMejoras,esquirlasLog}));fl()}catch(e){}}
 let stim;function fl(){const e=document.getElementById('sind');e.classList.add('v');clearTimeout(stim);stim=setTimeout(()=>e.classList.remove('v'),1800)}
 // State starts empty — loaded by session screen
 let heroes=[],gt={gold:0,potions:0,scrolls:0,keys:0},gi=[],cn='',dh=[],sk=null;
 let sT='barbaro',eHid=null,eSidx=-1,ciM='equip',ciR='common',giR='common';
+let esquirlas=0;  // shards in hand
+let esquirlasLog=[];  // history log
+let esquirlasPozo=0;  // shards thrown into the well
+let guaridaMejoras={};  // permanent guarida upgrades purchased
 function rnd(a){return a[Math.floor(Math.random()*a.length)]}
 function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function openM(id){
@@ -1066,7 +1059,7 @@ function showTab(tab,btn){
   document.getElementById('fab').classList.toggle('hidden',tab!=='heroes');
   if(tab==='notes')renderN();
   if(tab==='skirmish')renderSk();
-  if(tab==='mazo')renderMazo();
+  if(tab==='inventario')renderInventario();
   if(tab==='ciudad')renderCiudad();
   if(tab==='guarida')renderGuarida();
 }
@@ -1186,6 +1179,8 @@ function showD(id){
 
     + '<div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">'
       + '<button onclick="revive('+id+')" style="background:linear-gradient(135deg,var(--grd),#1a3010);border:1px solid var(--grd);border-radius:4px;color:var(--gr);font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#10024; REVIVIR</button>'
+      + '<button onclick="sendToRest('+id+');closeD()" style="background:linear-gradient(135deg,rgba(74,128,212,.2),rgba(50,80,150,.15));border:1px solid rgba(74,128,212,.5);border-radius:4px;color:var(--mg);font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#128564; GUARIDA</button>'
+      + '<button onclick="if(confirm(\'¿Marcar este héroe como caído en combate?\'))markAsDead('+id+',\'Caído en combate.\');closeD()" style="background:linear-gradient(135deg,rgba(139,26,26,.4),rgba(80,10,10,.3));border:1px solid rgba(139,26,26,.5);border-radius:4px;color:rgba(220,120,120,.9);font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#9760;&#65039; CAÍDO</button>'
       + '<button onclick="delH('+id+')" style="background:linear-gradient(135deg,rgba(80,15,15,.7),rgba(50,10,10,.7));border:1px solid var(--bl);border-radius:4px;color:var(--bl);font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#128128; ELIMINAR</button>'
     + '</div>';
 
@@ -1452,6 +1447,34 @@ function renderClassGrid(){
 }
 
 
+// ── STARTER ITEMS pool for new heroes ─────────────────────────────────────────
+const STARTER_ITEM_POOL = [
+  {nm:'Pocion de Curacion',    ico:'&#129514;', ds:'Restaura 1D4+2 HP.',                    r:'common'},
+  {nm:'Racion de Viaje',       ico:'&#127833;', ds:'+1 HP tras el proximo combate.',          r:'common'},
+  {nm:'Antidoto',              ico:'&#129514;', ds:'Cura el veneno inmediatamente.',          r:'common'},
+  {nm:'Daga de Emergencia',    ico:'&#128505;&#65039;', ds:'+1 ATK en un combate. Uso único.',r:'common'},
+  {nm:'Vendas de Campo',       ico:'&#129657;', ds:'Recupera 1 HP. Solo fuera de combate.',  r:'common'},
+  {nm:'Pedernal y Yesca',      ico:'&#128293;', ds:'Enciende antorchas. +1 dado vs criaturas de oscuridad.',r:'common'},
+  {nm:'Mapa Borroso',          ico:'&#128205;', ds:'Revela vagamente el tipo de la sala 3 de la proxima mazmorra.',r:'uncommon'},
+  {nm:'Amuleto de la Suerte',  ico:'&#128140;', ds:'Una vez por sesion: repite una tirada fallida.',r:'uncommon'},
+  {nm:'Cuerda de Seda x10m',   ico:'&#129717;', ds:'Util para bajar pozos o atar enemigos. Rompe con 1-2 en 1D6.',r:'common'},
+  {nm:'Pocion de Fuerza',      ico:'&#129514;', ds:'+2 ATK durante 1 batalla.',               r:'uncommon'},
+  {nm:'Escudo de Madera',      ico:'&#128737;&#65039;', ds:'+1 DEF. Se rompe con 1 en 1D6 al recibirimpacto.',r:'common'},
+  {nm:'Tiza de Mazmorra',      ico:'&#128396;&#65039;', ds:'Marca paredes para no perderse. Evita perderse en laberintos.',r:'common'},
+];
+
+function giveStarterItems(hero){
+  if(!gi) gi = [];
+  const pool = [...STARTER_ITEM_POOL];
+  // Pick 2 random distinct items
+  const shuffled = pool.sort(()=>Math.random()-.5);
+  const items = shuffled.slice(0, 2);
+  items.forEach(it=>{
+    gi.push({...it, qty:1, src:'Equipo inicial de '+hero.name, added:Date.now()});
+  });
+  return items;
+}
+
 function createH(){
   const nm = document.getElementById('hinp').value.trim();
   if(!nm){toast('Escribe un nombre');return;}
@@ -1465,9 +1488,11 @@ function createH(){
     name:nm,  // always after spread so template can't overwrite it
   };
   heroes.push(h);
+  const starterItems = giveStarterItems(h);
   closeHeroModal();
   rH(); saveS();
-  toast(t.ico+' '+nm+' se une a la aventura!');
+  const itemNames = starterItems.map(x=>x.nm).join(' y ');
+  toast(t.ico+' '+nm+' se une a la aventura! Equipo inicial: '+itemNames);
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -2428,82 +2453,359 @@ function renderCorridorView(pos,dg){
 }
 
 // Corridor-specific oracle questions
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ORÁCULO COHERENTE — Estado de zona persiste entre preguntas
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ZoneState tracks what the oracle already "knows" about the current zone.
+// Keys: hasEnemies, hasTrap, hasSecret, hasLoot, hasPNJ, isSafe, isAmbush
+// These are set by previous oracle answers and constrain future ones.
+// Stored per zone key (e.g. "cor_3", "rm_7")
+
+let zoneStates = {};  // key -> { hasEnemies, hasTrap, hasSecret, ... }
+
+function getZoneState(key){
+  if(!zoneStates[key]) zoneStates[key] = {};
+  return zoneStates[key];
+}
+
+function setZoneState(key, updates){
+  const z = getZoneState(key);
+  Object.assign(z, updates);
+  // Save with dg
+  if(dg){ dg._zoneStates = zoneStates; if(sk) sk.dg = dg; }
+}
+
+// Restore zone states when loading saved game
+function restoreZoneStates(){
+  if(dg && dg._zoneStates) zoneStates = dg._zoneStates;
+  else zoneStates = {};
+}
+
+// ── CORRIDOR QUESTIONS (3 questions, coherence-aware) ─────────────────────────
 const CORRIDOR_Qs = [
-  {ico:'&#128270;', lbl:'Exploro el pasillo', hint:'Buscar peligros o secretos',
-   rolls:[
-     {range:[1,2],res:'Pasillo despejado',       det:'El corredor esta limpio. Suelo firme, sin trampas visibles.',                        casillas:'Libre hasta la puerta',  fx:null},
-     {range:[3,4],res:'Trampa de hilo detectada', det:'Un hilo casi invisible cruza el pasillo. El Enano puede desactivarla (4+ en 1D6).',  casillas:'A 2 casillas adelante',  fx:{ico:'&#9888;&#65039;',txt:'Trampa — desactivar o rodear'}},
-     {range:[5,5],res:'Panel secreto en la pared',det:'El Enano nota un panel movible. Detras hay un objeto o atajo.',                     casillas:'A 1 casilla, pared dcha', fx:{ico:'&#128285;',txt:'Panel secreto — 1 casilla'}},
-     {range:[6,6],res:'Emboscada',               det:'Enemies ocultos en las sombras del pasillo. Actuan en el siguiente turno.',          casillas:'A 3-4 casillas',         fx:{ico:'&#9876;&#65039;',txt:'COMBATE — emboscada en pasillo'}},
-   ]},
-  {ico:'&#128483;', lbl:'Escucho antes de avanzar', hint:'Detectar actividad en la siguiente sala',
-   rolls:[
-     {range:[1,2],res:'Silencio total',           det:'Nada al otro lado. La sala siguiente parece vacia.',                                casillas:null, fx:null},
-     {range:[3,4],res:'Ruidos sospechosos',       det:'Se oyen pasos o roce de metal. La sala no esta vacia.',                            casillas:null, fx:{ico:'&#9888;&#65039;',txt:'Sala siguiente — hay actividad'}},
-     {range:[5,5],res:'Voces y preparativos',     det:'Los enemigos te han oido y se preparan. Pierdes la sorpresa.',                     casillas:null, fx:{ico:'&#128121;',txt:'Enemigos en alerta — sin sorpresa'}},
-     {range:[6,6],res:'Silencio peligroso',       det:'Demasiado silencioso para estar vacio. Es una emboscada preparada.',               casillas:null, fx:{ico:'&#128128;',txt:'EMBOSCADA preparada — maxima alerta'}},
-   ]},
-  {ico:'&#128682;', lbl:'Examino la puerta de la sala', hint:'Antes de abrir la puerta',
-   rolls:[
-     {range:[1,2],res:'Puerta normal',            det:'Madera reforzada. Sin trampa ni cerradura especial. Se puede abrir.',              casillas:'Tu casilla actual', fx:null},
-     {range:[3,4],res:'Puerta cerrada con llave', det:'Cerradura de hierro. Necesitas una llave o fuerza bruta (4+ en 1D6, hace ruido).', casillas:'Tu casilla actual', fx:{ico:'&#128285;',txt:'Llave o fuerza (4+) para abrir'}},
-     {range:[5,5],res:'Trampa en la puerta',      det:'El mecanismo esta trucado. Al abrir sin cuidado: 1D4 dano al abridor.',            casillas:'Tu casilla actual', fx:{ico:'&#9888;&#65039;',txt:'Trampa en puerta — 1D4 dano si no se detecta'}},
-     {range:[6,6],res:'Puerta reforzada magicamente',det:'Runas de bloqueo en los bordes. Solo el Mago puede abrirla (1 MP, 1 accion).',  casillas:'Tu casilla actual', fx:{ico:'&#128302;',txt:'Magia requerida — Mago 1 MP'}},
-   ]},
+  {
+    id:'explorar', ico:'&#128270;', lbl:'Exploro el pasillo', hint:'Buscar peligros o secretos',
+    // Rules: if zone already has enemies from "escuchar", we must show them; if safe, no trap
+    resolve: function(zk){
+      const z = getZoneState(zk);
+      // If we already know there are enemies (from listen), show them nearby
+      if(z.hasEnemies){
+        return {res:'Rastros recientes de enemigos', det:'El suelo muestra huellas frescas. Los mismos que oíste antes patrullan este tramo.', casillas:'A 2-4 casillas adelante', fx:{ico:'&#9876;&#65039;',txt:'Enemigos confirmados — 2-4 casillas'}, _sets:{hasTrap:false}};
+      }
+      if(z.isAmbush){
+        return {res:'Marcas de emboscada preparada', det:'Cuerdas tensadas, piedras alineadas. Alguien preparó esto con cuidado. Si avanzas sin precaución, actúan.', casillas:'En los 3 casillas siguientes', fx:{ico:'&#128128;',txt:'Emboscada activa — 3 casillas'}, _sets:{}};
+      }
+      if(z.isSafe){
+        return {res:'Pasillo completamente despejado', det:'Lo confirmas con tus propios ojos. No hay nada más que piedra y silencio. El sonido tampoco mentía.', casillas:'Libre hasta la puerta', fx:null, _sets:{hasTrap:false, hasSecret: Math.random()>0.7}};
+      }
+      // Default random
+      const roll = rollDice(6);
+      if(roll<=2) return {res:'Pasillo despejado',        det:'El corredor está limpio. Suelo firme, sin trampas visibles.', casillas:'Libre hasta la puerta', fx:null, _sets:{isSafe:true, hasTrap:false}};
+      if(roll<=3) return {res:'Trampa de hilo detectada', det:'Un hilo casi invisible cruza el pasillo. El Enano puede desactivarla (4+ en 1D6).', casillas:'A 2 casillas adelante', fx:{ico:'&#9888;&#65039;',txt:'Trampa — desactivar o rodear'}, _sets:{hasTrap:true}};
+      if(roll<=4) return {res:'Panel secreto en la pared',det:'El Enano nota un panel movible. Detrás hay un objeto o atajo.', casillas:'A 1 casilla, pared derecha', fx:{ico:'&#128285;',txt:'Panel secreto — 1 casilla'}, _sets:{hasSecret:true}};
+      if(roll<=5) return {res:'Rastro de sangre',         det:'Gotas de sangre llevan hacia la puerta. Alguien pasó herido hace poco.', casillas:'Desde aquí hasta la puerta', fx:{ico:'&#128167;',txt:'Rastro — indica combate reciente'}, _sets:{hasEnemies:true}};
+      return           {res:'Emboscada preparada',        det:'Sombras inmóviles en los recodos del pasillo. Están esperando que entres.', casillas:'A 3-4 casillas', fx:{ico:'&#9876;&#65039;',txt:'COMBATE — emboscada activa'}, _sets:{isAmbush:true, hasEnemies:true}};
+    }
+  },
+  {
+    id:'escuchar', ico:'&#128483;', lbl:'Escucho antes de avanzar', hint:'Detectar actividad en la zona',
+    resolve: function(zk){
+      const z = getZoneState(zk);
+      // If we already explored and found nothing dangerous, this confirms it
+      if(z.isSafe){
+        return {res:'Silencio absoluto, confirmado', det:'Tus oídos confirman lo que tus ojos vieron: no hay nadie. Puedes avanzar con total seguridad.', casillas:null, fx:null, _sets:{}};
+      }
+      if(z.isAmbush){
+        return {res:'Respiran conteniendo el aliento', det:'Escuchas la respiración tensa de al menos dos figuras. Están justo al otro lado del recodo, esperando.', casillas:'A 1-2 casillas del recodo', fx:{ico:'&#128128;',txt:'EMBOSCADA — respiran a 1-2 casillas'}, _sets:{}};
+      }
+      if(z.hasTrap){
+        return {res:'Solo el chasquido del mecanismo', det:'Un leve chasquido metálico periódico. Es la trampa que encontraste — el mecanismo está activo.', casillas:null, fx:{ico:'&#9888;&#65039;',txt:'Trampa activa — confirma lo encontrado'}, _sets:{}};
+      }
+      if(z.hasEnemies){
+        return {res:'Pasos confirmados', det:'Los mismos pasos que intuías. Se mueven despacio, en patrulla. Probablemente no os han oído todavía.', casillas:'3-5 casillas adelante', fx:{ico:'&#128121;',txt:'Enemigos — patrulla lenta, 3-5 casillas'}, _sets:{}};
+      }
+      // No prior context — independent roll
+      const roll = rollDice(6);
+      if(roll<=2) return {res:'Silencio total',       det:'Nada al otro lado. El pasillo parece muerto.', casillas:null, fx:null, _sets:{isSafe:true}};
+      if(roll<=3) return {res:'Ruidos lejanos',        det:'Pasos distantes, quizá de la sala siguiente. No en el pasillo mismo.', casillas:null, fx:{ico:'&#9888;&#65039;',txt:'Actividad — en sala siguiente, no aquí'}, _sets:{}};
+      if(roll<=4) return {res:'Pasos en el pasillo',   det:'Alguien patrulla este corredor. Se acerca desde el otro extremo.', casillas:'Avanzando desde el fondo', fx:{ico:'&#128121;',txt:'Patrulla — viene hacia ti'}, _sets:{hasEnemies:true}};
+      if(roll<=5) return {res:'Voces en voz baja',     det:'Dos o tres voces. Están apostados esperando. Han oído algo y están alerta.', casillas:'A 4-5 casillas, quietos', fx:{ico:'&#128121;',txt:'Guardias alertas — 4-5 casillas'}, _sets:{hasEnemies:true}};
+      return           {res:'Silencio siniestro',      det:'Demasiado silencio. Ni pasos ni respiración. Una emboscada bien entrenada no hace ruido.', casillas:null, fx:{ico:'&#128128;',txt:'EMBOSCADA preparada — máxima alerta'}, _sets:{isAmbush:true}};
+    }
+  },
+  {
+    id:'puerta', ico:'&#128682;', lbl:'Examino la puerta de la sala', hint:'Antes de abrir la puerta',
+    resolve: function(zk){
+      const z = getZoneState(zk);
+      // If we know there's an ambush, the door might be trapped or reinforced
+      if(z.isAmbush){
+        return {res:'Puerta con truco al abrirla', det:'Al tocarla notas resistencia extraña. Está conectada a un mecanismo — abrirla alerta a todos los que esperan dentro.', casillas:'Tu casilla actual', fx:{ico:'&#9888;&#65039;',txt:'Abrir = alerta inmediata al interior'}, _sets:{hasTrap:true}};
+      }
+      if(z.isSafe){
+        return {res:'Puerta normal, sin peligro', det:'Simple madera reforzada. Sin cerradura ni trampa. Puedes abrirla sin hacer ruido.', casillas:'Tu casilla actual', fx:null, _sets:{}};
+      }
+      if(z.hasEnemies){
+        return {res:'Oyes movimiento al otro lado', det:'La puerta vibra levemente. Hay alguien muy cerca del otro lado. Te oirán al abrirla.', casillas:'Tu casilla actual', fx:{ico:'&#128121;',txt:'Enemigo adyacente al otro lado de la puerta'}, _sets:{}};
+      }
+      // Default
+      const roll = rollDice(6);
+      if(roll<=2) return {res:'Puerta normal',                  det:'Madera reforzada. Sin trampa ni cerradura especial.', casillas:'Tu casilla actual', fx:null, _sets:{}};
+      if(roll<=3) return {res:'Puerta cerrada con llave',       det:'Cerradura de hierro. Necesitas llave o fuerza (4+ en 1D6, hace ruido).', casillas:'Tu casilla actual', fx:{ico:'&#128285;',txt:'Llave o fuerza (4+) para abrir'}, _sets:{}};
+      if(roll<=4) return {res:'Trampa en la puerta',            det:'Mecanismo trucado. Al abrir sin cuidado: 1D4 daño al abridor.', casillas:'Tu casilla actual', fx:{ico:'&#9888;&#65039;',txt:'Trampa — 1D4 daño si no se detecta'}, _sets:{hasTrap:true}};
+      if(roll<=5) return {res:'Puerta entreabierta',            det:'Ya está abierta una rendija. Puedes ver el borde de la sala sin activar nada.', casillas:'Tu casilla actual', fx:{ico:'&#128064;',txt:'+1 consulta oráculo en sala — puerta entreabierta'}, _sets:{hasSecret:true}};
+      return           {res:'Puerta reforzada mágicamente',    det:'Runas de bloqueo en los bordes. Solo el Mago puede abrirla (1 MP, 1 acción).', casillas:'Tu casilla actual', fx:{ico:'&#128302;',txt:'Magia requerida — Mago 1 MP'}, _sets:{}};
+    }
+  },
 ];
 
-// Room-specific oracle questions
+// ── ROOM QUESTIONS (4 questions, coherence-aware) ─────────────────────────────
 const ROOM_Qs = [
-  {ico:'&#128064;', lbl:'Inspecciono la sala', hint:'Al entrar — vision general',
-   rolls:[
-     {range:[1,2],res:'Sala sin secretos aparentes',  det:'Lo que ves es lo que hay. Sin zonas ocultas detectables a primera vista.',     casillas:'Toda la sala', fx:null},
-     {range:[3,4],res:'Objeto cubierto por telas',    det:'Algo esta cubierto en la esquina suroeste. Podria ser un cofre o una trampa.', casillas:'Esquina SO',   fx:{ico:'&#128220;',txt:'Objeto no identificado — esquina SO'}},
-     {range:[5,5],res:'Marca en el suelo',            det:'Una marca de sangre o tiza indica algo. El Enano puede interpretarla.',        casillas:'Centro-norte', fx:{ico:'&#128270;',txt:'Marca — investigar 1 accion'}},
-     {range:[6,6],res:'Pasaje oculto',                det:'Una piedra suelta en la pared revela una salida alternativa.',                 casillas:'Pared este',   fx:{ico:'&#128285;',txt:'Salida alternativa — pared este'}},
-   ]},
-  {ico:'&#128270;', lbl:'Busco objetos ocultos', hint:'Busqueda activa — 1 accion',
-   rolls:[
-     {range:[1,3],res:'Nada oculto',       det:'Registrais cada rincon. Paredes solidas, suelo firme.',          casillas:null,           fx:null},
-     {range:[4,4],res:'Nicho en la pared', det:'Una piedra suelta oculta una pequena cavidad con monedas.',     casillas:'Pared norte', fx:{ico:'&#128176;',txt:'+1D6x5 oros — nicho pared norte'}},
-     {range:[5,5],res:'Objeto caido',      det:'Detras de un mueble roto: una pocion o arma abandonada.',       casillas:'Esquina NE',  fx:{ico:'&#129514;',txt:'Objeto — esquina NE'}},
-     {range:[6,6],res:'Altar oculto',      det:'Un altar con una ofrenda intacta detras de un tapiz podrido.', casillas:'Pared sur',   fx:{ico:'&#128302;',txt:'+1 MP al activar — altar pared sur'}},
-   ]},
-  {ico:'&#10024;', lbl:'Siento magia en la sala', hint:'Solo Mago o Elfo',
-   rolls:[
-     {range:[1,2],res:'Sin magia',              det:'Zona muerta magicamente. Hechizos cuestan +1 MP.',                                casillas:'Toda la sala',     fx:{ico:'&#128683;',txt:'Sin magia — hechizos +1 MP'}},
-     {range:[3,4],res:'Residuos magicos',       det:'Alguien uso magia aqui recientemente.',                                          casillas:'Zona central',     fx:{ico:'&#128302;',txt:'Residuo magico — informacion de rastro'}},
-     {range:[5,5],res:'Trampa magica activa',   det:'Runa en el suelo. Mago puede desactivar (4+ en 1D6).',                          casillas:'Centro, 2-3 cas',  fx:{ico:'&#9889;',txt:'Runa — desactivar 4+, 2-3 casillas'}},
-     {range:[6,6],res:'Nexo de energia',        det:'Mago y Elfo recuperan 2 MP al entrar en radio de 2 casillas.',                  casillas:'Centro sala',      fx:{ico:'&#10024;',txt:'+2 MP Mago/Elfo — radio 2 casillas'}},
-   ]},
-  {ico:'&#128172;', lbl:'Hay alguien vivo aqui?', hint:'Al explorar zona con presencia',
-   rolls:[
-     {range:[1,2],res:'Solo enemigos',           det:'Nadie vivo aqui. Solo amenazas.',                                             casillas:null,               fx:null},
-     {range:[3,4],res:'Prisionero encadenado',   det:'En la pared norte, alguien encadenado. Puede dar informacion.',               casillas:'Pared norte, 4-5 cas', fx:{ico:'&#128172;',txt:'Prisionero — pared norte'}},
-     {range:[5,5],res:'Mercenario herido',        det:'En la esquina. Herido pero combativo. Podria ayudar por curacion.',          casillas:'Esquina SO, 5-6 cas',  fx:{ico:'&#9876;&#65039;',txt:'Mercenario — esquina SO'}},
-     {range:[6,6],res:'Aliado con informacion',   det:'Un aventurero que lleva dias aqui. Conoce el camino al jefe.',               casillas:'Centro sala',          fx:{ico:'&#128302;',txt:'Aliado con mapa del dungeon'}},
-   ]},
+  {
+    id:'inspeccionar', ico:'&#128064;', lbl:'Inspecciono la sala', hint:'Al entrar — visión general',
+    resolve: function(zk, room){
+      const z = getZoneState(zk);
+      const hasEnemies = room && room.content.enemies.length > 0;
+      const hasTraps   = room && room.content.traps.length > 0;
+      const hasLoot    = room && room.content.loots.length > 0;
+
+      // Set base state from actual room contents (always first question)
+      setZoneState(zk, {
+        hasEnemies: hasEnemies,
+        hasTrap:    hasTraps,
+        hasLoot:    hasLoot,
+        inspected:  true,
+      });
+
+      if(hasEnemies && hasTraps){
+        return {res:'Sala peligrosa', det:'A primera vista: presencias enemigas en el interior Y el suelo parece irregular en una zona. Doble amenaza.', casillas:'Enemigos visibles. Trampa en zona central.', fx:{ico:'&#9760;&#65039;',txt:'Enemigos + trampa — actúa con cuidado'}, _sets:{}};
+      }
+      if(hasEnemies){
+        const count = room.content.enemies.length;
+        return {res: count>2 ? 'Sala con múltiples amenazas' : 'Presencias enemigas', det: count>2 ? 'Más de dos figuras se mueven en la sala. Se coordinan — llevan tiempo aquí.' : 'Una o dos figuras se mueven en la penumbra. Aún no os han visto.', casillas:'Distribuidos por la sala', fx:{ico:'&#128121;',txt:count+' enemigo'+(count!==1?'s':'')+' — '+( count>2?'sala vigilada':'ventaja de sorpresa posible')}, _sets:{}};
+      }
+      if(hasTraps){
+        return {res:'Algo no cuadra en el suelo', det:'El pavimento brilla distinto en una zona. Podría ser una trampa de presión. Avanza con cautela.', casillas:'Zona central de la sala', fx:{ico:'&#9888;&#65039;',txt:'Posible trampa — no pises el centro'}, _sets:{}};
+      }
+      if(hasLoot){
+        return {res:'Sala aparentemente vacía', det:'Sin enemigos visibles. Pero en una esquina hay algo que sobresale bajo una tela. Quizá vale la pena explorar.', casillas:'Esquina opuesta', fx:{ico:'&#128176;',txt:'Objeto visible — sala segura'}, _sets:{isSafe:true}};
+      }
+      return {res:'Sala sin nada aparente', det:'Polvo, silencio y piedra. Lo que ves es lo que hay.', casillas:'Toda la sala', fx:null, _sets:{isSafe:true}};
+    }
+  },
+  {
+    id:'buscar', ico:'&#128270;', lbl:'Busco objetos ocultos', hint:'Búsqueda activa — 1 acción',
+    resolve: function(zk, room){
+      const z = getZoneState(zk);
+      // If we already know enemies are here, warn
+      if(z.hasEnemies && !z.inspected){
+        return {res:'Imposible buscar — hay enemigos', det:'No puedes registrar la sala con amenazas activas. Primero ocúpate de los enemigos.', casillas:null, fx:{ico:'&#9876;&#65039;',txt:'Derrota a los enemigos antes de buscar'}, _sets:{}};
+      }
+      // If we already found loot from inspection, confirm it
+      if(z.hasLoot){
+        const roll = rollDice(6);
+        if(roll>=4) return {res:'Objeto confirmado', det:'La tela en la esquina cubre exactamente lo que esperabas: un cofre o bolsa con contenido real.', casillas:'Esquina opuesta, 3-4 casillas', fx:{ico:'&#128176;',txt:'Botín — '+(roll>=5?'más de lo esperado':'tal como parecía')}, _sets:{}};
+        return {res:'El objeto resultó ser basura', det:'Bajo la tela: trapos rotos y una vasija vacía. La promesa era mayor que la realidad.', casillas:null, fx:null, _sets:{hasLoot:false}};
+      }
+      if(z.isSafe){
+        const roll = rollDice(6);
+        if(roll<=3) return {res:'Nada oculto', det:'Registráis cada rincón a fondo. Paredes sólidas, suelo firme.', casillas:null, fx:null, _sets:{}};
+        if(roll<=4) return {res:'Monedas en el suelo', det:'Unas pocas monedas dispersas, olvidadas por alguien que pasó aquí antes.', casillas:'Zona norte, 2-3 casillas', fx:{ico:'&#128176;',txt:'+1D6x5 oros — suelo zona norte'}, _sets:{hasLoot:true}};
+        if(roll<=5) return {res:'Panel suelto en la pared', det:'Una piedra se mueve al presionarla. Detrás: una cavidad con algo dentro.', casillas:'Pared norte, en tu alcance', fx:{ico:'&#128285;',txt:'Compartimento oculto — pared norte'}, _sets:{hasSecret:true}};
+        return {res:'Altar oculto tras un tapiz', det:'Un altar antiguo con una ofrenda intacta. Emana energía mágica residual.', casillas:'Pared sur, 4-5 casillas', fx:{ico:'&#128302;',txt:'+1 MP al activarlo — pared sur'}, _sets:{hasLoot:true}};
+      }
+      return {res:'Demasiado peligroso para buscar ahora', det:'Con la situación actual en la sala, una búsqueda cuidadosa no es posible. Primero asegura el perímetro.', casillas:null, fx:null, _sets:{}};
+    }
+  },
+  {
+    id:'magia', ico:'&#10024;', lbl:'Siento magia en la sala', hint:'Solo Mago o Elfo',
+    resolve: function(zk, room){
+      const z = getZoneState(zk);
+      // Coherence with room type
+      const rt = room && room.roomType ? room.roomType.type : 'combat';
+
+      if(rt==='shrine'){
+        return {res:'Energía sagrada intensa', det:'Este lugar fue un santuario. La energía es pura y antigua. El Mago recupera 2 MP al acercarse al altar.', casillas:'Todo el radio de la sala', fx:{ico:'&#10024;',txt:'+2 MP al Mago/Elfo — sala sagrada'}, _sets:{hasMagic:true}};
+      }
+      if(z.hasEnemies && rt==='combat'){
+        return {res:'Energía hostil detectada', det:'Los enemigos de esta sala no son ordinarios. Alguno porta un objeto encantado o tiene origen mágico.', casillas:'En los enemigos visibles', fx:{ico:'&#9889;',txt:'Enemigo con objeto o habilidad mágica'}, _sets:{hasMagic:true}};
+      }
+      if(z.hasTrap){
+        return {res:'Trampa mágica confirmada', det:'La anomalía que detectaste antes tiene origen arcano. No es mecánica — es una runa activada.', casillas:'Centro de la sala, 2-3 casillas', fx:{ico:'&#9889;',txt:'Trampa runa — solo magia puede desactivarla'}, _sets:{hasMagic:true}};
+      }
+      if(z.isSafe){
+        const roll = rollDice(6);
+        if(roll<=3) return {res:'Sin magia detectable', det:'La sala está muerta mágicamente. Los hechizos costarán +1 MP mientras estéis aquí.', casillas:'Toda la sala', fx:{ico:'&#128683;',txt:'Zona árida — hechizos +1 MP'}, _sets:{hasMagic:false}};
+        return {res:'Nexo de energía arcana', det:'Un punto de concentración de poder en el centro. Mago y Elfo recuperan 2 MP al estar en radio de 2 casillas.', casillas:'Radio 2 casillas del centro', fx:{ico:'&#10024;',txt:'+2 MP Mago/Elfo — radio 2 casillas del nexo'}, _sets:{hasMagic:true}};
+      }
+      return {res:'Residuos mágicos recientes', det:'Alguien usó magia potente aquí hace poco. Los rastros se disipan pero son rastreables.', casillas:'Zona central', fx:{ico:'&#128302;',txt:'Rastro mágico — útil para identificar origen'}, _sets:{hasMagic:true}};
+    }
+  },
+  {
+    id:'alguien', ico:'&#128172;', lbl:'¿Hay alguien vivo aquí?', hint:'Al explorar zona con presencia',
+    resolve: function(zk, room){
+      const z = getZoneState(zk);
+      const hasPNJ = room && room.content.pnjData;
+
+      // Coherence: if we know enemies are here, can't also have a neutral PNJ free
+      if(z.hasEnemies && !hasPNJ){
+        return {res:'Solo enemigos — ningún aliado', det:'Lo que hay en esta sala no son amigos. Los que encontraste antes lo confirman.', casillas:null, fx:null, _sets:{}};
+      }
+      if(hasPNJ){
+        const pnj = room.content.pnjData;
+        return {res:'Alguien vivo: '+pnj.nm, det:pnj.desc, casillas:'En la sala — busca el icono en el grid', fx:{ico:pnj.ico,txt:pnj.nm+' — '+pnj.reward}, _sets:{hasPNJ:true}};
+      }
+      if(z.isSafe){
+        return {res:'Completamente vacía', det:'No hay nadie. Esta sala lleva tiempo abandonada. Ni siquiera hay rastros recientes.', casillas:null, fx:null, _sets:{}};
+      }
+      // Random
+      const roll = rollDice(6);
+      if(roll<=2) return {res:'Solo amenazas — nadie más', det:'Quien hay aquí no tiene buenas intenciones. No hay inocentes.', casillas:null, fx:null, _sets:{}};
+      if(roll<=3) return {res:'Prisionero encadenado', det:'En la pared norte, alguien encadenado. Vivo pero en shock. Puede dar información si se le ayuda.', casillas:'Pared norte, 4-5 casillas', fx:{ico:'&#128532;',txt:'Prisionero — información a cambio de ayuda'}, _sets:{hasPNJ:true}};
+      if(roll<=4) return {res:'Mercenario herido', det:'En una esquina. Herido pero combativo. Podría ayudar por curación o dinero.', casillas:'Esquina SO, 5-6 casillas', fx:{ico:'&#129454;',txt:'Mercenario — aliado por 30 oros o 1 poción'}, _sets:{hasPNJ:true}};
+      if(roll<=5) return {res:'Comerciante perdido', det:'Un buhonero con su bolsa de cuero. Asustado pero con mercancía útil.', casillas:'Centro de la sala, 3-4 casillas', fx:{ico:'&#128717;',txt:'Mercader — pociones y objetos disponibles'}, _sets:{hasPNJ:true}};
+      return {res:'Aliado con información valiosa', det:'Un aventurero que lleva días aquí. Conoce el camino al jefe y la distribución de las salas restantes.', casillas:'Centro-sur, 4 casillas', fx:{ico:'&#128302;',txt:'Aliado con mapa del dungeon completo'}, _sets:{hasPNJ:true}};
+    }
+  },
 ];
 
 function renderCorridorOracle(pos, dg){
+  const zk = 'cor_'+(pos<0?0:pos);
   let html = '<div style="display:flex;flex-direction:column;gap:7px">';
   CORRIDOR_Qs.forEach((q,qi)=>{
-    const key = 'cor_'+pos+'_'+qi;
-    const used = (oracleLog||[]).some(l=>l.includes(key));
-    html += '<button onclick="askDgOracle('+qi+',\'corridor\',\''+key+'\')" style="'
+    const key  = zk+'_q'+qi;
+    const used = (oracleLog||[]).some(l=>l.includes('['+key+']'));
+    html += '<button onclick="askDgOracle('+qi+',\'corridor\',\''+key+'\',\''+zk+'\')" style="'
       + 'width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.2);'
       + 'border-radius:4px;padding:11px 13px;display:flex;align-items:center;gap:10px;'
-      + 'cursor:pointer;touch-action:manipulation;text-align:left;opacity:'+(used?.7:1)+'">'
+      + 'cursor:pointer;touch-action:manipulation;text-align:left;opacity:'+(used?.65:1)+'">'
       + '<span style="font-size:20px">'+q.ico+'</span>'
       + '<div style="flex:1">'
       + '<div style="font-family:\'Cinzel\',serif;font-size:13px;color:var(--pa)">'+q.lbl+'</div>'
       + '<div style="font-size:11px;color:var(--stl);font-style:italic;margin-top:2px">'+q.hint+'</div>'
       + '</div>'
-      + '<span style="color:var(--god);font-size:18px">&#8250;</span>'
+      + (used ? '<span style="font-size:10px;color:var(--god);font-family:Cinzel,serif;border:1px solid rgba(201,150,42,.2);border-radius:2px;padding:1px 5px">YA CONSULTADO</span>' : '<span style="color:var(--god);font-size:18px">&#8250;</span>')
       + '</button>';
   });
   html += '</div>';
   return html;
 }
+
+function askDgOracle(qIdx, zone, key, zk){
+  const qs = zone==='corridor' ? CORRIDOR_Qs : ROOM_Qs;
+  const q  = qs[qIdx];
+  if(!q) return;
+
+  // Get current room for room questions
+  const pos  = dg ? dg.currentPos : -1;
+  const room = (zone==='room' && pos>=0) ? dg.rooms[pos] : null;
+
+  // Resolve with coherence
+  const result = zone==='corridor'
+    ? q.resolve(zk)
+    : q.resolve(zk, room);
+
+  // Apply zone state updates from result
+  if(result._sets && Object.keys(result._sets).length){
+    setZoneState(zk, result._sets);
+  }
+
+  const roll = rollDice(6); // for display only (result is already determined)
+  const col  = result.fx ? 'var(--go)' : (result._sets && Object.keys(result._sets).some(k=>zoneStates[zk]&&zoneStates[zk][k]&&['hasEnemies','isAmbush','hasTrap'].includes(k))) ? 'var(--bl)' : 'var(--pad)';
+
+  const casillasHtml = result.casillas
+    ? '<div style="font-family:Cinzel,serif;font-size:11px;font-weight:700;color:var(--go);padding:4px 10px;background:rgba(201,150,42,.12);border:1px solid rgba(201,150,42,.3);border-radius:3px;margin-top:8px;display:inline-block">&#128205; '+result.casillas+'</div>'
+    : '';
+
+  const fxHtml = result.fx
+    ? '<div style="display:flex;align-items:center;gap:12px;margin-top:12px;padding:11px 13px;background:rgba(0,0,0,.4);border-radius:4px;border:1px solid rgba(201,150,42,.2)">'
+      + '<span style="font-size:24px">'+result.fx.ico+'</span>'
+      + '<span style="font-family:Cinzel,serif;font-size:13px;color:var(--pa)">'+result.fx.txt+'</span>'
+      + '</div>'
+    : '';
+
+  // Zone state summary (what oracle now knows)
+  const z = getZoneState(zk);
+  const knownItems = [];
+  if(z.hasEnemies) knownItems.push('&#128121; Enemigos confirmados');
+  if(z.isAmbush)   knownItems.push('&#128128; Emboscada activa');
+  if(z.hasTrap)    knownItems.push('&#9888;&#65039; Trampa detectada');
+  if(z.hasSecret)  knownItems.push('&#128285; Secreto conocido');
+  if(z.isSafe)     knownItems.push('&#10003; Zona segura');
+  if(z.hasPNJ)     knownItems.push('&#128172; PNJ presente');
+  if(z.hasMagic)   knownItems.push('&#10024; Magia detectada');
+  const knownHtml = knownItems.length
+    ? '<div style="margin-top:10px;padding:8px 10px;background:rgba(0,0,0,.3);border-radius:4px;border-top:1px solid rgba(255,255,255,.06)">'
+      + '<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:1px;color:var(--god);margin-bottom:5px">EL ORÁCULO SABE DE ESTA ZONA:</div>'
+      + knownItems.map(i=>'<span style="font-size:11px;color:var(--stl);margin-right:10px">'+i+'</span>').join('')
+      + '</div>'
+    : '';
+
+  const old = document.getElementById('dg-oracle-popup');
+  if(old) old.remove();
+
+  const popup = document.createElement('div');
+  popup.id = 'dg-oracle-popup';
+  popup.style.cssText = 'position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:20px;animation:fIn .2s ease';
+
+  popup.innerHTML =
+    '<div style="background:linear-gradient(160deg,#1e1810,#100c06);border:2px solid '+col+';border-radius:10px;width:100%;max-width:400px;max-height:88vh;overflow-y:auto;box-shadow:0 0 50px rgba(0,0,0,.95)">'
+
+    + '<div style="background:rgba(0,0,0,.5);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid '+col+'44">'
+    + '<div style="display:flex;align-items:center;gap:8px">'
+    + '<span style="font-size:20px">'+q.ico+'</span>'
+    + '<span style="font-family:Cinzel,serif;font-size:12px;color:var(--god);letter-spacing:1px">'+q.lbl+'</span>'
+    + '</div>'
+    + '<button onclick="document.getElementById(\'dg-oracle-popup\').remove()" style="background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:30px;height:30px;color:var(--stl);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation">&#10005;</button>'
+    + '</div>'
+
+    + '<div style="padding:16px 18px 8px;text-align:center">'
+    + '<div style="font-family:Cinzel,serif;font-size:20px;font-weight:700;color:'+col+';line-height:1.3;margin-bottom:8px">'+result.res+'</div>'
+    + '</div>'
+
+    + '<div style="padding:0 18px 14px">'
+    + '<div style="font-size:14px;color:var(--pad);line-height:1.75;font-style:italic;border-top:1px solid rgba(255,255,255,.07);padding-top:12px">'+result.det+'</div>'
+    + casillasHtml
+    + fxHtml
+    + knownHtml
+    + '</div>'
+
+    + '<div style="padding:12px 16px 16px;display:grid;grid-template-columns:1fr;gap:10px;border-top:1px solid rgba(255,255,255,.07)">'
+    + '<button onclick="document.getElementById(\'dg-oracle-popup\').remove()" style="background:linear-gradient(135deg,var(--grd),#1a3010);border:1px solid var(--grd);border-radius:4px;color:var(--gr);font-family:Cinzel,serif;font-size:12px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#10003; Anotado — continuar</button>'
+    + '</div>'
+    + '</div>';
+
+  popup.addEventListener('click', e=>{ if(e.target===popup) popup.remove(); });
+  document.documentElement.appendChild(popup);
+
+  // Log
+  const logEntry = q.ico+' <strong style="color:'+col+'">'+result.res+'</strong> — '+q.lbl+' ['+key+']';
+  oracleLog.unshift(logEntry);
+  if(oracleLog.length>20) oracleLog.pop();
+  if(sk) sk.oracleLog = oracleLog;
+
+  // Track used queries
+  if(dg && !oracleLog.slice(1).some(l=>l.includes('['+key+']'))){
+    const pos2 = dg.currentPos;
+    const zone2 = dg.currentZone;
+    if(zone2==='corridor'){
+      const ci = pos2 < 0 ? 0 : pos2;
+      const rm = dg.rooms[Math.min(ci,9)];
+      if(rm && rm.corridorContent) rm.corridorContent.usedQueries=(rm.corridorContent.usedQueries||0)+1;
+    } else {
+      const rm = pos2>=0 ? dg.rooms[pos2] : null;
+      if(rm) rm.usedRoomQueries=(rm.usedRoomQueries||0)+1;
+    }
+    if(sk) sk.dg = dg;
+  }
+  saveS();
+  renderSk();
+  document.documentElement.appendChild(popup);
+}
+
+
+
 
 function renderRoomView(room,dg){
   const content=room.content;
@@ -2515,7 +2817,6 @@ function renderRoomView(room,dg){
   const usedQ=Math.min(room.usedRoomQueries||0,maxQ);
   const remaining=Math.max(0,maxQ-usedQ);
   const d=DIFFICULTY[dg.difficulty]||DIFFICULTY.medio;
-
   const enemyCards=renderEnemyCards(content.enemies,'rm'+room.idx);
 
   // PNJ block
@@ -2525,19 +2826,17 @@ function renderRoomView(room,dg){
     pnjHtml='<div style="background:rgba(74,128,212,.08);border:1px solid rgba(74,128,212,.3);border-radius:6px;padding:12px 14px;margin-bottom:12px">'
       +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
       +'<span style="font-size:30px">'+pnj.ico+'</span>'
-      +'<div>'
-      +'<div style="font-family:Cinzel,serif;font-size:13px;color:var(--mg);font-weight:700">'+pnj.nm+'</div>'
+      +'<div><div style="font-family:Cinzel,serif;font-size:13px;color:var(--mg);font-weight:700">'+pnj.nm+'</div>'
       +'<div style="font-size:11px;color:var(--stl);text-transform:uppercase;letter-spacing:1px">'+pnj.type+'</div>'
       +'</div></div>'
       +'<div style="font-size:13px;color:var(--pad);font-style:italic;line-height:1.6;margin-bottom:8px">'+pnj.desc+'</div>'
       +'<div style="font-size:12px;color:var(--go);background:rgba(0,0,0,.3);border-radius:3px;padding:7px 10px">&#127919; '+pnj.reward+'</div>'
-      +(pnj.stock ? '<div style="margin-top:10px"><div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:var(--god);margin-bottom:6px">INVENTARIO DEL MERCADER</div>'
+      +(pnj.stock?'<div style="margin-top:10px"><div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:var(--god);margin-bottom:6px">INVENTARIO DEL MERCADER</div>'
         +pnj.stock.map(s=>'<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)">'
           +'<span style="font-size:16px">'+s.ico+'</span>'
           +'<div style="flex:1"><div style="font-size:12px;color:var(--pa)">'+s.nm+'</div><div style="font-size:11px;color:var(--stl);font-style:italic">'+s.desc+'</div></div>'
           +'<div style="font-family:Cinzel,serif;font-size:13px;color:var(--go)">'+s.price+' oros</div>'
-          +'</div>').join('')
-        +'</div>' : '')
+          +'</div>').join('')+'</div>':'')
       +'</div>';
   }
 
@@ -2552,20 +2851,22 @@ function renderRoomView(room,dg){
       +'</div>';
   }
 
-  // Oracle questions
+  // Oracle questions — coherence-aware
+  const zk='rm_'+room.idx;
   const oracleHtml='<div style="display:flex;flex-direction:column;gap:7px">'
     +ROOM_Qs.map((q,qi)=>{
-      const key='rm_'+room.idx+'_'+qi;
+      const key=zk+'_q'+qi;
       const used=(oracleLog||[]).some(l=>l.includes('['+key+']'));
-      return '<button onclick="askDgOracle('+qi+',\'room\',\''+key+'\')" style="'
+      return '<button onclick="askDgOracle('+qi+',\'room\',\''+key+'\',\''+zk+'\')" style="'
         +'width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.2);'
         +'border-radius:4px;padding:11px 13px;display:flex;align-items:center;gap:10px;'
-        +'cursor:pointer;touch-action:manipulation;text-align:left;opacity:'+(used?.7:1)+'">'
+        +'cursor:pointer;touch-action:manipulation;text-align:left;opacity:'+(used?.65:1)+'">'
         +'<span style="font-size:20px">'+q.ico+'</span>'
         +'<div style="flex:1">'
         +'<div style="font-family:Cinzel,serif;font-size:13px;color:var(--pa)">'+q.lbl+'</div>'
         +'<div style="font-size:11px;color:var(--stl);font-style:italic;margin-top:2px">'+q.hint+'</div>'
-        +'</div><span style="color:var(--god);font-size:18px">&#8250;</span>'
+        +'</div>'
+        +(used?'<span style="font-size:10px;color:var(--god);font-family:Cinzel,serif;border:1px solid rgba(201,150,42,.2);border-radius:2px;padding:1px 5px">YA CONSULTADO</span>':'<span style="color:var(--god);font-size:18px">&#8250;</span>')
         +'</button>';
     }).join('')+'</div>';
 
@@ -2586,8 +2887,9 @@ function renderRoomView(room,dg){
     +qLimitBar(usedQ,maxQ)
     +(remaining>0
       ?('<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;color:var(--god);margin-bottom:8px">&#128302; CONSULTAR ORACULO</div>'+oracleHtml)
-      :'<div style="font-family:Cinzel,serif;font-size:12px;color:var(--stl);text-align:center;padding:10px;font-style:italic">Sin mas consultas en esta sala.</div>'
+      :'<div style="font-family:Cinzel,serif;font-size:12px;color:var(--stl);text-align:center;padding:10px;font-style:italic">Sin más consultas en esta sala.</div>'
     )
+    +renderInlineD20(room)
     +'</div></div>';
 }
 
@@ -2598,7 +2900,6 @@ function renderRoomGrid(content,size,roomIdx){
   (content.traps||[]).forEach(t=>{   if(t.y<size.h&&t.x<size.w) grid[t.y][t.x]={type:'trap', data:t}; });
   (content.loots||[]).forEach(l=>{   if(l.y<size.h&&l.x<size.w) grid[l.y][l.x]={type:'loot', data:l}; });
   (content.furniture||[]).forEach(f=>{ if(f.y<size.h&&f.x<size.w&&!grid[f.y][f.x]) grid[f.y][f.x]={type:'furniture',data:f}; });
-
   const midRow=Math.floor(size.h/2);
   let tbl='<div style="overflow-x:auto;margin-bottom:8px"><table style="border-collapse:collapse;margin:0 auto">';
   for(let r=0;r<size.h;r++){
@@ -2606,233 +2907,64 @@ function renderRoomGrid(content,size,roomIdx){
     for(let c=0;c<size.w;c++){
       const cell=grid[r][c];
       let bg='rgba(18,12,6,.92)',border='1px solid rgba(201,150,42,.1)',inner='',title='';
-      // Entry/exit arrows on left and right walls
-      if(r===midRow&&c===0)      inner='<span style="font-size:10px;color:rgba(201,150,42,.4)">&#9654;</span>';
+      if(r===midRow&&c===0)       inner='<span style="font-size:10px;color:rgba(201,150,42,.4)">&#9654;</span>';
       if(r===midRow&&c===size.w-1) inner='<span style="font-size:10px;color:rgba(201,150,42,.4)">&#9654;</span>';
       if(cell){
-        if(cell.type==='enemy'){
-          bg=cell.data.id==='boss'?'rgba(100,10,10,.85)':'rgba(70,15,15,.8)';
-          border='1px solid rgba(139,26,26,.6)';
-          inner='<span title="'+cell.data.nm+'" style="font-size:17px;cursor:default">'+cell.data.ico+'</span>';
-          title=cell.data.nm+' HP:'+cell.data.hp+' ATK:'+cell.data.atk+' DEF:'+cell.data.def;
-        } else if(cell.type==='trap'){
-          bg='rgba(40,30,8,.85)'; border='1px solid rgba(201,150,42,.4)';
-          inner='<span title="'+cell.data.nm+'" style="font-size:13px;cursor:default">&#9888;&#65039;</span>';
-          title=cell.data.nm+': '+cell.data.det;
-        } else if(cell.type==='loot'){
-          bg='rgba(8,30,8,.85)'; border='1px solid rgba(90,176,90,.35)';
-          inner='<span title="'+cell.data.nm+'" style="font-size:15px;cursor:default">'+cell.data.ico+'</span>';
-          title=cell.data.nm+': '+cell.data.det;
-        } else if(cell.type==='furniture'){
-          bg='rgba(30,20,10,.7)'; border='1px solid rgba(100,80,40,.3)';
-          inner='<span title="'+cell.data.nm+'" style="font-size:14px;cursor:default;opacity:.85">'+cell.data.ico+'</span>';
-          title=cell.data.nm;
-        }
+        if(cell.type==='enemy'){bg=cell.data.id==='boss'?'rgba(100,10,10,.85)':'rgba(70,15,15,.8)';border='1px solid rgba(139,26,26,.6)';inner='<span title="'+cell.data.nm+'" style="font-size:17px;cursor:default">'+cell.data.ico+'</span>';title=cell.data.nm;}
+        else if(cell.type==='trap'){bg='rgba(40,30,8,.85)';border='1px solid rgba(201,150,42,.4)';inner='<span style="font-size:13px;cursor:default">&#9888;&#65039;</span>';title=cell.data.nm;}
+        else if(cell.type==='loot'){bg='rgba(8,30,8,.85)';border='1px solid rgba(90,176,90,.35)';inner='<span style="font-size:15px;cursor:default">'+cell.data.ico+'</span>';title=cell.data.nm;}
+        else if(cell.type==='furniture'){bg='rgba(30,20,10,.7)';border='1px solid rgba(100,80,40,.3)';inner='<span style="font-size:14px;cursor:default;opacity:.85">'+cell.data.ico+'</span>';title=cell.data.nm;}
       }
       tbl+='<td style="width:'+CELL+'px;height:'+CELL+'px;background:'+bg+';border:'+border+';text-align:center;vertical-align:middle" title="'+title+'">'+inner+'</td>';
     }
     tbl+='</tr>';
   }
   tbl+='</table></div>';
-
-  // Furniture legend
   const furnList=(content.furniture||[]);
-  const hasFurn=furnList.length>0;
   const legend='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;padding:6px 0;border-top:1px solid rgba(201,150,42,.08);border-bottom:1px solid rgba(201,150,42,.08)">'
     +(content.enemies.length?'<span style="font-size:11px;color:var(--stl);display:flex;align-items:center;gap:3px"><span style="background:rgba(70,15,15,.8);padding:1px 4px;border-radius:2px;font-size:13px">&#128121;</span>Enemigo</span>':'')
     +(content.traps.length?'<span style="font-size:11px;color:var(--stl);display:flex;align-items:center;gap:3px"><span style="background:rgba(40,30,8,.85);padding:1px 4px;border-radius:2px;font-size:12px">&#9888;&#65039;</span>Trampa</span>':'')
-    +(content.loots.length?'<span style="font-size:11px;color:var(--stl);display:flex;align-items:center;gap:3px"><span style="background:rgba(8,30,8,.85);padding:1px 4px;border-radius:2px;font-size:13px">'+content.loots[0].ico+'</span>Botin</span>':'')
-    +(hasFurn?furnList.map(f=>'<span style="font-size:11px;color:var(--stl);display:flex;align-items:center;gap:3px"><span style="font-size:13px">'+f.ico+'</span>'+f.nm+'</span>').join(''):'')
+    +(content.loots.length?'<span style="font-size:11px;color:var(--stl);display:flex;align-items:center;gap:3px"><span style="background:rgba(8,30,8,.85);padding:1px 4px;border-radius:2px;font-size:13px">'+content.loots[0].ico+'</span>Botín</span>':'')
+    +(furnList.length?furnList.map(f=>'<span style="font-size:11px;color:var(--stl);display:flex;align-items:center;gap:3px"><span style="font-size:13px">'+f.ico+'</span>'+f.nm+'</span>').join(''):'')
     +'</div>';
-
   return tbl+legend;
 }
 
 function renderNavButtons(pos, zone, dg){
   const atBoss = pos===9 && zone==='room';
   let html = '<div style="display:grid;gap:8px;margin-top:4px">';
-
   if(zone==='corridor'){
-    // Can enter the next room
     const nextRoomIdx = pos+1;
-    const nextAvail   = nextRoomIdx < 10;
-    if(nextAvail){
-      html += '<button onclick="enterRoom('+(pos+1)+')" style="'
-        + 'background:linear-gradient(135deg,#2a1e0a,#1a1208);border:2px solid var(--go);'
-        + 'border-radius:5px;color:var(--go);font-family:\'Cinzel\',serif;font-size:13px;'
-        + 'font-weight:700;letter-spacing:1px;padding:14px;cursor:pointer;touch-action:manipulation;'
-        + 'display:flex;align-items:center;justify-content:center;gap:10px">'
-        + '<span style="font-size:20px">&#127968;</span>'
-        + 'ENTRAR EN SALA '+(pos+2)+' / 10'
-        + '</button>';
+    if(nextRoomIdx < 10){
+      html += '<button onclick="enterRoom('+(pos+1)+')" style="background:linear-gradient(135deg,#2a1e0a,#1a1208);border:2px solid var(--go);border-radius:5px;color:var(--go);font-family:Cinzel,serif;font-size:13px;font-weight:700;letter-spacing:1px;padding:14px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;gap:10px"><span style="font-size:20px">&#127968;</span>ENTRAR EN SALA '+(pos+2)+' / 10</button>';
     }
   } else if(zone==='room'){
     if(!atBoss){
-      // Can advance to next corridor
-      html += '<button onclick="exitRoom('+pos+')" style="'
-        + 'background:linear-gradient(135deg,#1a2a1a,#0a180a);border:2px solid var(--gr);'
-        + 'border-radius:5px;color:var(--gr);font-family:\'Cinzel\',serif;font-size:13px;'
-        + 'font-weight:700;letter-spacing:1px;padding:14px;cursor:pointer;touch-action:manipulation;'
-        + 'display:flex;align-items:center;justify-content:center;gap:10px">'
-        + '<span style="font-size:20px">&#9135;&#65039;</span>'
-        + 'AVANZAR AL SIGUIENTE PASILLO'
-        + '</button>';
+      html += '<button onclick="exitRoom('+pos+')" style="background:linear-gradient(135deg,#1a2a1a,#0a180a);border:2px solid var(--gr);border-radius:5px;color:var(--gr);font-family:Cinzel,serif;font-size:13px;font-weight:700;letter-spacing:1px;padding:14px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;gap:10px"><span style="font-size:20px">&#9135;&#65039;</span>AVANZAR AL SIGUIENTE PASILLO</button>';
     } else {
-      // Boss room — victory
-      html += '<button onclick="victoryScreen()" style="'
-        + 'background:linear-gradient(135deg,var(--bl),var(--bld));border:2px solid var(--bl);'
-        + 'border-radius:5px;color:var(--pa);font-family:\'Cinzel\',serif;font-size:14px;'
-        + 'font-weight:700;letter-spacing:2px;padding:15px;cursor:pointer;touch-action:manipulation;'
-        + 'display:flex;align-items:center;justify-content:center;gap:10px">'
-        + '<span style="font-size:22px">&#11088;</span>'
-        + 'FINALIZAR MISION'
-        + '</button>';
+      html += '<button onclick="victoryScreen()" style="background:linear-gradient(135deg,var(--bl),var(--bld));border:2px solid var(--bl);border-radius:5px;color:var(--pa);font-family:Cinzel,serif;font-size:14px;font-weight:700;letter-spacing:2px;padding:15px;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;gap:10px"><span style="font-size:22px">&#11088;</span>FINALIZAR MISION</button>';
     }
   }
-
   html += '</div>';
   return html;
 }
 
 function enterRoom(roomIdx){
-  if(!dg || roomIdx<0 || roomIdx>9) return;
-  dg.rooms[roomIdx].state = 'revealed';
-  dg.currentPos  = roomIdx;
-  dg.currentZone = 'room';
-  sk.dg = dg; saveS();
-  renderSk();
-  // Scroll to top of skirmish view
-  document.getElementById('skcon').scrollTop = 0;
+  if(!dg||roomIdx<0||roomIdx>9) return;
+  dg.rooms[roomIdx].state='revealed';
+  dg.currentPos=roomIdx; dg.currentZone='room';
+  sk.dg=dg; saveS(); renderSk();
+  document.getElementById('skcon').scrollTop=0;
 }
 
 function exitRoom(roomIdx){
   if(!dg) return;
-  dg.rooms[roomIdx].state = 'cleared';
-  dg.currentPos  = roomIdx;
-  dg.currentZone = 'corridor';
-  sk.dg = dg; saveS();
-  renderSk();
-  document.getElementById('skcon').scrollTop = 0;
+  dg.rooms[roomIdx].state='cleared';
+  dg.currentPos=roomIdx; dg.currentZone='corridor';
+  sk.dg=dg; saveS(); renderSk();
+  document.getElementById('skcon').scrollTop=0;
 }
 
-function victoryScreen(){
-  const c = document.getElementById('skcon');
-  const lore = dg.lore;
-  c.innerHTML = '<div style="padding:40px 20px;text-align:center">'
-    + '<div style="font-size:72px;margin-bottom:16px">&#11088;</div>'
-    + '<div style="font-family:\'Cinzel\',serif;font-size:22px;color:var(--go);letter-spacing:2px;margin-bottom:8px">MISION COMPLETADA</div>'
-    + '<div style="font-family:\'Cinzel\',serif;font-size:14px;color:var(--god);margin-bottom:16px">'+lore.tl+'</div>'
-    + '<div style="font-size:14px;color:var(--pad);font-style:italic;line-height:1.9;margin-bottom:28px">'+lore.ob+'</div>'
-    + '<div style="background:rgba(0,0,0,.4);border:1px solid var(--go);border-radius:6px;padding:16px;margin-bottom:24px">'
-    + '<div style="font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:2px;color:var(--god);margin-bottom:10px">RECOMPENSAS</div>'
-    + '<div style="font-size:15px;color:var(--pad);margin-bottom:6px">&#128176; +'+(ri(60,120))+' oros por heroe</div>'
-    + '<div style="font-size:15px;color:var(--pad);margin-bottom:6px">&#11088; +150 XP por heroe</div>'
-    + '<div style="font-size:15px;color:var(--pad)">&#128302; 1 objeto magico (consulta catalogo)</div>'
-    + '</div>'
-    + '<button onclick="resetDungeon()" style="background:linear-gradient(135deg,var(--bl),var(--bld));border:2px solid var(--bl);border-radius:5px;color:var(--pa);font-family:\'Cinzel\',serif;font-size:13px;font-weight:700;letter-spacing:2px;padding:14px 28px;cursor:pointer">&#9876;&#65039; NUEVA ESCARAMUZA</button>'
-    + '</div>';
-}
-
-function resetDungeon(){
-  dg = null;
-  currentAdventure = null;
-  oracleLog = [];
-  if(sk){ sk.dg=null; sk.adventure=null; sk.oracleLog=[]; }
-  saveS();
-  renderSk();
-}
-
-// ── ORACLE for dungeon context ─────────────────────────────────────────────────
-function askDgOracle(qIdx, zone, key){
-  const qs = zone==='corridor' ? CORRIDOR_Qs : ROOM_Qs;
-  const q  = qs[qIdx];
-  if(!q) return;
-
-  const roll   = rollDice(6);
-  let result   = q.rolls[q.rolls.length-1];
-  for(const r of q.rolls){ if(roll>=r.range[0]&&roll<=r.range[1]){result=r;break;} }
-
-  const col      = roll<=2?'var(--bl)':roll<=4?'var(--pad)':roll===5?'var(--go)':'var(--gol)';
-  const rollLabel= roll<=2?'ADVERSO':roll<=4?'NEUTRO':roll===5?'FAVORABLE':'&#11088; CRITICO';
-
-  const casillasHtml = result.casillas
-    ? '<div style="font-family:\'Cinzel\',serif;font-size:11px;font-weight:700;color:var(--go);padding:4px 10px;background:rgba(201,150,42,.12);border:1px solid rgba(201,150,42,.3);border-radius:3px;margin-top:8px;display:inline-block">&#128205; '+result.casillas+'</div>'
-    : '';
-
-  const fxHtml = result.fx
-    ? '<div style="display:flex;align-items:center;gap:12px;margin-top:12px;padding:11px 13px;background:rgba(0,0,0,.4);border-radius:4px;border:1px solid rgba(201,150,42,.2)">'
-      + '<span style="font-size:24px">'+result.fx.ico+'</span>'
-      + '<span style="font-family:Cinzel,serif;font-size:13px;color:var(--pa)">'+result.fx.txt+'</span>'
-      + '</div>'
-    : '';
-
-  const old = document.getElementById('dg-oracle-popup');
-  if(old) old.remove();
-
-  const popup = document.createElement('div');
-  popup.id = 'dg-oracle-popup';
-  popup.style.cssText = 'position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:20px;animation:fIn .2s ease';
-  popup.innerHTML =
-    '<div style="background:linear-gradient(160deg,#1e1810,#100c06);border:2px solid '+col+';border-radius:10px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,.95),0 0 20px '+col+'44;animation:popIn .28s cubic-bezier(.34,1.4,.64,1)">'
-
-    + '<div style="background:rgba(0,0,0,.5);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid '+col+'44">'
-    + '<div style="display:flex;align-items:center;gap:8px">'
-    + '<span style="font-size:20px">'+q.ico+'</span>'
-    + '<span style="font-family:Cinzel,serif;font-size:11px;color:var(--god);letter-spacing:1px">'+q.lbl+'</span>'
-    + '</div>'
-    + '<div style="display:flex;align-items:center;gap:12px">'
-    + '<span style="font-family:Cinzel,serif;font-size:15px;color:'+col+';font-weight:700">&#127922; '+roll+'</span>'
-    + '<button onclick="document.getElementById(\'dg-oracle-popup\').remove()" style="background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:30px;height:30px;color:var(--stl);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation">&#10005;</button>'
-    + '</div>'
-    + '</div>'
-
-    + '<div style="text-align:center;padding:16px 16px 8px">'
-    + '<div style="font-family:Cinzel,serif;font-size:11px;letter-spacing:4px;color:'+col+';margin-bottom:8px">'+rollLabel+'</div>'
-    + '<div style="font-family:Cinzel,serif;font-size:20px;font-weight:700;color:'+col+';line-height:1.25;margin-bottom:6px">'+result.res+'</div>'
-    + '</div>'
-
-    + '<div style="padding:0 18px 14px">'
-    + '<div style="font-size:14px;color:var(--pad);line-height:1.75;font-style:italic;border-top:1px solid rgba(255,255,255,.07);padding-top:12px">'+result.det+'</div>'
-    + casillasHtml
-    + fxHtml
-    + '</div>'
-
-    + '<div style="padding:12px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid rgba(255,255,255,.07)">'
-    + '<button onclick="askDgOracle('+qIdx+',\''+zone+'\',\''+key+'\')" style="background:rgba(0,0,0,.5);border:1px solid rgba(201,150,42,.35);border-radius:4px;color:var(--god);font-family:Cinzel,serif;font-size:12px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#127922; Tirar de nuevo</button>'
-    + '<button onclick="document.getElementById(\'dg-oracle-popup\').remove()" style="background:linear-gradient(135deg,var(--grd),#1a3010);border:1px solid var(--grd);border-radius:4px;color:var(--gr);font-family:Cinzel,serif;font-size:12px;letter-spacing:1px;padding:12px;cursor:pointer;touch-action:manipulation">&#10003; Anotado</button>'
-    + '</div>'
-    + '</div>';
-
-  popup.addEventListener('click', e=>{ if(e.target===popup) popup.remove(); });
-  document.documentElement.appendChild(popup);
-
-  // Log
-  const logEntry = q.ico+' <strong style="color:'+col+'">'+result.res+'</strong> — '+q.lbl+' (&#127922;'+roll+') ['+key+']';
-  oracleLog.unshift(logEntry);
-  if(oracleLog.length>20) oracleLog.pop();
-  if(sk) sk.oracleLog = oracleLog;
-
-  // Track used queries per zone (only first use, not re-rolls)
-  if(dg && !oracleLog.slice(1).some(l=>l.includes('['+key+']'))){
-    const pos  = dg.currentPos;
-    const zone = dg.currentZone;
-    if(zone==='corridor'){
-      const ci = pos < 0 ? 0 : pos;
-      const room = dg.rooms[Math.min(ci,9)];
-      if(room && room.corridorContent){
-        room.corridorContent.usedQueries = (room.corridorContent.usedQueries||0) + 1;
-      }
-    } else {
-      const room = pos>=0 ? dg.rooms[pos] : null;
-      if(room){ room.usedRoomQueries = (room.usedRoomQueries||0) + 1; }
-    }
-    if(sk) sk.dg = dg;
-  }
-  saveS();
-  // Re-render skirmish to update query counters (without closing popup)
-  renderSk();
-  document.documentElement.appendChild(popup);
-}
 
 
 function renderMazo(){
@@ -3003,8 +3135,8 @@ const TABERNA_ITEMS = [
   {nm:'Elixir de Sabiduria',    ico:'&#128302;',desc:'Recupera todos los hechizos gastados.',price:60, type:'potion'},
   {nm:'Descanso Completo',      ico:'&#127817;',desc:'Restaura toda la vida y el mana.',     price:50,  type:'rest', heal:true},
   {nm:'Racion de Viaje x3',     ico:'&#127833;',desc:'+1 HP tras cada combate x3.',         price:15,  type:'ration'},
-  {nm:'Noche de Celebracion',   ico:'&#127867;',desc:'+1 MP maximo permanente (grupo).',    price:200, type:'upgrade', stat:'mp', val:1},
-  {nm:'Entrenamiento Duro',     ico:'&#127947;&#65039;',desc:'+1 HP maximo permanente.',   price:150, type:'upgrade', stat:'maxHp', val:1},
+  {nm:'Noche de Celebracion',   ico:'&#127867;',desc:'+1 MP maximo permanente (grupo).',    price:200, type:'upgrade', stat:'maxMp', val:1, allHeroes:true},
+  {nm:'Entrenamiento Duro',     ico:'&#127947;&#65039;',desc:'+1 HP maximo permanente a 1 heroe.',price:150, type:'upgrade', stat:'maxHp', val:1, heroTarget:true},
 ];
 
 const TEMPLO_ITEMS = [
@@ -3021,8 +3153,8 @@ const GREMIO_ITEMS = [
   {nm:'Mapa de Mazmorra',       ico:'&#128205;', desc:'Revela el tipo de las 5 primeras salas en la proxima escaramuza.',price:80},
   {nm:'Informacion de Jefe',    ico:'&#128272;', desc:'Conoce la debilidad del jefe antes de entrar.',price:120},
   {nm:'Contrato Mercenario',    ico:'&#129454;', desc:'Un mercenario se une al grupo por 1 mision (HP3 ATK2 DEF1).',price:100},
-  {nm:'Entrenamiento de Elite', ico:'&#127947;&#65039;',desc:'+1 ATK permanente a 1 heroe.',price:200, stat:'atk', val:1},
-  {nm:'Tecnica Defensiva',      ico:'&#128737;&#65039;',desc:'+1 DEF permanente a 1 heroe.',price:180, stat:'def', val:1},
+  {nm:'Entrenamiento de Elite', ico:'&#127947;&#65039;',desc:'+1 ATK permanente a 1 heroe.',price:200, stat:'atk', val:1, heroTarget:true},
+  {nm:'Tecnica Defensiva',      ico:'&#128737;&#65039;',desc:'+1 DEF permanente a 1 heroe.',price:180, stat:'def', val:1, heroTarget:true},
   {nm:'Identificar Objetos',    ico:'&#128270;', desc:'Identifica todos los objetos magicos sin coste.',price:50},
   {nm:'Ruta Alternativa',       ico:'&#9135;&#65039;',desc:'Elige la dificultad de la siguiente sala.',price:90},
 ];
@@ -3032,154 +3164,341 @@ const BIBLIOTECA_ITEMS = [
   {nm:'Pergamino: Curacion',    ico:'&#128220;', desc:'Recupera 1D4+2 HP a un aliado.',      price:40,  spell:'Curacion Corporal'},
   {nm:'Pergamino: Genio',       ico:'&#128220;', desc:'5 dados de ataque a cualquier objetivo.',price:90,spell:'Genio'},
   {nm:'Pergamino: Reflexion',   ico:'&#128220;', desc:'Devuelve el siguiente ataque magico.',  price:70,  spell:'Reflejo'},
-  {nm:'Tomo de Poder Arcano',   ico:'&#128218;', desc:'+1 MP maximo permanente al Mago.',     price:200, stat:'mp', val:1},
-  {nm:'Manual de Combate',      ico:'&#128218;', desc:'+1 ATK permanente al Barbaro/Enano.',  price:180, stat:'atk', val:1},
+  {nm:'Tomo de Poder Arcano',   ico:'&#128218;', desc:'+1 MP maximo permanente a 1 heroe.',   price:200, stat:'maxMp', val:1, heroTarget:true},
+  {nm:'Manual de Combate',      ico:'&#128218;', desc:'+1 ATK permanente a 1 heroe.',          price:180, stat:'atk', val:1, heroTarget:true},
   {nm:'Tratado de Alquimia',    ico:'&#128218;', desc:'Crea 2 pociones de curacion gratis.',  price:100},
 ];
 
 // ── CITY EVENTS ───────────────────────────────────────────────────────────────
 const CIUDAD_EVENTS = [
   {
-    id:'encuentro_heraldo',
-    ico:'&#128172;', title:'Heraldo del Rey',
-    desc:'Un heraldo real interrumpe vuestro descanso. El rey ofrece una recompensa especial, pero pide algo a cambio.',
+    id:'tabernero_borracho',
+    ico:'&#127867;', title:'El Tabernero Está de Buenas',
+    desc:'Rufus, el tabernero, lleva cuatro horas bebiendo su propia mercancía. Hoy todo está al coste, dice. "¡Sois como hijos para mí!" Os mira con los ojos vidriosos. Claramente no recuerda vuestros nombres.',
     choices:[
-      {txt:'Aceptar la mision real',  ico:'&#128081;', fn:'event_heraldo_a'},
-      {txt:'Declinar educadamente',   ico:'&#128077;', fn:'event_heraldo_b'},
-      {txt:'Negociar las condiciones',ico:'&#128176;', fn:'event_heraldo_c'},
+      {txt:'Aprovechar y comprar todo lo posible', ico:'&#128176;', fn:'tab_comprar'},
+      {txt:'Preguntarle por rumores del pueblo',   ico:'&#128172;', fn:'tab_rumores'},
+      {txt:'Esperar a que se duerma y registrarlo',ico:'&#128064;', fn:'tab_robar'},
     ]
   },
   {
-    id:'mercado_negro',
-    ico:'&#128123;', title:'Mercado Negro',
-    desc:'Un individuo encapuchado os ofrece objetos de origen dudoso a precios irrisorios. Podria ser una trampa... o una ganga.',
+    id:'mago_deudas',
+    ico:'&#129497;', title:'El Mago Tiene Deudas',
+    desc:'Aldous el Gris, conocido archimago de la región, os aborda en el mercado. Debe 200 oros al gremio y necesita que alguien "custodie un objeto" esta semana. No especifica qué objeto. Tampoco especifica de qué huye.',
     choices:[
-      {txt:'Comprar sin preguntar (50 oros)',ico:'&#128176;', fn:'event_mercadonegro_a'},
-      {txt:'Inspeccionar primero',          ico:'&#128270;', fn:'event_mercadonegro_b'},
-      {txt:'Rechazar y reportarlo',         ico:'&#9989;',   fn:'event_mercadonegro_c'},
+      {txt:'Aceptar custodiar el objeto misterioso', ico:'&#128302;', fn:'mago_aceptar'},
+      {txt:'Prestarle 50 oros sin preguntar',        ico:'&#128176;', fn:'mago_prestar'},
+      {txt:'Denunciarle al gremio por la recompensa',ico:'&#128272;', fn:'mago_delatar'},
     ]
   },
   {
-    id:'torneo_local',
-    ico:'&#127942;', title:'Torneo de la Ciudad',
-    desc:'Se celebra un torneo de combate en la plaza. El premio es jugoso, pero el riesgo tambien.',
+    id:'profecia_ambulante',
+    ico:'&#128064;', title:'La Profetisa del Mercado',
+    desc:'Una anciana con demasiados collares os agarra del brazo. "¡Os veo! ¡Veo vuestro futuro! ¡Grandeza! ¡También veo una muerte horrible, pero eso es opcional!". Hay cola detrás de vosotros esperando su turno.',
     choices:[
-      {txt:'Participar en el torneo',    ico:'&#9876;&#65039;', fn:'event_torneo_a'},
-      {txt:'Apostar por otro luchador',  ico:'&#127922;',       fn:'event_torneo_b'},
-      {txt:'Entrenar observando',        ico:'&#128064;',       fn:'event_torneo_c'},
+      {txt:'Pagar por la profecía completa (30 oros)', ico:'&#128302;', fn:'prof_pagar'},
+      {txt:'Pedirle solo la parte de grandeza',        ico:'&#11088;',  fn:'prof_grandeza'},
+      {txt:'Decirle que ya tenéis profetisa',          ico:'&#128073;', fn:'prof_ignorar'},
     ]
   },
   {
-    id:'mendigo_sabio',
-    ico:'&#129497;', title:'El Mendigo Sabio',
-    desc:'Un anciano harapiento os detiene. Sus ojos brillan con una inteligencia poco comun. Dice conocer el camino a un gran tesoro.',
+    id:'ladron_arrepentido',
+    ico:'&#129440;', title:'El Ladrón Arrepentido',
+    desc:'Un individuo nervioso os devuelve una bolsa. "Me equivoqué de víctimas. Vosotros claramente sois peores que yo." Dentro hay oro que no era vuestro pero que tampoco era suyo. Ética complicada.',
     choices:[
-      {txt:'Darle monedas y escuchar (20 oros)',ico:'&#128176;', fn:'event_mendigo_a'},
-      {txt:'Llevarle a la taberna',             ico:'&#127867;', fn:'event_mendigo_b'},
-      {txt:'Ignorarle y seguir',                ico:'&#128073;', fn:'event_mendigo_c'},
+      {txt:'Quedarse el oro sin preguntar',           ico:'&#128176;', fn:'ladron_quedar'},
+      {txt:'Reclutarle como informador del grupo',    ico:'&#129454;', fn:'ladron_reclutar'},
+      {txt:'Devolverlo al dueño original (si existe)',ico:'&#10003;',  fn:'ladron_devolver'},
     ]
   },
   {
-    id:'rumores_taberna',
-    ico:'&#127867;', title:'Rumores en la Taberna',
-    desc:'El tabernero susurra que han visto movimiento en las catacumbas del este. Alguien ofrece pagar muy bien por informacion.',
+    id:'enano_herrero',
+    ico:'&#9874;&#65039;', title:'El Herrero Tiene Mal Día',
+    desc:'Gruk, el mejor herrero de la ciudad, tiene la fragua destrozada por "razones no relacionadas con un dragón pequeño que definitivamente ya no está aquí". Necesita materiales. Tiene prisa. Y tiene precios muy buenos.',
     choices:[
-      {txt:'Investigar las catacumbas',    ico:'&#128270;', fn:'event_rumores_a'},
-      {txt:'Vender la informacion',        ico:'&#128176;', fn:'event_rumores_b'},
-      {txt:'Ignorar los rumores',          ico:'&#127861;', fn:'event_rumores_c'},
+      {txt:'Comprarle equipo a precio de ruina',       ico:'&#9876;&#65039;', fn:'herrero_comprar'},
+      {txt:'Prestarle vuestra fragua de guarida',      ico:'&#9874;&#65039;', fn:'herrero_prestar'},
+      {txt:'Preguntarle por el dragón pequeño',        ico:'&#128027;',       fn:'herrero_dragon'},
     ]
   },
   {
-    id:'artefacto_misterioso',
-    ico:'&#128302;', title:'Artefacto sin Identificar',
-    desc:'Un mercader os ofrece un objeto que nadie ha podido identificar. Emana una energia extrana. Precio irrisorio: 30 oros.',
+    id:'festival_ciudad',
+    ico:'&#127882;', title:'Festival de la Ciudad',
+    desc:'Hoy es el Festival del Fundador, que nadie sabe quién fue pero todos celebran. Hay competiciones, comida, bebida y un concurso de "hazaña más absurda del año". El grupo tiene candidatos obvios.',
     choices:[
-      {txt:'Comprarlo (30 oros)',         ico:'&#128176;', fn:'event_artefacto_a'},
-      {txt:'Pedir al Mago que lo analice',ico:'&#10024;',  fn:'event_artefacto_b'},
-      {txt:'No arriesgarse',              ico:'&#10060;',  fn:'event_artefacto_c'},
+      {txt:'Participar en el concurso de hazañas',  ico:'&#127942;', fn:'festival_concurso'},
+      {txt:'Comer y beber hasta recuperar fuerzas', ico:'&#127817;', fn:'festival_comer'},
+      {txt:'Apostar en los combates callejeros',    ico:'&#127922;', fn:'festival_apostar'},
+    ]
+  },
+  {
+    id:'noble_problemas',
+    ico:'&#128081;', title:'Noble con Problemas de Rico',
+    desc:'Lord Pemberton III os para en la calle. Su mansión tiene "un problemilla de no-muertos en el sótano desde hace tres semanas". Lleva guantes blancos. No ha bajado a verlo. Os ofrece recompensa "negociable", que en boca de noble significa "insultantemente baja".',
+    choices:[
+      {txt:'Negociar la recompensa al alza primero', ico:'&#128176;', fn:'noble_negociar'},
+      {txt:'Aceptar y limpiar el sótano',            ico:'&#9876;&#65039;', fn:'noble_aceptar'},
+      {txt:'Cobrarle por cada no-muerto por separado',ico:'&#128220;', fn:'noble_itemizar'},
+    ]
+  },
+  {
+    id:'bruja_bendicion',
+    ico:'&#129497;', title:'La Bruja del Bosque Visita la Ciudad',
+    desc:'Morgana la Verde rara vez baja al pueblo. Hoy sí. Vende maldiciones y bendiciones con el mismo entusiasmo. "Son lo mismo, depende del ángulo", dice. Huele a hierbas y a decisiones cuestionables.',
+    choices:[
+      {txt:'Comprar una bendición (50 oros)',    ico:'&#10024;',  fn:'bruja_bendicion'},
+      {txt:'Pedir que maldiga a un enemigo',     ico:'&#128128;', fn:'bruja_maldicion'},
+      {txt:'Comprarle pociones de su cosecha',   ico:'&#127807;', fn:'bruja_pociones'},
     ]
   },
 ];
 
-// Event outcomes
 const EVENT_OUTCOMES = {
-  event_heraldo_a: {
-    txt:'El rey os encomienda escortar un cargamento valioso. A cambio: +100 oros y bendicion real.',
-    type:'good', gold:100, effect:'Proxima mision: +1 dado de defensa para todos (bendicion real).'
+  // ── TABERNERO ─────────────────────────────────────────────────────────────
+  tab_comprar: {
+    txt:'Rufus os vende medio almacén a precio de coste antes de darse cuenta de lo que ha hecho. Se le pasa la borrachera a mitad de transacción pero ya es tarde. "Trato hecho", dice el contrato.',
+    type:'good', gold:0,
+    effect:'+3 Pociones de Curación, +1 Elixir de Sabiduría y +40 oros en mercancía al precio que os cobró.',
+    apply: function(){
+      addToInventory({nm:'Pocion de Curacion',ico:'&#129514;',ds:'Restaura 1D4+2 HP.',r:'common',qty:3,stackable:true},'Taberna de Rufus');
+      addToInventory({nm:'Elixir de Sabiduria',ico:'&#128302;',ds:'Recupera todos los hechizos gastados.',r:'uncommon',qty:1},'Taberna de Rufus');
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(40/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+    }
   },
-  event_heraldo_b: {
-    txt:'El heraldo asiente con respeto. La corona os tendrá en cuenta para el futuro. Nada cambia por ahora.',
-    type:'neutral', gold:0, effect:null
+  tab_rumores: {
+    txt:'"¿Secretos? TODOS. El alcalde tiene tres esposas. El templo esconde una armería. Y en la mazmorra del este hay un tesoro sin guardia desde que el guardian se hizo vegetariano." Rufus se queda dormido antes de terminar.',
+    type:'good', gold:0,
+    effect:'+1 consulta de Oráculo extra gratuita en la próxima sala + mapa de mazmorra añadido al inventario.',
+    apply: function(){
+      addToInventory({nm:'Rumores de Rufus',ico:'&#128205;',ds:'Información del tabernero ebrio. Revela el tipo de las 4 primeras salas de la próxima escaramuza. Sorprendentemente fiable.',r:'uncommon',qty:1},'Taberna de Rufus');
+    }
   },
-  event_heraldo_c: {
-    txt:'El rey acepta. Os paga 60 oros y os da un mapa de la proxima mazmorra.',
-    type:'good', gold:60, effect:'Mapa conseguido: conoces el tipo de las 3 primeras salas.'
+  tab_robar: {
+    txt:'Rufus no tiene nada de valor en sus bolsillos. Solo una nota que pone "debo 340 oros al usurero. P.D.: Que nadie lo lea." La leéis. Os sentís mal durante aproximadamente tres segundos.',
+    type:'neutral', gold:0,
+    effect:'Nada. Pero encontráis una llave vieja en el bolsillo interior. Podría abrir algo.',
+    apply: function(){
+      addToInventory({nm:'Llave de Rufus',ico:'&#128285;',ds:'Llave misteriosa. Abre alguna puerta en alguna mazmorra. Rufus no recuerda cuál.',r:'uncommon',qty:1},'Bolsillo de Rufus');
+    }
   },
-  event_mercadonegro_a: {
-    txt:'El objeto resulta ser una pocion de fuerza autentica. Suerte de principiante.',
-    type:'good', gold:-50, effect:'Recibes: Pocion de Fuerza.'
+
+  // ── MAGO ──────────────────────────────────────────────────────────────────
+  mago_aceptar: {
+    txt:'"El objeto" resulta ser un grimorio que cambia de idioma solo, pesa 40 kilos y a veces grita. A la semana, Aldous regresa con 80 oros de propina y sin explicaciones. "Mejor no preguntes", dice.',
+    type:'good', gold:80,
+    effect:'+80 oros + el grimorio deja un hechizo aprendido en el Mago del grupo antes de marcharse.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(80/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+      const mago=heroes.filter(h=>!h.dead).find(h=>['mago','hechicera','alquimista'].some(k=>(h.type||'').toLowerCase().includes(k)))||heroes.find(h=>!h.dead);
+      if(mago){ mago.maxMp=(mago.maxMp||2)+1; toast('&#128302; '+mago.name+' aprende algo del grimorio: +1 MP máximo'); }
+    }
   },
-  event_mercadonegro_b: {
-    txt:'Al inspeccionar, descubres que son falsificaciones. Os zafais antes de pagar.',
-    type:'neutral', gold:0, effect:'Evitado el engano. Sin perdidas.'
+  mago_prestar: {
+    txt:'Aldous desaparece con vuestros 50 oros durante 48 horas. Regresa con 120 oros, una capa nueva y sin querer hablar del tema. Os devuelve el doble. "Las inversiones mágicas tienen rendimiento variable."',
+    type:'good', gold:70,
+    effect:'+120 oros devueltos (ganancia neta: +70 oros). Sin preguntas.',
+    apply: function(){
+      const net=120-50; // devuelve 120, prestó 50
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(net/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+    }
   },
-  event_mercadonegro_c: {
-    txt:'Las autoridades os agradecen el aviso con 30 oros de recompensa.',
-    type:'good', gold:30, effect:'+30 oros de recompensa ciudadana.'
+  mago_delatar: {
+    txt:'El gremio os da 40 oros de recompensa. También os da una carta de Aldous que dice: "Lo sabía. Os maldigo con artritis los martes." Los martes ahora son incómodos.',
+    type:'mixed', gold:40,
+    effect:'+40 oros de recompensa. Maldición menor: los héroes tiran con -1 en algún momento futuro. Nada grave.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(40/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+      addToInventory({nm:'Maldicion de los Martes',ico:'&#128128;',ds:'Maldicion menor de Aldous el Gris. Efecto: incómodo pero no letal. Se cura en 1D6 semanas.',r:'common',qty:1},'Gremio de Magos');
+    }
   },
-  event_torneo_a: {
-    txt:'Luchais con honor. El resultado es incierto... tira 1D6: 1-3 perdeis 1D4 HP, 4-6 ganais 80 oros y gloria.',
+
+  // ── PROFETISA ─────────────────────────────────────────────────────────────
+  prof_pagar: {
+    txt:'"Veo... veo un gran tesoro en vuestra próxima mazmorra. También veo que uno de vosotros va a pisar una trampa obvia. Os daré una pista: es el más alto." Mira al Bárbaro fijamente.',
+    type:'good', gold:-30,
+    effect:'+1 poción rara de regalo + información real: la próxima sala del tipo Tesoro tiene botín aumentado.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=Math.max(0,(h.gold||0)-Math.floor(30/Math.max(1,heroes.filter(x=>!x.dead).length))); });
+      addToInventory({nm:'Pocion Profética',ico:'&#128302;',ds:'Elaborada por la profetisa. Efecto aleatorio pero garantizadamente útil cuando más se necesita.',r:'rare',qty:1},'La Profetisa');
+    }
+  },
+  prof_grandeza: {
+    txt:'"Solo grandeza... mmm. Vale. Veo gloria, poder, riquezas." Pausa. "También veo deudas, pero eso forma parte de la grandeza." Os cobra igual.',
+    type:'neutral', gold:0,
+    effect:'+10 XP a todos por la motivación. Gratis, porque no os cobra. Hoy está generosa.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.xp=(h.xp||0)+10; });
+      toast('&#11088; Motivación profética: +10 XP a todos');
+    }
+  },
+  prof_ignorar: {
+    txt:'"¡Ya lo veía! ¡Siempre ignoráis las profecías y luego venís llorando!" Os grita mientras os alejáis. Tiene razón estadísticamente hablando, pero hoy no pasa nada.',
+    type:'neutral', gold:0,
+    effect:'Nada. Aunque si algo sale mal en la próxima mazmorra, será culpa vuestra por no escucharla.',
+    apply: null
+  },
+
+  // ── LADRÓN ────────────────────────────────────────────────────────────────
+  ladron_quedar: {
+    txt:'80 oros de origen cuestionable. Nadie pregunta de dónde vienen. El karma es un concepto abstracto y las pociones cuestan dinero real.',
+    type:'good', gold:80,
+    effect:'+80 oros al grupo. Sin preguntas. Sin consecuencias visibles de momento.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(80/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+    }
+  },
+  ladron_reclutar: {
+    txt:'"Seré vuestro hombre en la ciudad. Información, contactos, objetos de origen diverso." Pedro el Rápido (nombre real) se convierte en vuestro enlace. Es sorprendentemente competente.',
+    type:'good', gold:0,
+    effect:'+1 objeto de contrabando al inventario por sesión + descuento del 10% en una compra de ciudad.',
+    apply: function(){
+      addToInventory({nm:'Contacto: Pedro el Rapido',ico:'&#129440;',ds:'Vuestro informador en la ciudad. Puede conseguir objetos difíciles. No preguntes cómo.',r:'rare',qty:1},'Ladrón Arrepentido');
+      addToInventory({nm:'Mercancia de Origen Diverso',ico:'&#128176;',ds:'Tres objetos comunes de procedencia cuestionable. Funcionan igual.',r:'common',qty:3},'Contacto Pedro');
+    }
+  },
+  ladron_devolver: {
+    txt:'El dueño original resulta ser el alcalde. Os da las gracias con una palmada en el hombro y una moneda. Una moneda de cobre. Sois los héroes más baratos de la historia.',
+    type:'neutral', gold:1,
+    effect:'+1 oro (sí, uno). Pero ganáis reputación en la ciudad. El alcalde os debe un favor.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+1; });
+      addToInventory({nm:'Favor del Alcalde',ico:'&#128081;',ds:'El alcalde os debe un favor. Puede usarse para evitar problemas con las autoridades o conseguir información oficial.',r:'uncommon',qty:1},'Alcalde de la Ciudad');
+      toast('&#10003; +1 oro y un favor del alcalde. La virtud tiene precio bajo.');
+    }
+  },
+
+  // ── HERRERO ───────────────────────────────────────────────────────────────
+  herrero_comprar: {
+    txt:'Gruk os vende armamento de primera a precio de segunda por urgencia económica. "No miréis las marcas de colmillos", dice señalando la espada. No miráis las marcas de colmillos.',
+    type:'good', gold:-60,
+    effect:'-60 oros + 1 Espada de Hierro, 1 Escudo Reforzado y 1 Hacha de Combate al inventario.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=Math.max(0,(h.gold||0)-Math.floor(60/Math.max(1,heroes.filter(x=>!x.dead).length))); });
+      addToInventory({nm:'Espada de Hierro (oferta)',ico:'&#9876;&#65039;',ds:'+2 ATK. Marcas de colmillos incluidas sin coste adicional.',r:'uncommon',qty:1},'Herrero Gruk');
+      addToInventory({nm:'Escudo Reforzado (oferta)',ico:'&#128737;&#65039;',ds:'+2 DEF. Gruk jura que el abolladero es decorativo.',r:'uncommon',qty:1},'Herrero Gruk');
+    }
+  },
+  herrero_prestar: {
+    txt:'Gruk trabaja en vuestra fragua 3 días y os deja como pago: 2 armas personalizadas y un agradecimiento en enano que básicamente os llama "amigos rescatadores de mi negocio".',
+    type:'good', gold:0,
+    effect:'+1 Arma Forjada a Medida (rara) y +1 Armadura Reforzada al inventario. Sin coste.',
+    apply: function(){
+      addToInventory({nm:'Arma Forjada por Gruk',ico:'&#128296;',ds:'+3 ATK. Hecha a mano por el mejor herrero de la región en vuestro honor. Y en vuestra fragua.',r:'rare',qty:1},'Gruk el Herrero');
+      addToInventory({nm:'Armadura de Gruk',ico:'&#128737;&#65039;',ds:'+3 DEF. Resistente a fuego, ácido y dragones pequeños según el fabricante.',r:'rare',qty:1},'Gruk el Herrero');
+    }
+  },
+  herrero_dragon: {
+    txt:'"No hay ningún dragón." Pausa de 4 segundos. Un rugido lejano. "Ese es el... viento." Os da 30 oros para que os vayáis. El dragón pequeño asoma la cabeza desde el taller.',
+    type:'good', gold:30,
+    effect:'+30 oros por vuestra discreción + escamas de dragón pequeño al inventario (ingrediente raro).',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(30/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+      addToInventory({nm:'Escamas de Dragon Pequeno',ico:'&#128027;',ds:'Ingrediente mágico raro. El Mago puede usarlas para poción de resistencia al fuego. El dragón las donó voluntariamente según Gruk.',r:'rare',qty:2},'Dragón de Gruk');
+    }
+  },
+
+  // ── FESTIVAL ──────────────────────────────────────────────────────────────
+  festival_concurso: {
+    txt:'"¿Vuestra hazaña más absurda?" El grupo tarda 40 minutos en decidir cuál contar. Ganan por unanimidad del jurado, que los mira con una mezcla de admiración y preocupación diagnóstica.',
+    type:'good', gold:100,
+    effect:'+100 oros de premio + título honorífico de "Aventureros Más Improbables del Año".',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(100/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+      addToInventory({nm:'Titulo: Aventureros Improbables',ico:'&#127942;',ds:'Reconocimiento oficial de la ciudad. Da acceso VIP a la taberna y descuento en el gremio. Enmarcado.',r:'uncommon',qty:1},'Festival del Fundador');
+    }
+  },
+  festival_comer: {
+    txt:'Tres horas de comida gratis y cerveza del festival. El grupo está en el mejor estado físico en semanas. Alguien llora de emoción. Probablemente el Bárbaro.',
+    type:'good', gold:0,
+    effect:'Todos los héroes activos recuperan HP completo + MP completo + 2 Raciones de Viaje al inventario.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.hp=h.maxHp; h.mp=h.maxMp; });
+      addToInventory({nm:'Racion del Festival',ico:'&#127833;',ds:'+1 HP tras cada combate durante 3 batallas. Sabe mejor que las raciones normales.',r:'common',qty:3,stackable:true},'Festival del Fundador');
+      toast('&#127817; Festín completo: HP y MP restaurados para todos');
+    }
+  },
+  festival_apostar: {
+    txt:'Los combates callejeros del festival son de dudosa legalidad y excelente rentabilidad. Apostáis con criterio estratégico (y algo de suerte) en los luchadores correctos.',
     type:'risk', gold:0, roll:true,
-    rollGood:{min:4,gold:80,effect:'Gloria ganada: +1 ATK el proximo combate.'},
-    rollBad:{max:3,gold:0,effect:'Derrota. Perdeis 1D4 HP cada heroe.', damage:true}
+    rollGood:{
+      min:4, gold:120,
+      effect:'Apuesta ganada: +120 oros. Conocéis al luchador ganador, que resulta ser disponible como mercenario.',
+      apply: function(){
+        heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(120/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+        addToInventory({nm:'Contacto: Luchador del Festival',ico:'&#129454;',ds:'Mercenario disponible. HP5 ATK3 DEF2. Lucha por 50 oros por misión. No pregunta el porqué.',r:'uncommon',qty:1},'Festival');
+      }
+    },
+    rollBad:{
+      max:3, gold:-40,
+      effect:'Apuesta perdida: -40 oros. El luchador favorito se rinde en el primer asalto. Tiene su orgullo, dice.',
+      apply: function(){
+        heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=Math.max(0,(h.gold||0)-Math.floor(40/Math.max(1,heroes.filter(x=>!x.dead).length))); });
+      }
+    }
   },
-  event_torneo_b: {
-    txt:'Apostais 20 oros. Tira 1D6: 4+ ganais el doble. 1-3 perdeis la apuesta.',
-    type:'risk', gold:-20, roll:true,
-    rollGood:{min:4,gold:40,effect:'Apuesta ganada. +40 oros.'},
-    rollBad:{max:3,gold:0,effect:'Apuesta perdida.'}
+
+  // ── NOBLE ─────────────────────────────────────────────────────────────────
+  noble_negociar: {
+    txt:'"Inicialmente ofrecía 50 oros." Negociáis. "80." Seguís. "150 y mi mejor botella de vino." No cedéis. "200 oros y prometo no mentarme más del tema." Trato.',
+    type:'good', gold:200,
+    effect:'+200 oros + botella de vino legendario al inventario (efecto mecánico real).',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(200/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+      addToInventory({nm:'Vino de Lord Pemberton III',ico:'&#127863;',ds:'Vino de cosecha legendaria. Al beberlo: +2 ATK y +2 DEF durante 1 batalla. Sabe a victoria y arrogancia de clase alta.',r:'rare',qty:1},'Lord Pemberton III');
+    }
   },
-  event_torneo_c: {
-    txt:'Observais las tecnicas de los luchadores. Aprendeis algo util.',
-    type:'good', gold:0, effect:'+1 dado de ataque en el primer turno de la proxima batalla.'
+  noble_aceptar: {
+    txt:'"Sótano limpio, 100 oros, gracias y adiós." Pemberton ni siquiera baja a comprobarlo. Os da los 100 oros y una carta de recomendación escrita con caligrafía de oro. La caligrafía vale más que el pago.',
+    type:'good', gold:100,
+    effect:'+100 oros + carta de recomendación noble (acceso a áreas restringidas) + +5 XP por no-muerto eliminado.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(100/Math.max(1,heroes.filter(x=>!x.dead).length)); h.xp=(h.xp||0)+20; });
+      addToInventory({nm:'Carta de Lord Pemberton',ico:'&#128220;',ds:'Carta de recomendación noble. Permite acceso a áreas restringidas y trato preferente en comercios nobles. Huele a lavanda.',r:'uncommon',qty:1},'Lord Pemberton III');
+    }
   },
-  event_mendigo_a: {
-    txt:'El anciano dibuja un mapa en la tierra. Revela una sala de tesoro oculta en la proxima mazmorra.',
-    type:'good', gold:-20, effect:'Sala de tesoro extra en la proxima escaramuza.'
+  noble_itemizar: {
+    txt:'Presentáis factura detallada: "12 esqueletos × 8 oros = 96. 3 zombies × 12 = 36. 1 espectro × 25 = 25. Gastos de antorcha = 5. Total: 162 oros." Pemberton os mira horrorizado. Paga.',
+    type:'good', gold:162,
+    effect:'+162 oros exactos. La auditoría funciona. El noble aprende una lección sobre contratar aventureros.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=(h.gold||0)+Math.floor(162/Math.max(1,heroes.filter(x=>!x.dead).length)); });
+      toast('&#128220; Factura cobrada: 162 oros. La burocracia heroica funciona.');
+    }
   },
-  event_mendigo_b: {
-    txt:'Entre copa y copa, el mendigo revela ser un antiguo explorador. Os da una gema magica.',
-    type:'good', gold:0, effect:'Gema magica: +2 MP al Mago o Elfo permanentemente.'
+
+  // ── BRUJA ─────────────────────────────────────────────────────────────────
+  bruja_bendicion: {
+    txt:'"Esta bendición os protegerá en vuestro próximo viaje." Morgana murmura durante diez minutos. Mezcla algo que huele terrible. "Listo." Todos os sentís ligeramente más invencibles. O es el olor.',
+    type:'good', gold:-50,
+    effect:'+1 DEF a todos permanentemente + poción de "No Me Muero Hoy" al inventario.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=Math.max(0,(h.gold||0)-Math.floor(50/Math.max(1,heroes.filter(x=>!x.dead).length))); h.def=(h.def||1)+1; });
+      addToInventory({nm:'Pocion de Morgana',ico:'&#127807;',ds:'Al llegar a 0 HP, tira 1D6: con 4+ sobrevives con 1 HP. Sabe a musgo y decisiones de vida.',r:'rare',qty:1},'Morgana la Verde');
+      toast('&#10024; Bendición de Morgana: +1 DEF a todos');
+    }
   },
-  event_mendigo_c: {
-    txt:'Mas tarde descubrireis que era un heroe legendario de incognito. Una oportunidad perdida.',
-    type:'bad', gold:0, effect:'Oportunidad perdida. No habra segunda vez.'
+  bruja_maldicion: {
+    txt:'"¿A quién maldigo?" Le dáis el nombre del jefe de vuestra próxima mazmorra. Morgana escribe algo, lo quema, y asiente gravemente. "Hecho. Tendrá pesadillas de pollos. Le distraerá."',
+    type:'good', gold:0,
+    effect:'El jefe de la próxima mazmorra tiene -1 ATK permanente esta misión (pesadillas de pollos).',
+    apply: function(){
+      addToInventory({nm:'Maldicion de los Pollos',ico:'&#129510;',ds:'Aplicada al jefe de la próxima mazmorra. -1 ATK. Informa al Master de este efecto antes de comenzar.',r:'rare',qty:1},'Morgana la Verde');
+      toast('&#128128; Maldición lanzada. El jefe lo pasará mal esta noche.');
+    }
   },
-  event_rumores_a: {
-    txt:'Las catacumbas estan llenas de no-muertos pero tambien de tesoros. Encontrais 80 oros y un objeto.',
-    type:'good', gold:80, effect:'Objeto encontrado: equipo raro. Consulta catalogo.'
-  },
-  event_rumores_b: {
-    txt:'La informacion vale 50 oros. El comprador es discreto y profesional.',
-    type:'good', gold:50, effect:'+50 oros por la informacion.'
-  },
-  event_rumores_c: {
-    txt:'Disfrutais de una velada tranquila. A veces descansar tambien es sabio.',
-    type:'neutral', gold:0, effect:'Descanso: todos recuperan 2 HP.'
-  },
-  event_artefacto_a: {
-    txt:'Al examinar el objeto de vuelta al alojamiento, el Mago lo identifica: es un Orbe de Poder.',
-    type:'good', gold:-30, effect:'Orbe de Poder conseguido: +2 MP maximo al Mago.'
-  },
-  event_artefacto_b: {
-    txt:'El Mago invierte 10 minutos analizandolo. Es un amuleto de proteccion menor pero real.',
-    type:'good', gold:0, effect:'Amuleto: +1 DEF permanente a un heroe de tu eleccion.'
-  },
-  event_artefacto_c: {
-    txt:'Prudencia ante todo. Mas tarde oireis que era un objeto maldito. Buena decision.',
-    type:'neutral', gold:0, effect:'Maldicion evitada. Sin consecuencias.'
+  bruja_pociones: {
+    txt:'Morgana saca del cesto lo que parecen pociones normales. "Esta cura veneno. Esta da fuerza. Esta hace que habléis con plantas. Útil a veces." Compráis todas, incluida la última.',
+    type:'good', gold:-40,
+    effect:'-40 oros + 2 Antídotos, 1 Poción de Fuerza, 1 Poción Extraña (efecto sorpresa) al inventario.',
+    apply: function(){
+      heroes.filter(h=>!h.dead).forEach(h=>{ h.gold=Math.max(0,(h.gold||0)-Math.floor(40/Math.max(1,heroes.filter(x=>!x.dead).length))); });
+      addToInventory({nm:'Antidoto de Morgana',ico:'&#129514;',ds:'Cura veneno y maldiciones menores. Ligeramente alucinógeno. Efecto secundario aceptable.',r:'uncommon',qty:2,stackable:true},'Morgana');
+      addToInventory({nm:'Pocion de Fuerza de Morgana',ico:'&#129514;',ds:'+2 ATK durante 1 batalla. Huele a tierra mojada y determinación.',r:'uncommon',qty:1},'Morgana');
+      addToInventory({nm:'Pocion Hablar con Plantas',ico:'&#127807;',ds:'Permite comunicarse con plantas durante 1 hora. Útil a veces, dice Morgana. Las plantas raramente saben nada relevante.',r:'rare',qty:1},'Morgana');
+    }
   },
 };
+
 
 // ── DUNGEON ENCOUNTER EVENTS (in-room events) ─────────────────────────────────
 const DUNGEON_ROOM_EVENTS = [
@@ -3342,46 +3661,76 @@ function resolveCiudadEvent(evId, fn){
   let roll = null;
   let resultText = outcome.txt;
   let effectText = outcome.effect;
-  let goldChange = outcome.gold||0;
+  let goldChange = outcome.gold || 0;
+  let appliedFn  = outcome.apply || null;
 
+  // Handle roll-based outcomes
   if(outcome.roll){
     roll = Math.floor(Math.random()*6)+1;
-    const good = roll >= (outcome.rollGood?.min||4);
-    effectText = good ? outcome.rollGood?.effect : outcome.rollBad?.effect;
-    if(good && outcome.rollGood?.gold) goldChange += outcome.rollGood.gold;
-    if(!good && outcome.rollBad?.damage && heroes.length>0){
+    const good = roll >= (outcome.rollGood?.min || 4);
+    const branch = good ? outcome.rollGood : outcome.rollBad;
+    effectText = branch?.effect || null;
+    appliedFn  = branch?.apply || null;
+    if(good && branch?.gold) goldChange += branch.gold;
+    if(!good && branch?.damage){
       const dmg = Math.floor(Math.random()*4)+1;
-      heroes.forEach(h=>{ h.hp=Math.max(0,h.hp-dmg); });
-      rH(); saveS();
+      heroes.filter(h=>!h.dead&&!h.enGuarida).forEach(h=>{ h.hp=Math.max(0,(h.hp||0)-dmg); });
     }
   }
 
-  // Apply gold change
+  // Apply gold change evenly
   if(goldChange !== 0 && heroes.length > 0){
-    const share = Math.floor(Math.abs(goldChange)/Math.max(1,heroes.length));
-    heroes.forEach(h=>{ h.gold=Math.max(0,(h.gold||0)+(goldChange>0?share:-share)); });
-    rH(); saveS();
+    const share = Math.floor(Math.abs(goldChange) / Math.max(1, heroes.filter(h=>!h.dead).length));
+    heroes.filter(h=>!h.dead).forEach(h=>{
+      h.gold = Math.max(0, (h.gold||0) + (goldChange > 0 ? share : -share));
+    });
   }
 
+  // Apply real effect
+  if(appliedFn) appliedFn();
+
+  rH(); saveS();
+
+  // Build result UI
   const typeCol = outcome.type==='good'?'var(--gr)':outcome.type==='bad'?'var(--bl)':outcome.type==='risk'?'var(--go)':'var(--stl)';
   const typeIco = outcome.type==='good'?'&#11088;':outcome.type==='bad'?'&#128128;':outcome.type==='risk'?'&#127922;':'&#9679;';
+
+  // Build applied effects summary
+  let appliedHtml = '';
+  if(goldChange !== 0){
+    appliedHtml += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)">'
+      +'<span style="font-size:16px">&#128176;</span>'
+      +'<span style="font-size:12px;color:var(--pad);flex:1">Oro</span>'
+      +'<span style="font-family:Cinzel,serif;font-size:13px;color:'+(goldChange>0?'var(--go)':'var(--bl)')+'">'+(goldChange>0?'+':'')+goldChange+' oros</span>'
+      +'</div>';
+  }
+  if(effectText){
+    appliedHtml += '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0">'
+      +'<span style="font-size:16px">'+(appliedFn?'&#10003;':'&#128302;')+'</span>'
+      +'<span style="font-size:12px;color:'+(appliedFn?'var(--gr)':'var(--pad)')+';flex:1;line-height:1.5">'+effectText+'</span>'
+      +'</div>';
+  }
 
   const resultEl = document.getElementById('ciudad-event-result');
   if(resultEl){
     resultEl.innerHTML = '<div class="event-result">'
-      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
-      +'<span style="font-size:20px">'+typeIco+'</span>'
-      +(roll?'<span style="font-family:Cinzel,serif;font-size:14px;color:var(--go)">&#127922; '+roll+'</span>':'')
-      +'<span style="font-family:Cinzel,serif;font-size:12px;color:'+typeCol+';flex:1">'+resultText+'</span>'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+      +'<span style="font-size:24px">'+typeIco+'</span>'
+      +(roll?'<span style="font-family:Cinzel,serif;font-size:18px;color:var(--go);font-weight:700">&#127922; '+roll+'</span>':'')
+      +'<span style="font-family:Cinzel,serif;font-size:13px;color:'+typeCol+';flex:1;line-height:1.5">'+resultText+'</span>'
       +'</div>'
-      +(effectText?'<div style="font-size:12px;color:var(--pad);font-style:italic;padding:8px 10px;background:rgba(0,0,0,.3);border-radius:3px">'+effectText+'</div>':'')
-      +(goldChange?'<div style="font-family:Cinzel,serif;font-size:13px;color:'+(goldChange>0?'var(--go)':'var(--bl)')+';margin-top:8px">'+(goldChange>0?'+':'')+goldChange+' oros</div>':'')
+      +(appliedHtml
+        ?'<div style="background:rgba(0,0,0,.3);border-radius:4px;padding:8px 12px;border:1px solid rgba(201,150,42,.15)">'
+        +'<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:var(--god);margin-bottom:6px">EFECTOS APLICADOS</div>'
+        +appliedHtml+'</div>'
+        :'')
       +'</div>';
   }
-  // Remove choice buttons
+
   document.querySelectorAll('.event-choice').forEach(b=>b.remove());
   renderCiudad();
 }
+
 
 function renderShop(shop, totalGold, heroCount){
   const isOpen = ciudadOpenCard === shop.id;
@@ -3394,8 +3743,9 @@ function renderShop(shop, totalGold, heroCount){
       +'<div class="shop-item-desc">'+item.desc+'</div>'
       +'</div>'
       +'<span class="shop-item-price">'+item.price+'&#128176;</span>'
-      +'<button class="shop-btn" '+(heroCount===0||!canAfford?'disabled':'onclick="buyItem(\''+shop.id+'\','+idx+')"')+'>'
-      +(canAfford&&heroCount>0?'COMPRAR':'SIN OROS')
+      +'<button class="shop-btn" '+(heroCount===0||!canAfford?'disabled':'onclick="buyItem(\''+shop.id+'\','+idx+')"')
+      +(item.heroTarget?' style="border-color:rgba(74,128,212,.6);color:var(--mg)"':'')+'>'
+      +(canAfford&&heroCount>0?(item.heroTarget?'ELEGIR &#8250;':'COMPRAR'):'SIN OROS')
       +'</button>'
       +'</div>';
   }).join('');
@@ -3468,78 +3818,197 @@ function toggleShop(shopId){
 }
 
 function buyItem(shopId, itemIdx){
-  const shopMap = {armeria:ARMERIA_ITEMS, taberna:TABERNA_ITEMS, templo:TEMPLO_ITEMS, gremio:GREMIO_ITEMS, biblioteca:BIBLIOTECA_ITEMS};
-  const items = shopMap[shopId];
+  const shopMap={armeria:ARMERIA_ITEMS,taberna:TABERNA_ITEMS,templo:TEMPLO_ITEMS,gremio:GREMIO_ITEMS,biblioteca:BIBLIOTECA_ITEMS};
+  const items=shopMap[shopId];
   if(!items) return;
-  const item = items[itemIdx];
+  const item=items[itemIdx];
   if(!item) return;
 
-  const totalGold = heroes.reduce((s,h)=>s+(h.gold||0),0);
-  if(totalGold < item.price){ toast('Sin oros suficientes'); return; }
+  const totalGold=heroes.reduce((s,h)=>s+(h.gold||0),0);
+  if(totalGold<item.price){ toast('Sin oros suficientes'); return; }
+  if(!heroes.filter(h=>!h.dead).length){ toast('Sin heroes activos'); return; }
 
-  // Deduct cost evenly
-  const share = Math.ceil(item.price / Math.max(1,heroes.length));
-  let remaining = item.price;
-  for(const h of heroes){
-    const pay = Math.min(remaining, h.gold||0);
-    h.gold = (h.gold||0) - pay;
-    remaining -= pay;
-    if(remaining<=0) break;
+  // Items that require choosing a specific hero → show picker popup
+  if(item.heroTarget){
+    showHeroPickerForItem(shopId, itemIdx, item);
+    return;
   }
 
-  // Apply effect
+  // Pay immediately
+  _deductGold(item.price);
+  _applyItemEffect(item, null);
+  rH(); saveS(); renderCiudad();
+}
+
+function _deductGold(amount){
+  let rem=amount;
+  for(const h of heroes){
+    const pay=Math.min(rem,h.gold||0);
+    h.gold=(h.gold||0)-pay;
+    rem-=pay;
+    if(rem<=0) break;
+  }
+}
+
+function _applyItemEffect(item, targetHero){
+  // targetHero = specific hero object, or null = apply to all/group
+  const targets = targetHero ? [targetHero] : heroes.filter(h=>!h.dead);
+
   if(item.effect){
-    const stat = item.effect.stat, val = item.effect.val;
+    const {stat,val}=item.effect;
     if(stat==='atk'||stat==='def'||stat==='mov'){
-      heroes.forEach(h=>{ if(h[stat]!==undefined) h[stat]+=val; });
-      toast(item.ico+' '+item.nm+' — todos: +'+val+' '+stat.toUpperCase());
+      targets.forEach(h=>{ h[stat]=(h[stat]||0)+val; });
+      toast(item.ico+' '+item.nm+' — '+(targetHero?targetHero.name:'todos')+': +'+val+' '+stat.toUpperCase());
     } else if(stat==='maxHp'){
-      heroes.forEach(h=>{ h.maxHp=(h.maxHp||4)+val; h.hp=Math.min(h.hp+val,h.maxHp); });
-      toast(item.ico+' '+item.nm+' — +'+val+' HP maximo');
+      targets.forEach(h=>{ h.maxHp=(h.maxHp||4)+val; h.hp=Math.min((h.hp||0)+val,h.maxHp); });
+      toast(item.ico+' '+item.nm+' — '+(targetHero?targetHero.name:'todos')+': +'+val+' HP máx');
     } else if(stat==='maxMp'){
-      heroes.forEach(h=>{ h.maxMp=(h.maxMp||2)+val; h.mp=Math.min(h.mp+val,h.maxMp); });
-      toast(item.ico+' '+item.nm+' — +'+val+' MP maximo');
+      targets.forEach(h=>{ h.maxMp=(h.maxMp||2)+val; h.mp=Math.min((h.mp||0)+val,h.maxMp); });
+      toast(item.ico+' '+item.nm+' — '+(targetHero?targetHero.name:'todos')+': +'+val+' MP máx');
     } else if(stat==='mp'){
-      heroes.forEach(h=>{ h.mp=Math.min((h.mp||0)+val,h.maxMp||10); });
+      targets.forEach(h=>{ h.mp=Math.min((h.mp||0)+val,h.maxMp||10); });
       toast(item.ico+' '+item.nm+' — MP restaurado');
     }
-  } else if(item.type==='rest'&&item.heal){
-    heroes.forEach(h=>{ h.hp=h.maxHp; h.mp=h.maxMp; });
-    toast('&#127817; Descanso completo — HP y MP al maximo');
-  } else if(item.type==='potion'&&item.heal){
-    // Immediate heal to first injured hero
-    const wounded = heroes.find(h=>h.hp<h.maxHp)||heroes[0];
-    if(wounded){ const heal=Math.floor(Math.random()*4)+3; wounded.hp=Math.min(wounded.maxHp,wounded.hp+heal); }
-    toast(item.ico+' Pocion usada — +'+(Math.floor(Math.random()*4)+3)+' HP');
-  } else if(item.type==='upgrade'){
-    const stat=item.stat, val=item.val;
-    heroes.forEach(h=>{
-      if(stat==='maxHp'){h.maxHp=(h.maxHp||4)+val;h.hp=Math.min(h.hp+val,h.maxHp);}
-      else if(stat==='mp'||stat==='maxMp'){h.maxMp=(h.maxMp||2)+val;h.mp=Math.min(h.mp+val,h.maxMp);}
+    return;
+  }
+
+  if(item.type==='upgrade'&&item.stat){
+    const {stat,val}=item;
+    targets.forEach(h=>{
+      if(stat==='maxHp'){h.maxHp=(h.maxHp||4)+val;h.hp=Math.min((h.hp||0)+val,h.maxHp);}
+      else if(stat==='maxMp'){h.maxMp=(h.maxMp||2)+val;h.mp=Math.min((h.mp||0)+val,h.maxMp);}
+      else if(stat==='mp'){h.mp=Math.min((h.mp||0)+val,h.maxMp||10);}
+      else if(stat==='atk'||stat==='def'||stat==='mov'){h[stat]=(h[stat]||0)+val;}
     });
-    toast(item.ico+' '+item.nm+' — mejora aplicada a todos');
-  } else if(item.stat && item.val){
-    // Stat upgrade for all heroes
-    heroes.forEach(h=>{
-      if(item.stat==='atk') h.atk=(h.atk||1)+item.val;
-      else if(item.stat==='def') h.def=(h.def||1)+item.val;
-      else if(item.stat==='mp'||item.stat==='maxMp'){h.maxMp=(h.maxMp||2)+item.val;h.mp=Math.min(h.mp+item.val,h.maxMp);}
-      else if(item.stat==='level'){
-        h.level=(h.level||1)+item.val;
+    toast(item.ico+' '+item.nm+' — '+(targetHero?targetHero.name:'todos')+' mejorado');
+    return;
+  }
+
+  if(item.stat&&item.val&&!item.type){
+    const {stat,val}=item;
+    targets.forEach(h=>{
+      if(stat==='atk'||stat==='def'||stat==='mov'){h[stat]=(h[stat]||0)+val;}
+      else if(stat==='maxHp'){h.maxHp=(h.maxHp||4)+val;h.hp=Math.min((h.hp||0)+val,h.maxHp);}
+      else if(stat==='maxMp'){h.maxMp=(h.maxMp||2)+val;h.mp=Math.min((h.mp||0)+val,h.maxMp);}
+      else if(stat==='level'){
+        h.level=(h.level||1)+val;
         const sk2=pickTwoSkills(h);
         if(sk2.length>=2){ const hcopy=h; setTimeout(()=>showSkillChoicePopup(hcopy,sk2,null),600); }
       }
     });
-    toast(item.ico+' '+item.nm+' aplicado a todos');
-  } else {
-    // Add to group inventory
-    if(!gi) gi=[];
-    gi.push({nm:item.nm,ico:item.ico,ds:item.desc,r:'uncommon',qty:1});
-    toast(item.ico+' '+item.nm+' anadido al inventario');
+    toast(item.ico+' '+item.nm+' — '+(targetHero?targetHero.name:'todos'));
+    return;
   }
+
+  if(item.type==='rest'&&item.heal){
+    targets.forEach(h=>{ h.hp=h.maxHp; h.mp=h.maxMp; });
+    toast('&#127817; Descanso completo — HP y MP al máximo');
+    return;
+  }
+  if(item.type==='potion'&&item.heal){
+    const t=targetHero||(targets.sort((a,b)=>(a.hp/a.maxHp)-(b.hp/b.maxHp))[0]);
+    if(t){ const heal=Math.floor(Math.random()*4)+3; t.hp=Math.min(t.maxHp,(t.hp||0)+heal); toast(item.ico+' '+t.name+': +'+heal+' HP'); }
+    return;
+  }
+  if(item.allHeroes&&item.stat){
+    const {stat,val}=item;
+    targets.forEach(h=>{
+      if(stat==='maxHp'){h.maxHp=(h.maxHp||4)+val;h.hp=Math.min((h.hp||0)+val,h.maxHp);}
+      else if(stat==='maxMp'){h.maxMp=(h.maxMp||2)+val;h.mp=Math.min((h.mp||0)+val,h.maxMp);}
+      else if(stat==='atk'||stat==='def'){h[stat]=(h[stat]||0)+val;}
+    });
+    toast(item.ico+' '+item.nm+' — todos los héroes mejorados');
+    return;
+  }
+
+  // Default: add to inventory
+  addToInventory({nm:item.nm,ico:item.ico,ds:item.desc,r:'uncommon',qty:1},'Ciudad');
+  toast(item.ico+' '+item.nm+' añadido al inventario');
+}
+
+// Hero picker popup for single-target upgrades
+function showHeroPickerForItem(shopId, itemIdx, item){
+  const old=document.getElementById('hero-picker-popup');
+  if(old) old.remove();
+
+  const available=heroes.filter(h=>!h.dead);
+  if(!available.length){ toast('No hay héroes disponibles'); return; }
+
+  // Build stat change preview
+  function statPreview(h){
+    if(item.effect||item.stat||item.type==='upgrade'){
+      const stat=item.effect?.stat||item.stat;
+      const val=item.effect?.val||item.val||1;
+      const before=h[stat]||(stat==='maxHp'?h.maxHp:stat==='maxMp'?h.maxMp:0)||0;
+      return stat?('<span style="color:var(--gr);font-family:Cinzel,serif;font-size:11px">'+stat.replace('max','').toUpperCase()+' '+before+' → '+(before+val)+'</span>'):'';
+    }
+    return '';
+  }
+
+  const el=document.createElement('div');
+  el.id='hero-picker-popup';
+  el.style.cssText='position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:20px;animation:fIn .2s ease';
+
+  el.innerHTML='<div style="background:linear-gradient(160deg,#1e1810,#100c06);border:2px solid var(--go);border-radius:10px;width:100%;max-width:400px;max-height:88vh;overflow-y:auto;box-shadow:0 0 50px rgba(201,150,42,.3)">'
+    // Header
+    +'<div style="position:sticky;top:0;background:#1a1208;padding:14px 16px;border-bottom:1px solid rgba(201,150,42,.2);display:flex;align-items:center;gap:12px;z-index:1">'
+    +'<span style="font-size:28px">'+item.ico+'</span>'
+    +'<div style="flex:1">'
+    +'<div style="font-family:Cinzel,serif;font-size:14px;color:var(--go);font-weight:700">'+item.nm+'</div>'
+    +'<div style="font-size:12px;color:var(--stl);margin-top:2px">'+item.desc+'</div>'
+    +'</div>'
+    +'<button onclick="document.getElementById(\'hero-picker-popup\').remove()" style="background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:30px;height:30px;color:var(--stl);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation">&#10005;</button>'
+    +'</div>'
+    // Body
+    +'<div style="padding:16px">'
+    +'<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:var(--god);margin-bottom:10px">¿A QUÉ HÉROE APLICAS LA MEJORA?</div>'
+    +available.map(h=>{
+      const hpPct=Math.max(0,Math.min(100,((h.hp||0)/(h.maxHp||1))*100));
+      const hpCol=hpPct>60?'var(--gr)':hpPct>30?'var(--go)':'var(--bl)';
+      const status=h.enGuarida?'&#128564; Descansando':'&#9876;&#65039; Activo';
+      return '<button onclick="confirmHeroPickerBuy(\''+shopId+'\','+itemIdx+','+h.id+')" style="'
+        +'width:100%;background:linear-gradient(135deg,#1e1810,#2a2218);'
+        +'border:2px solid rgba(201,150,42,.25);border-radius:6px;padding:12px 14px;'
+        +'display:flex;align-items:center;gap:12px;cursor:pointer;touch-action:manipulation;'
+        +'text-align:left;margin-bottom:8px">'
+        +'<div style="width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,'+h.col+'44,'+h.col+'11);border:2px solid rgba(201,150,42,.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">'+h.ico+'</div>'
+        +'<div style="flex:1">'
+        +'<div style="font-family:Cinzel,serif;font-size:14px;color:var(--pa);font-weight:700;margin-bottom:2px">'+h.name+'</div>'
+        +'<div style="font-size:11px;color:var(--stl);margin-bottom:4px">'+h.cls+' &bull; Nv '+(h.level||1)+' &bull; '+status+'</div>'
+        +'<div style="height:5px;background:rgba(0,0,0,.4);border-radius:2px;overflow:hidden;margin-bottom:4px">'
+        +'<div style="height:100%;width:'+hpPct+'%;background:linear-gradient(90deg,'+hpCol+','+hpCol+'88);border-radius:2px"></div></div>'
+        +'<div style="display:flex;justify-content:space-between;align-items:center">'
+        +'<span style="font-size:10px;color:var(--stl)">&#10084; '+(h.hp||0)+'/'+(h.maxHp||0)+' &nbsp; &#10024; '+(h.mp||0)+'/'+(h.maxMp||0)+'</span>'
+        +statPreview(h)
+        +'</div>'
+        +'</div>'
+        +'<span style="color:var(--go);font-size:22px">&#8250;</span>'
+        +'</button>';
+    }).join('')
+    +'</div></div>';
+
+  el.addEventListener('click',e=>{if(e.target===el)el.remove();});
+  document.documentElement.appendChild(el);
+}
+
+function confirmHeroPickerBuy(shopId, itemIdx, heroId){
+  const shopMap={armeria:ARMERIA_ITEMS,taberna:TABERNA_ITEMS,templo:TEMPLO_ITEMS,gremio:GREMIO_ITEMS,biblioteca:BIBLIOTECA_ITEMS};
+  const item=shopMap[shopId]?.[itemIdx];
+  const h=heroes.find(x=>x.id===heroId);
+  if(!item||!h) return;
+
+  const totalGold=heroes.reduce((s,hh)=>s+(hh.gold||0),0);
+  if(totalGold<item.price){ toast('Sin oros suficientes'); return; }
+
+  _deductGold(item.price);
+  _applyItemEffect(item, h);
+
+  const popup=document.getElementById('hero-picker-popup');
+  if(popup) popup.remove();
 
   rH(); saveS(); renderCiudad();
 }
+
 
 function applyUpgrade(shopId, upgradeIdx){
   const upgrades = [
@@ -4127,6 +4596,7 @@ function renderGuarida(){
       + '</div>';
   }
 
+  html += renderGuaridaUpgrades();
   html += '</div>';
   c.innerHTML = html;
 }
@@ -4350,6 +4820,600 @@ function deductGroupGold(amount){
 }
 
 
+// ══════════════════════════════════════════════════════════════════════════════
+// INVENTARIO GLOBAL
+// ══════════════════════════════════════════════════════════════════════════════
+(function(){
+  const s=document.createElement('style');
+  s.textContent=`
+    .inv-view{padding:12px;padding-bottom:90px}
+    .inv-section-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--god);padding:10px 0 7px;display:flex;align-items:center;justify-content:space-between}
+    .inv-item{display:flex;align-items:center;gap:12px;padding:11px 13px;background:linear-gradient(135deg,#1a1208,#0d0a07);border:1px solid rgba(201,150,42,.18);border-radius:6px;margin-bottom:7px}
+    .inv-item-ico{font-size:24px;flex-shrink:0;width:34px;text-align:center}
+    .inv-item-body{flex:1;min-width:0}
+    .inv-item-name{font-family:'Cinzel',serif;font-size:13px;color:var(--pa);font-weight:700;margin-bottom:2px}
+    .inv-item-desc{font-size:11px;color:var(--stl);font-style:italic}
+    .inv-item-src{font-size:10px;color:var(--god);font-family:'Cinzel',serif;letter-spacing:.5px;margin-top:3px}
+    .inv-rarity{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;padding:1px 6px;border-radius:2px;border:1px solid;white-space:nowrap;flex-shrink:0}
+    .inv-use-btn{background:rgba(0,0,0,.4);border:1px solid rgba(201,150,42,.3);border-radius:3px;color:var(--go);font-family:'Cinzel',serif;font-size:10px;padding:5px 9px;cursor:pointer;touch-action:manipulation;white-space:nowrap;flex-shrink:0}
+    .inv-use-btn:active{opacity:.7}
+    .inv-empty{text-align:center;padding:32px 16px;color:var(--stl);font-style:italic;font-size:13px;line-height:1.8}
+    /* Inline D20 table in rooms */
+    .room-d20-section{background:rgba(0,0,0,.25);border:1px solid rgba(201,150,42,.15);border-radius:5px;overflow:hidden;margin-top:10px}
+    .room-d20-header{padding:9px 13px;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:space-between;cursor:pointer;touch-action:manipulation}
+    .room-d20-header:active{background:rgba(201,150,42,.08)}
+    .room-d20-body{display:none;padding:0}
+    .room-d20-body.open{display:block}
+    .room-d20-roll-row{padding:10px 13px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(201,150,42,.1)}
+    .d20-result-inline{font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:var(--go);min-width:36px;text-align:center;transition:all .25s}
+    .d20-result-inline.rolling{animation:diceRollAnim .35s ease}
+    .d20-row-highlight{background:rgba(201,150,42,.14)!important;color:var(--go)!important}
+  `;
+  document.head.appendChild(s);
+})();
+
+const RARITY_COLS = {common:'#5a504a',uncommon:'#4a80d4',rare:'#8a2a8a',legendary:'#c9962a'};
+const RARITY_LABELS = {common:'COMÚN',uncommon:'POCO COMÚN',rare:'RARO',legendary:'LEGENDARIO'};
+
+// Inventory: gi is the global array, items have {nm,ico,ds,r,qty,src,heroId?}
+function addToInventory(item, source){
+  if(!gi) gi=[];
+  const existing = gi.find(x=>x.nm===item.nm&&x.r===item.r);
+  if(existing && item.stackable){ existing.qty=(existing.qty||1)+1; }
+  else { gi.push({...item, qty:item.qty||1, src:source||'Desconocido', added:Date.now()}); }
+  saveS();
+  toast(item.ico+' '+item.nm+' añadido al inventario');
+}
+
+function renderInventario(){
+  const c=document.getElementById('invcon');
+  if(!c) return;
+
+  const totalGold = heroes.reduce((s,h)=>s+(h.gold||0),0);
+  const items = gi||[];
+
+  // Split by rarity for display
+  const byRarity = {legendary:[],rare:[],uncommon:[],common:[]};
+  items.forEach(it=>{
+    const r=it.r||'common';
+    if(byRarity[r]) byRarity[r].push(it);
+    else byRarity.common.push(it);
+  });
+
+  let html='<div class="inv-view">'
+    +'<div style="font-family:Cinzel,serif;font-size:11px;letter-spacing:3px;color:var(--god);text-align:center;padding:8px 0 12px">&#127919; INVENTARIO DEL GRUPO</div>'
+
+    // Summary bar
+    +'<div style="display:flex;gap:8px;margin-bottom:14px">'
+    +[
+      {ico:'&#128176;',val:totalGold+' oros',col:'var(--go)'},
+      {ico:'&#127919;',val:items.length+' objetos',col:'var(--pa)'},
+      {ico:'&#129514;',val:(items.filter(x=>x.nm&&x.nm.toLowerCase().includes('pocion')).length)+' pociones',col:'var(--gr)'},
+    ].map(s=>'<div style="flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(201,150,42,.15);border-radius:5px;padding:8px 10px;text-align:center">'
+      +'<div style="font-size:18px">'+s.ico+'</div>'
+      +'<div style="font-family:Cinzel,serif;font-size:11px;color:'+s.col+';margin-top:3px">'+s.val+'</div>'
+      +'</div>'
+    ).join('')
+    +'</div>';
+
+  if(items.length===0){
+    html+='<div class="inv-empty">El inventario está vacío.<br>Los objetos conseguidos en mazmorras<br>y comprados en la ciudad aparecerán aquí.</div>';
+  } else {
+    ['legendary','rare','uncommon','common'].forEach(r=>{
+      const group=byRarity[r];
+      if(!group.length) return;
+      html+='<div class="inv-section-title">'
+        +'<span style="color:'+RARITY_COLS[r]+'">'+RARITY_LABELS[r]+'</span>'
+        +'<span style="font-size:11px;color:var(--stl)">'+group.length+' objeto'+(group.length!==1?'s':'')+'</span>'
+        +'</div>';
+      group.forEach((it,idx)=>{
+        const globalIdx = gi.indexOf(it);
+        const rarCol = RARITY_COLS[r]||'var(--stl)';
+        html+='<div class="inv-item">'
+          +'<span class="inv-item-ico">'+it.ico+'</span>'
+          +'<div class="inv-item-body">'
+          +'<div class="inv-item-name">'+it.nm+(it.qty>1?' ×'+it.qty:'')+'</div>'
+          +'<div class="inv-item-desc">'+(it.ds||it.desc||'Sin descripción')+'</div>'
+          +(it.src?'<div class="inv-item-src">&#128205; '+it.src+'</div>':'')
+          +'</div>'
+          +'<span class="inv-rarity" style="color:'+rarCol+';border-color:'+rarCol+'44">'+RARITY_LABELS[r]+'</span>'
+          +(isUsableItem(it)?'<button class="inv-use-btn" onclick="useInventoryItem('+globalIdx+')">USAR</button>':'')
+          +'<button onclick="removeInvItem('+globalIdx+')" style="background:none;border:none;color:rgba(139,26,26,.5);font-size:18px;cursor:pointer;padding:4px;touch-action:manipulation">&#10005;</button>'
+          +'</div>';
+      });
+    });
+  }
+
+  // Hero gold breakdown
+  if(heroes.length>0){
+    html+='<div class="inv-section-title"><span>ORO POR HÉROE</span></div>'
+      +'<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">';
+    heroes.filter(h=>!h.dead).forEach(h=>{
+      html+='<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(0,0,0,.25);border:1px solid rgba(201,150,42,.12);border-radius:5px">'
+        +'<span style="font-size:20px">'+h.ico+'</span>'
+        +'<span style="font-family:Cinzel,serif;font-size:12px;color:var(--pa);flex:1">'+h.name+'</span>'
+        +'<span style="font-family:Cinzel,serif;font-size:14px;color:var(--go)">'+( h.gold||0)+' &#128176;</span>'
+        +'</div>';
+    });
+    html+='</div>';
+  }
+
+  html+='</div>';
+  c.innerHTML=html;
+}
+
+function isUsableItem(it){
+  const nm=(it.nm||'').toLowerCase();
+  return nm.includes('pocion')||nm.includes('pergamino')||nm.includes('elixir')||nm.includes('antidoto');
+}
+
+function useInventoryItem(idx){
+  const it=gi[idx];
+  if(!it) return;
+  const nm=(it.nm||'').toLowerCase();
+  if(nm.includes('pocion')||nm.includes('elixir')){
+    // Heal most injured active hero
+    const active=heroes.filter(h=>!h.enGuarida&&!h.dead);
+    const target=active.sort((a,b)=>((a.hp/a.maxHp)-(b.hp/b.maxHp)))[0];
+    if(target){ const heal=Math.floor(Math.random()*4)+3; target.hp=Math.min(target.maxHp,(target.hp||0)+heal); toast(it.ico+' '+it.nm+' usado en '+target.name+': +'+heal+' HP'); }
+  } else if(nm.includes('antidoto')){
+    toast(it.ico+' Antídoto usado — veneno curado');
+  } else {
+    toast(it.ico+' '+it.nm+' activado');
+  }
+  if(it.qty>1){ it.qty--; } else { gi.splice(idx,1); }
+  rH(); saveS(); renderInventario();
+}
+
+function removeInvItem(idx){
+  if(!gi||!gi[idx]) return;
+  if(!confirm('¿Eliminar '+gi[idx].nm+' del inventario?')) return;
+  gi.splice(idx,1);
+  saveS(); renderInventario();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// D20 TABLE INLINE IN ROOMS
+// ══════════════════════════════════════════════════════════════════════════════
+let openD20Rooms = new Set(); // track which rooms have D20 open
+
+function renderInlineD20(room){
+  const table = room.content.d20Table;
+  if(!table||!table.length) return '';
+  const rt = room.roomType||{label:'Sala',ico:'&#127968;'};
+  const isOpen = openD20Rooms.has(room.idx);
+  const resultId = 'id20res-'+room.idx;
+
+  let rows = table.map(row=>
+    '<tr id="id20row-'+room.idx+'-'+row[0]+'" style="border-bottom:1px solid rgba(255,255,255,.04)">'
+    +'<td style="padding:7px 10px;font-family:Cinzel,serif;font-size:12px;color:var(--go);font-weight:700;width:44px;text-align:center">'+row[0]+'</td>'
+    +'<td style="padding:7px 10px;font-size:12px;color:var(--pad);line-height:1.45">'+row[1]+'</td>'
+    +'</tr>'
+  ).join('');
+
+  return '<div class="room-d20-section">'
+    +'<div class="room-d20-header" onclick="toggleRoomD20('+room.idx+')">'
+    +'<div style="display:flex;align-items:center;gap:8px">'
+    +'<span style="font-size:16px">&#127922;</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:11px;color:var(--god);letter-spacing:1px">TABLA D20 — '+rt.label.toUpperCase()+'</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:10px">'
+    +'<span class="d20-result-inline" id="'+resultId+'">—</span>'
+    +'<button onclick="event.stopPropagation();rollInlineD20('+room.idx+')" style="background:linear-gradient(135deg,#2a1e0a,#1a1208);border:2px solid var(--god);border-radius:4px;color:var(--go);font-family:Cinzel,serif;font-size:11px;letter-spacing:1px;padding:7px 12px;cursor:pointer;touch-action:manipulation">&#127922; D20</button>'
+    +'<span style="color:var(--god);font-size:18px;transition:transform .2s'+(isOpen?';transform:rotate(90deg)':'')+'">&#8250;</span>'
+    +'</div>'
+    +'</div>'
+    +'<div class="room-d20-body'+(isOpen?' open':'')+'" id="id20body-'+room.idx+'">'
+    +'<div class="room-d20-roll-row">'
+    +'<span style="font-size:13px;color:var(--stl);font-style:italic">Tira el dado y compara con la tabla</span>'
+    +'</div>'
+    +'<table style="width:100%;border-collapse:collapse"><tbody>'+rows+'</tbody></table>'
+    +'</div>'
+    +'</div>';
+}
+
+function toggleRoomD20(roomIdx){
+  if(openD20Rooms.has(roomIdx)) openD20Rooms.delete(roomIdx);
+  else openD20Rooms.add(roomIdx);
+  renderSk();
+  // Scroll to keep position
+  const el=document.getElementById('id20body-'+roomIdx);
+  if(el&&openD20Rooms.has(roomIdx)) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function rollInlineD20(roomIdx){
+  const roll=Math.floor(Math.random()*20)+1;
+  const resEl=document.getElementById('id20res-'+roomIdx);
+  if(resEl){ resEl.classList.remove('rolling'); void resEl.offsetWidth; resEl.textContent=roll; resEl.classList.add('rolling'); }
+  // Clear all highlights for this room
+  if(!dg) return;
+  const room=dg.rooms[roomIdx];
+  const table=room?.content?.d20Table||[];
+  table.forEach(row=>{
+    const rowEl=document.getElementById('id20row-'+roomIdx+'-'+row[0]);
+    if(rowEl){ rowEl.style.background=''; rowEl.querySelectorAll('td').forEach(td=>td.style.color=''); }
+  });
+  // Highlight the result
+  const target=document.getElementById('id20row-'+roomIdx+'-'+roll);
+  if(target){
+    target.classList.add('d20-row-highlight');
+    target.querySelectorAll('td').forEach(td=>td.classList.add('d20-row-highlight'));
+    // Auto-open if closed
+    openD20Rooms.add(roomIdx);
+    const body=document.getElementById('id20body-'+roomIdx);
+    if(body){ body.classList.add('open'); }
+    setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'nearest'}),150);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// APPLY REWARDS ON VICTORY
+// ══════════════════════════════════════════════════════════════════════════════
+function victoryScreen(){
+  if(!dg) return;
+  const lore = dg.lore;
+  const diff = dg.difficulty||'medio';
+  const d = DIFFICULTY[diff]||DIFFICULTY.medio;
+
+  // Calculate rewards based on difficulty
+  const goldPerHero = diff==='facil'?ri(40,70):diff==='dificil'?ri(80,150):ri(60,120);
+  const xpPerHero   = diff==='facil'?100:diff==='dificil'?200:150;
+  const bonusItem   = diff==='facil'
+    ? {nm:'Poción de Curación',ico:'&#129514;',ds:'Restaura 1D4+2 HP.',r:'common'}
+    : diff==='dificil'
+    ? {nm:'Objeto Mágico Raro',ico:'&#128302;',ds:'Objeto de gran poder. Identifica con el Mago.',r:'rare'}
+    : {nm:'Equipo de Aventura',ico:'&#9876;&#65039;',ds:'Equipo poco común del dungeon.',r:'uncommon'};
+
+  // Collect all loot from cleared rooms
+  const dungeonLoot = [];
+  (dg.rooms||[]).forEach(room=>{
+    if(room.state==='cleared'||room.state==='revealed'){
+      (room.content.loots||[]).forEach(l=>{
+        dungeonLoot.push({nm:l.nm,ico:l.ico,ds:l.det||l.ds||'',r:'uncommon',src:'Sala '+(room.idx+1)+' — '+lore.tl});
+      });
+    }
+  });
+
+  // Apply gold and XP to active heroes
+  const activeHeroes = heroes.filter(h=>!h.enGuarida&&!h.dead);
+  activeHeroes.forEach(h=>{
+    h.gold=(h.gold||0)+goldPerHero;
+    h.xp=(h.xp||0)+xpPerHero;
+    // Level up check: every 200 XP
+    const newLevel = Math.floor(h.xp/200)+1;
+    if(newLevel > (h.level||1)){
+      h.level=newLevel;
+      const sk2=pickTwoSkills(h);
+      if(sk2.length>=2){ const hcopy=h; setTimeout(()=>showSkillChoicePopup(hcopy,sk2,null),800+activeHeroes.indexOf(h)*600); }
+    }
+  });
+
+  // Add bonus item + dungeon loot to inventory
+  addToInventory({...bonusItem, src:'Recompensa — '+lore.tl}, 'Recompensa');
+  dungeonLoot.forEach(l=>{ addToInventory(l, l.src); });
+
+  // Award esquirla
+  const esquirlasEarned = diff==='dificil' ? 2 : 1;
+  esquirlas += esquirlasEarned;
+  if(!esquirlasLog) esquirlasLog=[];
+  esquirlasLog.unshift('&#128142; +'+esquirlasEarned+' esquirla'+(esquirlasEarned>1?'s':'')+' — '+lore.tl+' ('+new Date().toLocaleDateString('es')+')');
+
+  // Apply guarida bonuses if purchased
+  if(guaridaMejoras && guaridaMejoras.sala_entrenamiento){
+    activeHeroes.forEach(h=>{ h.xp=(h.xp||0)+25; });
+  }
+
+  rH(); saveS();
+
+  const c=document.getElementById('skcon');
+  c.innerHTML='<div style="padding:40px 20px;text-align:center">'
+    +'<div style="font-size:72px;margin-bottom:16px">&#11088;</div>'
+    +'<div style="font-family:Cinzel,serif;font-size:22px;color:var(--go);letter-spacing:2px;margin-bottom:6px">MISIÓN COMPLETADA</div>'
+    +'<div style="font-family:Cinzel,serif;font-size:13px;color:var(--god);margin-bottom:18px">'+lore.tl+'</div>'
+
+    // Rewards breakdown
+    +'<div style="background:rgba(0,0,0,.4);border:2px solid var(--go);border-radius:8px;padding:18px;margin-bottom:16px;text-align:left">'
+    +'<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:var(--god);margin-bottom:12px;text-align:center">RECOMPENSAS APLICADAS</div>'
+    +'<div style="display:flex;flex-direction:column;gap:8px">'
+    +'<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(201,150,42,.08);border-radius:4px">'
+    +'<span style="font-size:20px">&#128176;</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:13px;color:var(--pa);flex:1">Oro</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:15px;color:var(--go);font-weight:700">+'+goldPerHero+' por héroe</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(201,150,42,.08);border-radius:4px">'
+    +'<span style="font-size:20px">&#11088;</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:13px;color:var(--pa);flex:1">Experiencia</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:15px;color:var(--go);font-weight:700">+'+xpPerHero+' XP por héroe</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(128,74,212,.12);border-radius:4px">'
+    +'<span style="font-size:20px">&#128142;</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:13px;color:var(--pa);flex:1">Esquirla de Mazmorra</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:15px;color:var(--pul);font-weight:700">+'+esquirlasEarned+' (total: '+esquirlas+')</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(201,150,42,.08);border-radius:4px">'
+    +'<span style="font-size:20px">'+bonusItem.ico+'</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:13px;color:var(--pa);flex:1">'+bonusItem.nm+'</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:11px;color:var(--god);text-transform:uppercase">&#10003; Inventario</span>'
+    +'</div>'
+    +(dungeonLoot.length?'<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(42,90,42,.15);border-radius:4px">'
+    +'<span style="font-size:20px">&#127917;</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:13px;color:var(--pa);flex:1">Botín del dungeon</span>'
+    +'<span style="font-family:Cinzel,serif;font-size:11px;color:var(--gr)">'+dungeonLoot.length+' objetos &#10003;</span>'
+    +'</div>':'')
+    +'</div></div>'
+
+    // Hero summary
+    +(activeHeroes.length?'<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">'
+    +activeHeroes.map(h=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(0,0,0,.3);border:1px solid rgba(201,150,42,.15);border-radius:5px">'
+      +'<span style="font-size:20px">'+h.ico+'</span>'
+      +'<div style="flex:1;text-align:left">'
+      +'<div style="font-family:Cinzel,serif;font-size:12px;color:var(--pa)">'+h.name+'</div>'
+      +'<div style="font-size:11px;color:var(--stl)">Nv '+(h.level||1)+' &bull; '+( h.xp||0)+' XP &bull; '+(h.gold||0)+' oros</div>'
+      +'</div>'
+      +'<div style="text-align:right"><div style="font-size:11px;color:var(--go)">&#10084; '+(h.hp||0)+'/'+(h.maxHp||0)+'</div></div>'
+      +'</div>'
+    ).join('')+'</div>':'')
+
+    +'<button onclick="resetDungeon()" style="background:linear-gradient(135deg,var(--bl),var(--bld));border:2px solid var(--bl);border-radius:5px;color:var(--pa);font-family:Cinzel,serif;font-size:13px;font-weight:700;letter-spacing:2px;padding:14px 28px;cursor:pointer;touch-action:manipulation">&#9876;&#65039; NUEVA ESCARAMUZA</button>'
+    +'</div>';
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CRÓNICA — Notas + gestor de esquirlas
+// ══════════════════════════════════════════════════════════════════════════════
+
+const OBJETIVO_ESQUIRLAS = 100;
+
+function renderN(){
+  // Keep existing textarea notes functional
+  const ta = document.getElementById('cnotes');
+  if(ta) ta.value = cn||'';
+  // Render esquirlas panel
+  renderEsquirlas();
+}
+
+function renderEsquirlas(){
+  const el = document.getElementById('esquirlas-panel');
+  if(!el) return;
+
+  const pct  = Math.min(100, Math.round((esquirlasPozo / OBJETIVO_ESQUIRLAS) * 100));
+  const done = esquirlasPozo >= OBJETIVO_ESQUIRLAS;
+  const held = esquirlas; // in hand, not yet thrown
+
+  el.innerHTML =
+    // Title
+    '<div style="font-family:Cinzel,serif;font-size:11px;letter-spacing:3px;color:var(--god);padding:10px 0 12px;text-align:center">&#128142; POZO DE LAS ESQUIRLAS</div>'
+
+    // Lore blurb
+    + '<div style="font-size:13px;color:var(--pad);font-style:italic;line-height:1.7;margin-bottom:14px;padding:10px 12px;background:rgba(0,0,0,.25);border:1px solid rgba(201,150,42,.12);border-radius:5px">'
+    + 'Una antigua profecía dice que cuando cien almas de mazmorra sean arrojadas al Pozo del Umbral, '
+    + 'las puertas de Zargon se abrirán para siempre o serán selladas eternamente. '
+    + 'Cada escaramuza completada deja una esquirla de mazmorra en vuestras manos.'
+    + '</div>'
+
+    // Progress bar
+    + '<div style="margin-bottom:16px">'
+    + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">'
+    + '<span style="font-family:Cinzel,serif;font-size:11px;color:var(--god)">PROGRESO DE CAMPAÑA</span>'
+    + '<span style="font-family:Cinzel,serif;font-size:16px;color:'+(done?'var(--go)':'var(--pa)')+';font-weight:700">'+esquirlasPozo+' / '+OBJETIVO_ESQUIRLAS+'</span>'
+    + '</div>'
+    + '<div style="height:14px;background:rgba(0,0,0,.5);border-radius:7px;overflow:hidden;border:1px solid rgba(201,150,42,.2);position:relative">'
+    + '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#4a2080,#8a50d0,var(--go));border-radius:7px;transition:width .6s ease;position:relative">'
+    + (pct>8?'<span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-family:Cinzel,serif;font-size:9px;color:rgba(255,255,255,.8)">'+pct+'%</span>':'')
+    + '</div>'
+    + '</div>'
+    // Milestone markers
+    + '<div style="display:flex;justify-content:space-between;margin-top:4px">'
+    + [0,25,50,75,100].map(m=>'<span style="font-size:9px;color:'+(esquirlasPozo>=m?'var(--go)':'rgba(201,150,42,.3)')+';font-family:Cinzel,serif">'+m+'</span>').join('')
+    + '</div>'
+    + '</div>'
+
+    // In-hand esquirlas
+    + '<div style="background:linear-gradient(135deg,rgba(128,74,212,.1),rgba(74,50,130,.08));border:1px solid rgba(128,74,212,.3);border-radius:8px;padding:14px;margin-bottom:12px">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
+    + '<div>'
+    + '<div style="font-family:Cinzel,serif;font-size:13px;color:var(--pul);font-weight:700;margin-bottom:2px">&#128142; Esquirlas en mano</div>'
+    + '<div style="font-size:11px;color:var(--stl)">Obtenidas al terminar mazmorras</div>'
+    + '</div>'
+    + '<div style="font-family:Cinzel,serif;font-size:32px;color:var(--pul);font-weight:700">'+held+'</div>'
+    + '</div>'
+    // Buttons: +/- held, throw into well
+    + '<div style="display:flex;gap:8px">'
+    + '<button onclick="adjEsquirlas(-1)" style="flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(128,74,212,.3);border-radius:4px;color:var(--pul);font-family:Cinzel,serif;font-size:18px;padding:8px;cursor:pointer;touch-action:manipulation">−</button>'
+    + '<button onclick="adjEsquirlas(1)"  style="flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(128,74,212,.3);border-radius:4px;color:var(--pul);font-family:Cinzel,serif;font-size:18px;padding:8px;cursor:pointer;touch-action:manipulation">+</button>'
+    + '<button onclick="throwEsquirlas()" '+(held<=0?'disabled style="opacity:.4;cursor:not-allowed;':'style="')+'flex:2;background:linear-gradient(135deg,#2a1a50,#1a0a30);border:2px solid rgba(128,74,212,.5);border-radius:4px;color:var(--pul);font-family:Cinzel,serif;font-size:11px;letter-spacing:1px;padding:8px 10px;cursor:pointer;touch-action:manipulation">&#11835; ECHAR AL POZO</button>'
+    + '</div>'
+    + '</div>'
+
+    // Done banner
+    + (done
+      ? '<div style="background:linear-gradient(135deg,rgba(201,150,42,.2),rgba(128,74,212,.15));border:2px solid var(--go);border-radius:8px;padding:16px;text-align:center;margin-bottom:12px">'
+        + '<div style="font-size:48px;margin-bottom:8px">&#127942;</div>'
+        + '<div style="font-family:Cinzel,serif;font-size:16px;color:var(--go);font-weight:700;margin-bottom:6px">¡CAMPAÑA COMPLETADA!</div>'
+        + '<div style="font-size:13px;color:var(--pad);font-style:italic;line-height:1.7">Las 100 esquirlas han sido arrojadas al Pozo del Umbral.<br>La profecía se ha cumplido. Zargon ha caído.</div>'
+        + '</div>'
+      : '')
+
+    // History log
+    + '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:2px;color:var(--stl);margin-bottom:6px">REGISTRO DE MAZMORRAS COMPLETADAS</div>'
+    + '<div id="esquirlas-log" style="background:rgba(0,0,0,.2);border-radius:4px;padding:8px 10px;min-height:40px">'
+    + (esquirlasLog && esquirlasLog.length
+        ? esquirlasLog.slice(0,8).map(l=>'<div style="font-size:11px;color:var(--stl);padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)">'+l+'</div>').join('')
+        : '<div style="font-size:11px;color:rgba(201,150,42,.3);font-style:italic">Ninguna mazmorra completada todavía.</div>'
+    )
+    + '</div>';
+}
+
+function adjEsquirlas(delta){
+  esquirlas = Math.max(0, esquirlas + delta);
+  saveS(); renderEsquirlas();
+}
+
+function throwEsquirlas(){
+  if(esquirlas <= 0) return;
+  const thrown = esquirlas;
+  esquirlasPozo += thrown;
+  esquirlas = 0;
+  const logMsg = '&#128142; ×'+thrown+' esquirlas → Pozo (total: '+esquirlasPozo+')';
+  if(!esquirlasLog) esquirlasLog = [];
+  esquirlasLog.unshift(logMsg);
+  if(esquirlasLog.length > 20) esquirlasLog.pop();
+  saveS(); renderEsquirlas();
+  if(esquirlasPozo >= OBJETIVO_ESQUIRLAS) toast('&#127942; ¡100 esquirlas! ¡CAMPAÑA COMPLETADA!');
+  else toast('&#128142; ×'+thrown+' esquirlas echadas al pozo');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MEJORAS PERMANENTES DE GUARIDA
+// ══════════════════════════════════════════════════════════════════════════════
+
+const GUARIDA_UPGRADES = [
+  {
+    id:'forja',
+    ico:'&#9874;&#65039;', nm:'La Gran Forja',
+    desc:'Una forja completa instalada en la guarida. Los héroes pueden mejorar armas y armaduras entre misiones sin coste adicional de servicio.',
+    lore:'Un herrero errante acepta instalarse aquí a cambio de alojamiento.',
+    effect:'Todas las mejoras del Herrero cuestan -20 oros permanentemente.',
+    costGold: 500,
+    statBonus: {herreroDiscount: 20},
+  },
+  {
+    id:'biblioteca_arcana',
+    ico:'&#128218;', nm:'Biblioteca Arcana',
+    desc:'Estantes llenos de tomos y pergaminos recuperados de mazmorras. El Mago puede estudiar entre misiones.',
+    lore:'Los libros que sobrevivieron a las llamas de la Forja del Caos.',
+    effect:'El Mago recupera 1 MP extra adicional al descansar en la guarida.',
+    costGold: 400,
+    statBonus: {magoMpRest: 1},
+  },
+  {
+    id:'infirmeria',
+    ico:'&#127817;', nm:'Enfermería',
+    desc:'Una sala con camas, hierbas y instrumental médico. La curación en la guarida es más eficiente.',
+    lore:'Equipada con material salvado de un templo derruido.',
+    effect:'Al descansar en la guarida, los héroes recuperan +1 HP adicional por noche.',
+    costGold: 350,
+    statBonus: {healBonus: 1},
+  },
+  {
+    id:'sala_entrenamiento',
+    ico:'&#127947;&#65039;', nm:'Sala de Entrenamiento',
+    desc:'Un espacio para practicar combate y tácticas. Los héroes mejoran más rápido.',
+    lore:'Construida con madera del bosque que rodea la guarida.',
+    effect:'+25 XP extra al completar cada mazmorra para héroes activos.',
+    costGold: 450,
+    statBonus: {xpBonus: 25},
+  },
+  {
+    id:'almacen',
+    ico:'&#128189;', nm:'Almacén Reforzado',
+    desc:'Un almacén seguro para guardar el botín entre mazmorras. Protección contra robos y deterioro.',
+    lore:'Las paredes tienen 60 cm de piedra sólida. Nadie entra sin permiso.',
+    effect:'El inventario del grupo no tiene límite. Protección total del botín.',
+    costGold: 300,
+    statBonus: {unlimitedInventory: true},
+  },
+  {
+    id:'oraculo_permanente',
+    ico:'&#128302;', nm:'Oráculo Vinculado',
+    desc:'Un cristal arcano instalado en la guarida que permite consultar el oráculo antes de cada misión.',
+    lore:'Extraído de las profundidades de la Biblioteca de los Prohibidos.',
+    effect:'Al iniciar cada escaramuza, el grupo recibe 1 consulta de oráculo extra gratuita en la primera sala.',
+    costGold: 600,
+    statBonus: {bonusOracleStart: 1},
+  },
+  {
+    id:'estatua_heroica',
+    ico:'&#129461;', nm:'Estatua del Héroe Caído',
+    desc:'En honor a los aventureros que no regresaron. Su memoria fortalece a los supervivientes.',
+    lore:'Tallada en piedra de mazmorra por el Enano del grupo.',
+    effect:'Cada héroe caído da +5 de bonificación permanente de ATK a todos los supervivientes.',
+    costGold: 250,
+    statBonus: {fallBonus: 5},
+  },
+  {
+    id:'portal_rapido',
+    ico:'&#128302;', nm:'Portal de Acceso Rápido',
+    desc:'Un portal mágico que permite llegar antes a las mazmorras. El grupo actúa con ventaja al inicio.',
+    lore:'Fragmento de un portal mayor destruido por los cultistas.',
+    effect:'Al iniciar combate en la primera sala, el grupo actúa antes que los enemigos (sorpresa garantizada).',
+    costGold: 700,
+    statBonus: {firstRoomSurprise: true},
+  },
+];
+
+function renderGuaridaUpgrades(){
+  const totalGold = heroes.reduce((s,h)=>s+(h.gold||0),0);
+  const purchased = guaridaMejoras || {};
+
+  let html = '<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:3px;color:var(--god);padding:12px 0 10px">&#127981; MEJORAS DE LA GUARIDA</div>'
+    + '<div style="font-size:12px;color:var(--stl);font-style:italic;margin-bottom:12px;line-height:1.6">Mejoras permanentes para toda la campaña. Una vez construidas, sus beneficios son para siempre.</div>';
+
+  GUARIDA_UPGRADES.forEach(upg=>{
+    const owned   = !!purchased[upg.id];
+    const canGold = totalGold >= upg.costGold;
+    const canBuy  = !owned && canGold;
+
+    html += '<div style="background:linear-gradient(135deg,'+(owned?'#0d1a0d':'#1a1208')+','+(owned?'#081008':'#0d0a07')+');border:1px solid rgba('+(owned?'42,90,42':'201,150,42')+','+(owned?.4:.18)+');border-radius:8px;overflow:hidden;margin-bottom:10px">'
+      // Header
+      + '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;'+(owned?'border-bottom:1px solid rgba(42,90,42,.2)':'')+';">'
+      + '<span style="font-size:28px;flex-shrink:0">'+upg.ico+'</span>'
+      + '<div style="flex:1">'
+      + '<div style="font-family:Cinzel,serif;font-size:13px;color:'+(owned?'var(--gr)':'var(--pa)')+';font-weight:700;margin-bottom:2px">'+upg.nm+'</div>'
+      + '<div style="font-size:11px;color:var(--stl);font-style:italic">'+upg.lore+'</div>'
+      + '</div>'
+      + (owned
+        ? '<span style="font-family:Cinzel,serif;font-size:10px;color:var(--gr);border:1px solid var(--grd);border-radius:3px;padding:2px 8px;flex-shrink:0">CONSTRUIDA</span>'
+        : '<div style="text-align:right;flex-shrink:0">'
+          + '<div style="font-family:Cinzel,serif;font-size:13px;color:'+(canGold?'var(--go)':'var(--bl)')+';font-weight:700">'+upg.costGold+' &#128176;</div>'
+          + '</div>'
+      )
+      + '</div>'
+      // Body
+      + (owned
+        ? '<div style="padding:8px 14px 12px"><div style="font-size:12px;color:var(--gr)">&#10003; '+upg.effect+'</div></div>'
+        : '<div style="padding:8px 14px 12px">'
+          + '<div style="font-size:12px;color:var(--pad);font-style:italic;margin-bottom:8px">'+upg.desc+'</div>'
+          + '<div style="font-size:11px;color:'+(owned?'var(--gr)':'var(--go)')+';background:rgba(0,0,0,.3);border-radius:3px;padding:6px 9px;margin-bottom:8px">&#127919; '+upg.effect+'</div>'
+          + '<button onclick="buyGuaridaUpgrade(\''+upg.id+'\')" '+(canBuy?'':'disabled ')
+          + 'style="width:100%;background:'+(canBuy?'linear-gradient(135deg,#1a2a0a,#0d1808)':'rgba(0,0,0,.3)')+';border:1px solid '+(canBuy?'var(--grd)':'rgba(255,255,255,.1)')+';border-radius:4px;color:'+(canBuy?'var(--gr)':'var(--stl)')+';font-family:Cinzel,serif;font-size:11px;letter-spacing:1px;padding:10px;cursor:'+(canBuy?'pointer':'not-allowed')+';touch-action:manipulation;">'
+          + (canBuy ? '&#9874;&#65039; CONSTRUIR' : 'Sin oros suficientes')
+          + '</button>'
+          + '</div>'
+      )
+      + '</div>';
+  });
+
+  return html;
+}
+
+function buyGuaridaUpgrade(upgradeId){
+  const upg = GUARIDA_UPGRADES.find(u=>u.id===upgradeId);
+  if(!upg) return;
+  if(guaridaMejoras[upgradeId]){ toast('Ya está construida'); return; }
+
+  const totalGold = heroes.reduce((s,h)=>s+(h.gold||0),0);
+  if(totalGold < upg.costGold){ toast('Sin oros suficientes'); return; }
+
+  // Deduct gold
+  let rem = upg.costGold;
+  for(const h of heroes){
+    const pay = Math.min(rem, h.gold||0);
+    h.gold = (h.gold||0) - pay;
+    rem -= pay;
+    if(rem<=0) break;
+  }
+
+  // Mark as owned
+  if(!guaridaMejoras) guaridaMejoras = {};
+  guaridaMejoras[upgradeId] = true;
+
+  rH(); saveS(); renderGuarida();
+  toast(upg.ico+' '+upg.nm+' — ¡construida en la guarida!');
+}
+
+
 function initSessionScreen(){
   const raw=localStorage.getItem(LSK);
   let saveData=null;
@@ -4381,7 +5445,7 @@ function initSessionScreen(){
 }
 function continueSession(){
   const raw=localStorage.getItem(LSK);
-  if(raw){try{const d=JSON.parse(raw);heroes=d.heroes??[];gt=d.gt??{gold:0,potions:0,scrolls:0,keys:0};gi=d.gi??[];cn=d.cn??'';dh=d.dh??[];sk=d.sk??null;if(sk?.adventure){currentAdventure=sk.adventure;} if(sk?.oracleLog)oracleLog=sk.oracleLog; if(sk?.dg){dg=sk.dg;skDifficulty=dg.difficulty||'medio';}}catch(e){}}
+  if(raw){try{const d=JSON.parse(raw);heroes=d.heroes??[];gt=d.gt??{gold:0,potions:0,scrolls:0,keys:0};gi=d.gi??[];cn=d.cn??'';dh=d.dh??[];sk=d.sk??null;if(sk?.adventure){currentAdventure=sk.adventure;} if(sk?.oracleLog)oracleLog=sk.oracleLog; if(sk?.dg){dg=sk.dg;skDifficulty=dg.difficulty||'medio';restoreZoneStates();} if(d.esquirlas!==undefined)esquirlas=d.esquirlas; if(d.esquirlasPozo!==undefined)esquirlasPozo=d.esquirlasPozo; if(d.guaridaMejoras)guaridaMejoras=d.guaridaMejoras; if(d.esquirlasLog)esquirlasLog=d.esquirlasLog; if(d.guaridaRestLog)guaridaRestLog=d.guaridaRestLog;}catch(e){}}
   dismissSessionScreen();
 }
 function confirmNewSession(){
