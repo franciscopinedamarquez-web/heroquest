@@ -1,9 +1,9 @@
 {
-  "name": "HeroQuest — Gestor de Héroes",
-  "short_name": "HeroQuest",
-  "description": "Gestiona tus héroes en partidas de HeroQuest",
+  "name": "Crawlers",
+  "short_name": "Crawlers",
+  "description": "Gestor de héroes y mazmorras para tus partidas de Crawlers",
   "start_url": "./index.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#2a2420",
   "theme_color": "#1a0f00",
   "orientation": "portrait",
@@ -22,6 +22,9 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["games", "utilities"],
+  "categories": [
+    "games",
+    "utilities"
+  ],
   "screenshots": []
 }
