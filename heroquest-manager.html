@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HeroQuest — Gestor de Héroes</title>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Uncial+Antiqua&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f2e8d0;
+    --parchment-dark: #ddd0a8;
+    --ink: #1a0f00;
+    --ink-light: #3d2800;
+    --blood: #8b1a1a;
+    --blood-dark: #5c0f0f;
+    --gold: #c9962a;
+    --gold-light: #f0c040;
+    --gold-dim: #7a5a18;
+    --stone: #2a2420;
+    --stone-mid: #3d3530;
+    --stone-light: #5a504a;
+    --magic-blue: #2a4a7f;
+    --magic-glow: #4a80d4;
+    --ember: #d4621a;
+    --shadow: rgba(0,0,0,0.7);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Crimson Pro', serif;
+    background: var(--stone);
+    color: var(--parchment);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(201,150,42,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(139,26,26,0.1) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.03) 40px, rgba(0,0,0,0.03) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.03) 40px, rgba(0,0,0,0.03) 41px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: linear-gradient(180deg, #0d0a07 0%, var(--stone) 100%);
+    border-bottom: 2px solid var(--gold-dim);
+    padding: 14px 16px 10px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+  }
+  header::after {
+    content: '⚔ ✦ ⚔';
+    display: block;
+    font-size: 10px;
+    color: var(--gold-dim);
+    letter-spacing: 6px;
+    margin-top: 2px;
+  }
+  .logo {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(201,150,42,0.4), 0 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 3px;
+  }
+  .logo span { color: var(--blood); }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    background: #12100d;
+    border-bottom: 1px solid var(--gold-dim);
+    position: sticky;
+    top: 74px;
+    z-index: 99;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 4px 8px;
+    background: none;
+    border: none;
+    color: var(--stone-light);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .tab-btn .tab-icon { font-size: 16px; }
+  .tab-btn.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+    background: rgba(201,150,42,0.06);
+  }
+
+  /* ── VIEWS ── */
+  .view { display: none; animation: fadeIn 0.3s ease; }
+  .view.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── HERO CARDS ── */
+  .heroes-grid {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold-dim);
+    text-align: center;
+    padding: 12px 0 4px;
+    text-transform: uppercase;
+  }
+
+  .hero-card {
+    background: linear-gradient(135deg, #1e1810 0%, #2a2218 50%, #1a150e 100%);
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(201,150,42,0.1);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    touch-action: manipulation;
+  }
+  .hero-card:active { transform: scale(0.985); box-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+  .hero-card.selected { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 4px 20px rgba(201,150,42,0.2); }
+
+  .hero-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(201,150,42,0.15);
+  }
+  .hero-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    border: 2px solid var(--gold-dim);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-avatar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 -4px 8px rgba(0,0,0,0.5);
+  }
+  .hero-info { flex: 1; }
+  .hero-name {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+  .hero-class {
+    font-size: 12px;
+    color: var(--parchment-dark);
+    letter-spacing: 1px;
+    font-style: italic;
+  }
+  .hero-level-badge {
+    background: var(--blood-dark);
+    border: 1px solid var(--blood);
+    color: var(--parchment);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .stat-box {
+    padding: 8px 4px;
+    text-align: center;
+    border-right: 1px solid rgba(201,150,42,0.1);
+    position: relative;
+  }
+  .stat-box:last-child { border-right: none; }
+  .stat-label {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: var(--stone-light);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .stat-value {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--parchment);
+  }
+  .stat-value.hp { color: var(--blood); }
+  .stat-value.mp { color: var(--magic-glow); }
+  .stat-value.atk { color: var(--gold); }
+  .stat-value.def { color: #8aaf5a; }
+  .stat-max {
+    font-size: 9px;
+    color: var(--stone-light);
+    display: block;
+  }
+
+  /* HP/MP bars */
+  .hero-bars { padding: 8px 14px 12px; display: flex; flex-direction: column; gap: 5px; }
+  .bar-row { display: flex; align-items: center; gap: 8px; }
+  .bar-label { font-size: 9px; font-family: 'Cinzel', serif; letter-spacing: 1px; color: var(--stone-light); width: 16px; }
+  .bar-track {
+    flex: 1; height: 8px; background: rgba(0,0,0,0.5);
+    border-radius: 1px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden;
+  }
+  .bar-fill { height: 100%; border-radius: 1px; transition: width 0.4s ease; }
+  .bar-fill.hp-bar { background: linear-gradient(90deg, var(--blood-dark), var(--blood)); }
+  .bar-fill.mp-bar { background: linear-gradient(90deg, var(--magic-blue), var(--magic-glow)); }
+  .bar-text { font-size: 10px; color: var(--parchment-dark); min-width: 32px; text-align: right; }
+
+  /* ── DETAIL VIEW ── */
+  .detail-view { padding: 0 0 80px; }
+
+  .detail-header {
+    background: linear-gradient(180deg, #0d0a07, #1a150e);
+    padding: 20px 16px;
+    border-bottom: 1px solid var(--gold-dim);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .detail-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 20px rgba(201,150,42,0.3), inset 0 -6px 12px rgba(0,0,0,0.5);
+  }
+  .detail-name { font-family: 'Cinzel', serif; font-size: 24px; font-weight: 700; color: var(--gold); }
+  .detail-subtitle { font-size: 13px; color: var(--parchment-dark); font-style: italic; }
+  .detail-gold { display: flex; align-items: center; gap: 4px; font-family: 'Cinzel', serif; font-size: 13px; color: var(--gold-light); margin-top: 4px; }
+
+  .section-card {
+    margin: 12px 16px 0;
+    background: linear-gradient(135deg, #1e1810, #2a2218);
+    border: 1px solid rgba(201,150,42,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .section-card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold-dim);
+    padding: 8px 14px;
+    background: rgba(0,0,0,0.3);
+    border-bottom: 1px solid rgba(201,150,42,0.1);
+    text-transform: uppercase;
+  }
+
+  /* Stat adjusters */
+  .stat-adjuster {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .stat-adjuster:last-child { border-bottom: none; }
+  .stat-adjuster-label { font-size: 14px; color: var(--parchment-dark); flex: 1; }
+  .stat-adjuster-label small { display: block; font-size: 11px; color: var(--stone-light); }
+  .adj-controls { display: flex; align-items: center; gap: 0; }
+  .adj-btn {
+    width: 34px; height: 34px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(201,150,42,0.3);
+    color: var(--gold);
+    font-size: 20px;
+    font-family: 'Cinzel', serif;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+    transition: all 0.15s;
+    touch-action: manipulation;
+    border-radius: 2px;
+  }
+  .adj-btn:active { background: rgba(201,150,42,0.2); transform: scale(0.92); }
+  .adj-val {
+    min-width: 48px; text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--parchment);
+  }
+
+  /* Equipment */
+  .equip-slot {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .equip-slot:last-child { border-bottom: none; }
+  .equip-slot:active { background: rgba(201,150,42,0.05); }
+  .equip-icon { font-size: 22px; width: 32px; text-align: center; }
+  .equip-info { flex: 1; }
+  .equip-slot-name { font-size: 10px; letter-spacing: 1px; color: var(--stone-light); font-family: 'Cinzel', serif; text-transform: uppercase; }
+  .equip-item-name { font-size: 14px; color: var(--parchment); }
+  .equip-rarity { font-size: 10px; }
+  .rarity-common { color: #aaa; }
+  .rarity-uncommon { color: #5ab05a; }
+  .rarity-rare { color: var(--magic-glow); }
+  .rarity-legendary { color: var(--gold); }
+  .equip-arrow { color: var(--stone-light); font-size: 16px; }
+
+  /* Skills */
+  .skill-item {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .skill-item:last-child { border-bottom: none; }
+  .skill-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+  .skill-name { font-family: 'Cinzel', serif; font-size: 13px; color: var(--parchment); }
+  .skill-cost { font-size: 11px; color: var(--magic-glow); }
+  .skill-desc { font-size: 12px; color: var(--stone-light); font-style: italic; line-height: 1.4; }
+
+  /* ── CAMPAIGN VIEW ── */
+  .campaign-view { padding: 16px; }
+  .mission-card {
+    background: linear-gradient(135deg, #1e1810, #2a2218);
+    border: 1px solid rgba(201,150,42,0.2);
+    border-radius: 4px;
+    padding: 14px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .mission-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .mission-number { font-size: 10px; letter-spacing: 2px; color: var(--gold-dim); font-family: 'Cinzel', serif; }
+  .mission-name { font-family: 'Cinzel', serif; font-size: 18px; color: var(--gold); margin: 2px 0; }
+  .mission-desc { font-size: 13px; color: var(--parchment-dark); font-style: italic; line-height: 1.4; margin-bottom: 10px; }
+  .mission-rewards { display: flex; gap: 12px; flex-wrap: wrap; }
+  .reward-tag {
+    font-size: 11px; font-family: 'Cinzel', serif;
+    padding: 3px 8px;
+    border-radius: 2px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid;
+  }
+  .reward-tag.gold-tag { color: var(--gold); border-color: var(--gold-dim); }
+  .reward-tag.xp-tag { color: #8aaf5a; border-color: #4a7a2a; }
+  .reward-tag.item-tag { color: var(--magic-glow); border-color: var(--magic-blue); }
+  .mission-status {
+    position: absolute; top: 12px; right: 12px;
+    font-size: 18px;
+  }
+
+  /* ── DICE VIEW ── */
+  .dice-view { padding: 20px 16px; }
+  .dice-section { margin-bottom: 24px; }
+  .dice-title { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 2px; color: var(--gold-dim); margin-bottom: 14px; text-align: center; text-transform: uppercase; }
+  .dice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .die-btn {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #2a2218, #1a150e);
+    border: 2px solid var(--gold-dim);
+    border-radius: 8px;
+    color: var(--gold);
+    font-size: 36px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.15s;
+    touch-action: manipulation;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,150,42,0.1);
+  }
+  .die-btn:active { transform: scale(0.92) translateY(2px); box-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+  .die-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px; color: var(--gold-dim); }
+  .die-btn.combat { border-color: var(--blood); color: var(--blood); }
+  .die-btn.magic { border-color: var(--magic-glow); color: var(--magic-glow); }
+
+  .dice-result {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(201,150,42,0.2);
+    border-radius: 4px;
+    padding: 16px;
+    text-align: center;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .dice-result-value {
+    font-family: 'Cinzel', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(201,150,42,0.4);
+    line-height: 1;
+    transition: all 0.2s;
+  }
+  .dice-result-label { font-size: 12px; color: var(--stone-light); font-style: italic; }
+  .dice-result.rolling .dice-result-value { animation: diceRoll 0.4s ease; }
+  @keyframes diceRoll {
+    0% { transform: scale(1.4) rotate(-10deg); opacity: 0; }
+    60% { transform: scale(0.9) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  /* ── NOTES VIEW ── */
+  .notes-view { padding: 16px; }
+  .notes-area {
+    width: 100%;
+    min-height: 200px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(201,150,42,0.2);
+    border-radius: 4px;
+    color: var(--parchment);
+    font-family: 'Crimson Pro', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 14px;
+    resize: vertical;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  .notes-area:focus { border-color: var(--gold-dim); }
+  .notes-area::placeholder { color: var(--stone-light); font-style: italic; }
+
+  .treasure-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .treasure-item {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(201,150,42,0.15);
+    border-radius: 3px;
+    padding: 10px 12px;
+  }
+  .treasure-icon { font-size: 20px; }
+  .treasure-name { flex: 1; font-size: 14px; color: var(--parchment); }
+  .treasure-qty { font-family: 'Cinzel', serif; font-size: 12px; color: var(--gold); }
+
+  /* ── FAB ── */
+  .fab {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, var(--blood), var(--blood-dark));
+    border: 2px solid var(--blood);
+    border-radius: 50%;
+    color: var(--parchment);
+    font-size: 26px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(139,26,26,0.5);
+    z-index: 200;
+    transition: all 0.2s;
+    touch-action: manipulation;
+  }
+  .fab:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(139,26,26,0.5); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 300;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: linear-gradient(180deg, #2a2218, #1a150e);
+    border: 1px solid var(--gold-dim);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    width: 100%;
+    max-width: 430px;
+    padding: 20px 20px 40px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-title { font-family: 'Cinzel', serif; font-size: 18px; color: var(--gold); margin-bottom: 20px; }
+  .modal-close { float: right; background: none; border: none; color: var(--stone-light); font-size: 24px; cursor: pointer; line-height: 1; }
+  .input-field {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(201,150,42,0.3);
+    border-radius: 3px;
+    color: var(--parchment);
+    font-family: 'Crimson Pro', serif;
+    font-size: 16px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    outline: none;
+  }
+  .input-field:focus { border-color: var(--gold-dim); }
+  .input-label { font-size: 11px; letter-spacing: 1px; color: var(--stone-light); font-family: 'Cinzel', serif; text-transform: uppercase; margin-bottom: 4px; display: block; }
+  .hero-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+  .hero-type-btn {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(201,150,42,0.3);
+    border-radius: 4px;
+    color: var(--parchment-dark);
+    padding: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    touch-action: manipulation;
+  }
+  .hero-type-btn:active, .hero-type-btn.selected {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,150,42,0.1);
+  }
+  .hero-type-icon { font-size: 28px; display: block; margin-bottom: 4px; }
+  .hero-type-name { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 1px; }
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, var(--blood), var(--blood-dark));
+    border: 1px solid var(--blood);
+    border-radius: 4px;
+    color: var(--parchment);
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+    touch-action: manipulation;
+    transition: all 0.15s;
+  }
+  .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(30,24,16,0.95);
+    border: 1px solid var(--gold-dim);
+    color: var(--parchment);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 10px 20px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    z-index: 400;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    padding: 60px 30px;
+    text-align: center;
+  }
+  .empty-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.5; }
+  .empty-text { font-family: 'Cinzel', serif; font-size: 13px; color: var(--stone-light); letter-spacing: 1px; line-height: 1.6; }
+
+  /* Decorative divider */
+  .divider {
+    text-align: center;
+    color: var(--gold-dim);
+    font-size: 12px;
+    letter-spacing: 4px;
+    margin: 16px 0 4px;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">HERO<span>QUEST</span></div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" onclick="showTab('heroes')">
+    <span class="tab-icon">⚔️</span>HÉROES
+  </button>
+  <button class="tab-btn" onclick="showTab('campaign')">
+    <span class="tab-icon">📜</span>CAMPAÑA
+  </button>
+  <button class="tab-btn" onclick="showTab('dice')">
+    <span class="tab-icon">🎲</span>DADOS
+  </button>
+  <button class="tab-btn" onclick="showTab('notes')">
+    <span class="tab-icon">📖</span>NOTAS
+  </button>
+</nav>
+
+<!-- HEROES VIEW -->
+<div class="view active" id="view-heroes">
+  <div class="heroes-grid" id="heroes-container">
+    <div class="empty-state" id="empty-heroes">
+      <div class="empty-icon">🏰</div>
+      <div class="empty-text">No hay héroes en la mazmorra.<br>Pulsa ＋ para añadir un valiente aventurero.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMPAIGN VIEW -->
+<div class="view" id="view-campaign">
+  <div class="campaign-view">
+    <p class="section-title">✦ misiones disponibles ✦</p>
+    <div class="mission-card">
+      <div class="mission-status">✅</div>
+      <div class="mission-number">MISIÓN I</div>
+      <div class="mission-name">El Retorno del Brujo</div>
+      <div class="mission-desc">Zargon ha vuelto. Adentraros en las mazmorras de Kadar Mildar y acabad con sus secuaces.</div>
+      <div class="mission-rewards">
+        <span class="reward-tag gold-tag">💰 150 oros</span>
+        <span class="reward-tag xp-tag">⭐ 200 XP</span>
+        <span class="reward-tag item-tag">🗡️ Espada corta</span>
+      </div>
+    </div>
+    <div class="mission-card">
+      <div class="mission-status">🔓</div>
+      <div class="mission-number">MISIÓN II</div>
+      <div class="mission-name">El Laberinto de los Goblins</div>
+      <div class="mission-desc">Las criaturas de Zargon acechan en un laberinto de trampas. Solo los más hábiles sobrevivirán.</div>
+      <div class="mission-rewards">
+        <span class="reward-tag gold-tag">💰 200 oros</span>
+        <span class="reward-tag xp-tag">⭐ 350 XP</span>
+        <span class="reward-tag item-tag">🛡️ Escudo élfico</span>
+      </div>
+    </div>
+    <div class="mission-card">
+      <div class="mission-status">🔒</div>
+      <div class="mission-number">MISIÓN III</div>
+      <div class="mission-name">La Cámara del Hechicero</div>
+      <div class="mission-desc">En las profundidades aguarda un poderoso hechicero. Encontrad el Orbe de Zargon antes de que sea tarde.</div>
+      <div class="mission-rewards">
+        <span class="reward-tag gold-tag">💰 300 oros</span>
+        <span class="reward-tag xp-tag">⭐ 500 XP</span>
+        <span class="reward-tag item-tag">📜 Pergamino arcano</span>
+      </div>
+    </div>
+    <div class="mission-card">
+      <div class="mission-status">🔒</div>
+      <div class="mission-number">MISIÓN IV</div>
+      <div class="mission-name">La Forja del Caos</div>
+      <div class="mission-desc">En las entrañas de la montaña, los esqueletos guardan una forja legendaria. Recuperadla para el Imperio.</div>
+      <div class="mission-rewards">
+        <span class="reward-tag gold-tag">💰 400 oros</span>
+        <span class="reward-tag xp-tag">⭐ 700 XP</span>
+        <span class="reward-tag item-tag">⚔️ Hacha del Caos</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DICE VIEW -->
+<div class="view" id="view-dice">
+  <div class="dice-view">
+    <div class="dice-result" id="dice-result">
+      <div class="dice-result-value" id="dice-value">—</div>
+      <div class="dice-result-label" id="dice-label">Lanza un dado para comenzar</div>
+    </div>
+
+    <div class="dice-section">
+      <div class="dice-title">⚔ Dados de Combate ⚔</div>
+      <div class="dice-grid">
+        <button class="die-btn combat" onclick="rollDie(6, 'combate')">⚔️<span class="die-label">D6</span></button>
+        <button class="die-btn combat" onclick="rollCombatDice(2)">🗡️🗡️<span class="die-label">2xD6</span></button>
+        <button class="die-btn combat" onclick="rollCombatDice(3)">⚔️⚔️⚔️<span class="die-label">3xD6</span></button>
+      </div>
+    </div>
+
+    <div class="dice-section">
+      <div class="dice-title">✦ Dados Numéricos ✦</div>
+      <div class="dice-grid">
+        <button class="die-btn" onclick="rollDie(4, 'D4')">🔺<span class="die-label">D4</span></button>
+        <button class="die-btn" onclick="rollDie(8, 'D8')">💎<span class="die-label">D8</span></button>
+        <button class="die-btn" onclick="rollDie(10, 'D10')">🔟<span class="die-label">D10</span></button>
+        <button class="die-btn" onclick="rollDie(12, 'D12')">⬡<span class="die-label">D12</span></button>
+        <button class="die-btn" onclick="rollDie(20, 'D20')">🌟<span class="die-label">D20</span></button>
+        <button class="die-btn magic" onclick="rollDie(100, 'D100')">🌀<span class="die-label">D100</span></button>
+      </div>
+    </div>
+
+    <div class="dice-section">
+      <div class="dice-title">🌀 Dados de Magia 🌀</div>
+      <div class="dice-grid">
+        <button class="die-btn magic" onclick="rollMagicDie()">✨<span class="die-label">MAGIA</span></button>
+        <button class="die-btn magic" onclick="rollDie(6,'peligro')">💀<span class="die-label">PELIGRO</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES VIEW -->
+<div class="view" id="view-notes">
+  <div class="notes-view">
+    <p class="section-title">✦ diario de campaña ✦</p>
+    <textarea class="notes-area" placeholder="Anota aquí los eventos de la partida, pistas encontradas, mapas descubiertos..." rows="8" id="campaign-notes"></textarea>
+
+    <p class="section-title">✦ tesoros encontrados ✦</p>
+    <div class="treasure-list">
+      <div class="treasure-item">
+        <span class="treasure-icon">💰</span>
+        <span class="treasure-name">Monedas de Oro del Grupo</span>
+        <span class="treasure-qty" id="group-gold">0 oros</span>
+      </div>
+      <div class="treasure-item">
+        <span class="treasure-icon">🧪</span>
+        <span class="treasure-name">Pociones de Curación</span>
+        <span class="treasure-qty" id="group-potions">0 unidades</span>
+      </div>
+      <div class="treasure-item">
+        <span class="treasure-icon">📜</span>
+        <span class="treasure-name">Pergaminos Mágicos</span>
+        <span class="treasure-qty" id="group-scrolls">0 unidades</span>
+      </div>
+      <div class="treasure-item">
+        <span class="treasure-icon">🗝️</span>
+        <span class="treasure-name">Llaves y Artefactos</span>
+        <span class="treasure-qty" id="group-keys">0 unidades</span>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+      <button class="btn-primary" style="background:linear-gradient(135deg,#2a5a2a,#1a3a1a);border-color:#3a7a3a;margin-top:0;font-size:12px;padding:10px;" onclick="adjustTreasure('gold',50)">＋50 Oros</button>
+      <button class="btn-primary" style="background:linear-gradient(135deg,#2a2a5a,#1a1a3a);border-color:#3a3a7a;margin-top:0;font-size:12px;padding:10px;" onclick="adjustTreasure('potion',1)">＋Poción</button>
+      <button class="btn-primary" style="background:rgba(0,0,0,0.4);border-color:#444;margin-top:0;font-size:12px;padding:10px;color:#888;" onclick="adjustTreasure('gold',-50)">－50 Oros</button>
+      <button class="btn-primary" style="background:rgba(0,0,0,0.4);border-color:#444;margin-top:0;font-size:12px;padding:10px;color:#888;" onclick="adjustTreasure('scroll',1)">＋Pergamino</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openModal()">＋</button>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnBg(event)">
+  <div class="modal" id="modal">
+    <div>
+      <span class="modal-title" id="modal-title">Nuevo Héroe</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <label class="input-label">Nombre del Héroe</label>
+    <input class="input-field" type="text" id="hero-name-input" placeholder="Escribe el nombre..." maxlength="20">
+
+    <label class="input-label">Clase</label>
+    <div class="hero-type-grid" id="hero-type-grid">
+      <button class="hero-type-btn selected" data-type="barbaro" onclick="selectType(this)">
+        <span class="hero-type-icon">🪓</span>
+        <span class="hero-type-name">BÁRBARO</span>
+      </button>
+      <button class="hero-type-btn" data-type="enano" onclick="selectType(this)">
+        <span class="hero-type-icon">⚒️</span>
+        <span class="hero-type-name">ENANO</span>
+      </button>
+      <button class="hero-type-btn" data-type="elfo" onclick="selectType(this)">
+        <span class="hero-type-icon">🏹</span>
+        <span class="hero-type-name">ELFO</span>
+      </button>
+      <button class="hero-type-btn" data-type="mago" onclick="selectType(this)">
+        <span class="hero-type-icon">🔮</span>
+        <span class="hero-type-name">MAGO</span>
+      </button>
+    </div>
+
+    <button class="btn-primary" onclick="createHero()">⚔ COMENZAR AVENTURA ⚔</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+const HERO_TEMPLATES = {
+  barbaro: {
+    icon: '🪓', color: '#8b1a1a', class: 'Bárbaro',
+    hp: 8, maxHp: 8, mp: 2, maxMp: 2,
+    attack: 3, defense: 2, movement: 3,
+    equipment: [
+      { slot: 'Arma', icon: '🪓', name: 'Hacha de Batalla', rarity: 'uncommon' },
+      { slot: 'Armadura', icon: '🛡️', name: 'Armadura de Cuero', rarity: 'common' },
+      { slot: 'Accesorio', icon: '💍', name: '—', rarity: 'common' },
+    ],
+    skills: [
+      { name: 'Furia Berserker', cost: null, desc: 'Tira un dado adicional de ataque en combate cuerpo a cuerpo.' },
+      { name: 'Resistencia', cost: null, desc: 'Una vez por misión, ignora el daño de un ataque.' },
+    ]
+  },
+  enano: {
+    icon: '⚒️', color: '#7a5a18', class: 'Enano',
+    hp: 7, maxHp: 7, mp: 3, maxMp: 3,
+    attack: 2, defense: 3, movement: 2,
+    equipment: [
+      { slot: 'Arma', icon: '⚒️', name: 'Martillo de Guerra', rarity: 'common' },
+      { slot: 'Armadura', icon: '🛡️', name: 'Cota de Malla', rarity: 'uncommon' },
+      { slot: 'Accesorio', icon: '💍', name: 'Amuleto Rúnico', rarity: 'rare' },
+    ],
+    skills: [
+      { name: 'Buscar Trampas', cost: null, desc: 'Detecta automáticamente trampas en la habitación actual.' },
+      { name: 'Reparar', cost: null, desc: 'Repara un objeto o mecanismo dañado sin tirada.' },
+    ]
+  },
+  elfo: {
+    icon: '🏹', color: '#2a5a2a', class: 'Elfo',
+    hp: 6, maxHp: 6, mp: 4, maxMp: 4,
+    attack: 2, defense: 2, movement: 4,
+    equipment: [
+      { slot: 'Arma', icon: '🏹', name: 'Arco Largo Élfico', rarity: 'rare' },
+      { slot: 'Armadura', icon: '🧥', name: 'Capa de Sigiloso', rarity: 'uncommon' },
+      { slot: 'Accesorio', icon: '🌿', name: 'Corona de Hojas', rarity: 'uncommon' },
+    ],
+    skills: [
+      { name: 'Paso Silencioso', cost: null, desc: 'El Elfo no activa trampas al moverse.' },
+      { name: 'Tiro Preciso', cost: '1 MP', desc: 'Un disparo con distancia doble y +1 dado de ataque.' },
+    ]
+  },
+  mago: {
+    icon: '🔮', color: '#2a4a7f', class: 'Mago',
+    hp: 4, maxHp: 4, mp: 6, maxMp: 6,
+    attack: 1, defense: 1, movement: 2,
+    equipment: [
+      { slot: 'Arma', icon: '🪄', name: 'Bastón Arcano', rarity: 'uncommon' },
+      { slot: 'Armadura', icon: '🔮', name: 'Túnica Encantada', rarity: 'uncommon' },
+      { slot: 'Accesorio', icon: '📚', name: 'Libro de Hechizos', rarity: 'legendary' },
+    ],
+    skills: [
+      { name: 'Bola de Fuego', cost: '2 MP', desc: 'Daña a todos los enemigos en una habitación: 2D6 de daño.' },
+      { name: 'Escudo Arcano', cost: '1 MP', desc: 'Añade 2 dados de defensa hasta el siguiente turno.' },
+      { name: 'Curar', cost: '2 MP', desc: 'Restaura 1D4 puntos de vida a un aliado adyacente.' },
+    ]
+  }
+};
+
+let heroes = [];
+let selectedType = 'barbaro';
+let groupTreasure = { gold: 0, potions: 0, scrolls: 0, keys: 0 };
+
+function showTab(tab) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  const fab = document.getElementById('fab');
+  fab.style.display = tab === 'heroes' ? 'flex' : 'none';
+}
+
+function selectType(btn) {
+  document.querySelectorAll('.hero-type-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedType = btn.dataset.type;
+}
+
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('hero-name-input').value = '';
+  document.getElementById('hero-name-input').focus();
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalOnBg(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+function createHero() {
+  const name = document.getElementById('hero-name-input').value.trim();
+  if (!name) { showToast('⚠ Escribe un nombre para el héroe'); return; }
+
+  const tmpl = HERO_TEMPLATES[selectedType];
+  const hero = {
+    id: Date.now(),
+    name,
+    type: selectedType,
+    ...JSON.parse(JSON.stringify(tmpl)),
+    gold: 100,
+    level: 1,
+    xp: 0,
+    notes: '',
+  };
+  heroes.push(hero);
+  renderHeroes();
+  closeModal();
+  showToast('⚔ ' + name + ' se une a la aventura');
+}
+
+function renderHeroes() {
+  const container = document.getElementById('heroes-container');
+  const empty = document.getElementById('empty-heroes');
+  if (heroes.length === 0) {
+    empty.style.display = 'block';
+    container.querySelectorAll('.hero-card').forEach(c => c.remove());
+    return;
+  }
+  empty.style.display = 'none';
+  container.querySelectorAll('.hero-card').forEach(c => c.remove());
+
+  heroes.forEach(hero => {
+    const hpPct = Math.max(0, (hero.hp / hero.maxHp) * 100);
+    const mpPct = Math.max(0, (hero.mp / hero.maxMp) * 100);
+    const card = document.createElement('div');
+    card.className = 'hero-card';
+    card.innerHTML = `
+      <div class="hero-card-header">
+        <div class="hero-avatar" style="background:radial-gradient(circle at 40% 35%,${hero.color}44,${hero.color}11)">${hero.icon}</div>
+        <div class="hero-info">
+          <div class="hero-name">${hero.name}</div>
+          <div class="hero-class">${hero.class}</div>
+        </div>
+        <div class="hero-level-badge">NV ${hero.level}</div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-box">
+          <span class="stat-label">❤ Vida</span>
+          <span class="stat-value hp">${hero.hp}</span>
+          <span class="stat-max">/${hero.maxHp}</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">✦ Maná</span>
+          <span class="stat-value mp">${hero.mp}</span>
+          <span class="stat-max">/${hero.maxMp}</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">⚔ Ataque</span>
+          <span class="stat-value atk">${hero.attack}</span>
+          <span class="stat-max">dados</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">🛡 Defensa</span>
+          <span class="stat-value def">${hero.defense}</span>
+          <span class="stat-max">dados</span>
+        </div>
+      </div>
+      <div class="hero-bars">
+        <div class="bar-row">
+          <span class="bar-label">HP</span>
+          <div class="bar-track"><div class="bar-fill hp-bar" style="width:${hpPct}%"></div></div>
+          <span class="bar-text">${hero.hp}/${hero.maxHp}</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">MP</span>
+          <div class="bar-track"><div class="bar-fill mp-bar" style="width:${mpPct}%"></div></div>
+          <span class="bar-text">${hero.mp}/${hero.maxMp}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(201,150,42,0.1)">
+        <button style="padding:10px;background:none;border:none;border-right:1px solid rgba(201,150,42,0.1);color:var(--blood);font-size:20px;cursor:pointer;touch-action:manipulation" onclick="adjustStat(${hero.id},'hp',-1)" title="Perder HP">💔</button>
+        <button style="padding:10px;background:none;border:none;border-right:1px solid rgba(201,150,42,0.1);color:#5ab05a;font-size:20px;cursor:pointer;touch-action:manipulation" onclick="adjustStat(${hero.id},'hp',1)" title="Ganar HP">❤️</button>
+        <button style="padding:10px;background:none;border:none;color:var(--gold-dim);font-size:14px;cursor:pointer;font-family:'Cinzel',serif;letter-spacing:1px;touch-action:manipulation" onclick="showDetail(${hero.id})">VER ›</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function adjustStat(id, stat, delta) {
+  const hero = heroes.find(h => h.id === id);
+  if (!hero) return;
+  if (stat === 'hp') hero.hp = Math.max(0, Math.min(hero.maxHp, hero.hp + delta));
+  if (stat === 'mp') hero.mp = Math.max(0, Math.min(hero.maxMp, hero.mp + delta));
+  renderHeroes();
+  if (stat === 'hp' && hero.hp === 0) showToast('💀 ' + hero.name + ' ha caído en combate');
+}
+
+function showDetail(id) {
+  const hero = heroes.find(h => h.id === id);
+  if (!hero) return;
+
+  const rarityClass = { common: 'rarity-common', uncommon: 'rarity-uncommon', rare: 'rarity-rare', legendary: 'rarity-legendary' };
+  const rarityName = { common: 'Común', uncommon: 'Poco común', rare: 'Raro', legendary: '★ Legendario' };
+
+  const equipHtml = hero.equipment.map(e => `
+    <div class="equip-slot">
+      <span class="equip-icon">${e.icon}</span>
+      <div class="equip-info">
+        <div class="equip-slot-name">${e.slot}</div>
+        <div class="equip-item-name">${e.name}</div>
+        <div class="equip-rarity ${rarityClass[e.rarity]}">${rarityName[e.rarity]}</div>
+      </div>
+      <span class="equip-arrow">›</span>
+    </div>
+  `).join('');
+
+  const skillsHtml = hero.skills.map(s => `
+    <div class="skill-item">
+      <div class="skill-header">
+        <span class="skill-name">⚡ ${s.name}</span>
+        ${s.cost ? `<span class="skill-cost">${s.cost}</span>` : ''}
+      </div>
+      <div class="skill-desc">${s.desc}</div>
+    </div>
+  `).join('');
+
+  const detail = document.createElement('div');
+  detail.id = 'detail-panel';
+  detail.style.cssText = 'position:fixed;inset:0;background:var(--stone);z-index:500;overflow-y:auto;max-width:430px;margin:0 auto;animation:fadeIn 0.2s ease;';
+  detail.innerHTML = `
+    <div style="position:sticky;top:0;z-index:10;background:var(--stone);padding:10px 16px;border-bottom:1px solid var(--gold-dim);display:flex;align-items:center;gap:12px">
+      <button onclick="closeDetail()" style="background:none;border:none;color:var(--gold);font-size:20px;cursor:pointer;padding:4px;">‹</button>
+      <span style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold-dim);letter-spacing:2px;">FICHA DE HÉROE</span>
+    </div>
+    <div class="detail-header">
+      <div class="detail-avatar" style="background:radial-gradient(circle at 40% 35%,${hero.color}55,${hero.color}11)">${hero.icon}</div>
+      <div>
+        <div class="detail-name">${hero.name}</div>
+        <div class="detail-subtitle">${hero.class} · Nivel ${hero.level}</div>
+        <div class="detail-gold">💰 ${hero.gold} oros</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-title">⚔ estadísticas</div>
+      <div class="stat-adjuster">
+        <div class="stat-adjuster-label">Puntos de Vida <small>Máx: ${hero.maxHp}</small></div>
+        <div class="adj-controls">
+          <button class="adj-btn" onclick="adjDetail(${id},'hp',-1)">−</button>
+          <span class="adj-val" id="detail-hp">${hero.hp}</span>
+          <button class="adj-btn" onclick="adjDetail(${id},'hp',1)">+</button>
+        </div>
+      </div>
+      <div class="stat-adjuster">
+        <div class="stat-adjuster-label">Puntos de Maná <small>Máx: ${hero.maxMp}</small></div>
+        <div class="adj-controls">
+          <button class="adj-btn" onclick="adjDetail(${id},'mp',-1)">−</button>
+          <span class="adj-val" id="detail-mp">${hero.mp}</span>
+          <button class="adj-btn" onclick="adjDetail(${id},'mp',1)">+</button>
+        </div>
+      </div>
+      <div class="stat-adjuster">
+        <div class="stat-adjuster-label">Oro <small>Monedas propias</small></div>
+        <div class="adj-controls">
+          <button class="adj-btn" onclick="adjDetail(${id},'gold',-10)">−</button>
+          <span class="adj-val" id="detail-gold">${hero.gold}</span>
+          <button class="adj-btn" onclick="adjDetail(${id},'gold',10)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-title">🎒 equipamiento</div>
+      ${equipHtml}
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-title">⚡ habilidades</div>
+      ${skillsHtml}
+    </div>
+
+    <div style="padding:16px 16px 40px;">
+      <button class="btn-primary" style="background:rgba(100,20,20,0.5);border-color:#5c1010;font-size:12px;padding:12px;" onclick="deleteHero(${id})">🗑 ELIMINAR HÉROE</button>
+    </div>
+  `;
+  document.body.appendChild(detail);
+}
+
+function adjDetail(id, stat, delta) {
+  const hero = heroes.find(h => h.id === id);
+  if (!hero) return;
+  if (stat === 'hp') hero.hp = Math.max(0, Math.min(hero.maxHp, hero.hp + delta));
+  if (stat === 'mp') hero.mp = Math.max(0, Math.min(hero.maxMp, hero.mp + delta));
+  if (stat === 'gold') hero.gold = Math.max(0, hero.gold + delta);
+  const el = document.getElementById('detail-' + stat);
+  if (el) el.textContent = hero[stat];
+  renderHeroes();
+}
+
+function closeDetail() {
+  const p = document.getElementById('detail-panel');
+  if (p) p.remove();
+}
+
+function deleteHero(id) {
+  if (!confirm('¿Eliminar este héroe permanentemente?')) return;
+  heroes = heroes.filter(h => h.id !== id);
+  closeDetail();
+  renderHeroes();
+  showToast('El héroe ha abandonado la aventura');
+}
+
+// ── DICE ──
+const COMBAT_FACES = ['💀','⚔️','🛡️','⚔️','💀','⚔️'];
+const MAGIC_FACES = ['✨','🌀','💫','⚡','✨','🌀'];
+
+function rollDie(sides, label) {
+  const result = Math.floor(Math.random() * sides) + 1;
+  const el = document.getElementById('dice-result');
+  el.classList.remove('rolling');
+  void el.offsetWidth;
+  el.classList.add('rolling');
+  document.getElementById('dice-value').textContent = result;
+  document.getElementById('dice-label').textContent = label + ' · Resultado: ' + result;
+}
+
+function rollCombatDice(n) {
+  const results = Array.from({length: n}, () => COMBAT_FACES[Math.floor(Math.random() * 6)]);
+  const skulls = results.filter(r => r === '💀').length;
+  const swords = results.filter(r => r === '⚔️').length;
+  const shields = results.filter(r => r === '🛡️').length;
+  const el = document.getElementById('dice-result');
+  el.classList.remove('rolling');
+  void el.offsetWidth;
+  el.classList.add('rolling');
+  document.getElementById('dice-value').textContent = results.join(' ');
+  document.getElementById('dice-label').textContent = `${swords} ataques · ${skulls} mortales · ${shields} bloqueos`;
+}
+
+function rollMagicDie() {
+  const faces = ['✨ Éxito', '🌀 Magia', '💫 Arcano', '⚡ Fallo', '✨ Éxito', '🌀 Magia'];
+  const result = faces[Math.floor(Math.random() * 6)];
+  const el = document.getElementById('dice-result');
+  el.classList.remove('rolling');
+  void el.offsetWidth;
+  el.classList.add('rolling');
+  document.getElementById('dice-value').textContent = result;
+  document.getElementById('dice-label').textContent = 'Dado de Magia';
+}
+
+// ── TREASURE ──
+function adjustTreasure(type, delta) {
+  if (type === 'gold') groupTreasure.gold = Math.max(0, groupTreasure.gold + delta);
+  if (type === 'potion') groupTreasure.potions = Math.max(0, groupTreasure.potions + delta);
+  if (type === 'scroll') groupTreasure.scrolls = Math.max(0, groupTreasure.scrolls + delta);
+  if (type === 'key') groupTreasure.keys = Math.max(0, groupTreasure.keys + delta);
+  document.getElementById('group-gold').textContent = groupTreasure.gold + ' oros';
+  document.getElementById('group-potions').textContent = groupTreasure.potions + ' unidades';
+  document.getElementById('group-scrolls').textContent = groupTreasure.scrolls + ' unidades';
+  document.getElementById('group-keys').textContent = groupTreasure.keys + ' unidades';
+}
+
+// ── TOAST ──
+let toastTimeout;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ── INIT ──
+renderHeroes();
+</script>
+</body>
+</html>
