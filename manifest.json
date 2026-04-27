@@ -21,7 +21,7 @@ html,body{height:100%;overscroll-behavior:none}
 body{font-family:'Crimson Pro',serif;background:var(--st);color:var(--pa);max-width:430px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom);font-size:16px}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(201,150,42,.07) 0%,transparent 55%),radial-gradient(ellipse at 80% 100%,rgba(139,26,26,.09) 0%,transparent 55%);pointer-events:none;z-index:0}
 header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0d0a07,var(--st));border-bottom:2px solid var(--god);padding:11px 16px 6px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.8)}
-header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);letter-spacing:8px;margin-top:1px}
+header::after{content:'CRAWLERS';display:block;font-size:8px;color:var(--god);letter-spacing:8px;margin-top:1px}
 .logo{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--go);letter-spacing:3px}
 .logo span{color:var(--bl)}
 .sind{position:absolute;top:10px;right:12px;font-size:9px;color:var(--god);font-family:'Cinzel',serif;opacity:0;transition:opacity .5s}
@@ -465,7 +465,7 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 </head>
 <body>
 <header>
-  <div class="logo">HERO<span>QUEST</span></div>
+  <div class="logo">CRAW<span>LERS</span></div>
   <span class="sind" id="sind">GUARDADO</span>
 </header>
 <nav class="tabs">
@@ -636,8 +636,8 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
 <!-- SESSION SCREEN (shown on first load) -->
 <div id="session-screen">
   <div class="ss-emblem">&#9876;&#65039;</div>
-  <div class="ss-logo">HERO<span>QUEST</span></div>
-  <div class="ss-sub">GESTOR DE HEROES</div>
+  <div class="ss-logo">CRAW<span>LERS</span></div>
+  <div class="ss-sub">GESTOR DE AVENTUREROS</div>
   <div class="ss-divider"></div>
 
   <!-- Save preview filled by JS -->
@@ -646,7 +646,7 @@ header::after{content:'HEROQUEST';display:block;font-size:8px;color:var(--god);l
   <!-- Buttons filled by JS -->
   <div id="ss-buttons" style="width:100%"></div>
 
-  <div class="ss-version">v14.0 &bull; Crawlers &bull; 2026</div>
+  <div class="ss-version">v2.0 &bull; Crawlers &bull; 2026</div>
 </div>
 <script>
 const HT={
