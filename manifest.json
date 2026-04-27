@@ -5414,6 +5414,24 @@ function buyGuaridaUpgrade(upgradeId){
 }
 
 
+function resetDungeon(){
+  dg = null;
+  zoneStates = {};
+  sk = sk || {};
+  sk.dg = null;
+  oracleLog = [];
+  openD20Rooms = new Set();
+  saveS();
+  renderSk();
+  toast('&#9876;&#65039; Nueva escaramuza lista');
+}
+
+function renderDH(){
+  // dh = dungeon history array, kept for save compatibility but no dedicated panel now
+  // History is shown in Crónica tab via esquirlasLog
+}
+
+
 function initSessionScreen(){
   const raw=localStorage.getItem(LSK);
   let saveData=null;
